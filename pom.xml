@@ -15,15 +15,50 @@
     <youtube.version>v3-rev178-1.22.0</youtube.version>
     <picasa.version>1.0.10-alpha</picasa.version> 
     <struts.version>2.3.15.3</struts.version>
+    <version.jboss.bom.eap>6.4.0.GA</version.jboss.bom.eap>
   </properties>
   
+  <dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.jboss.bom.eap</groupId>
+				<artifactId>jboss-javaee-6.0-with-tools</artifactId>
+				<version>${version.jboss.bom.eap}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.jboss.bom.eap</groupId>
+				<artifactId>jboss-javaee-6.0-with-hibernate</artifactId>
+				<version>${version.jboss.bom.eap}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+</dependencyManagement>
+  
   <dependencies>
-    <dependency>
+    <!--dependency>
       <groupId>org.jboss.spec</groupId>
       <artifactId>jboss-javaee-6.0</artifactId>
       <version>3.0.3.Final</version>
       <type>pom</type>
       <scope>provided</scope>
+    </dependency-->
+    <dependency>
+			<groupId>org.jboss.spec.javax.ejb</groupId>
+			<artifactId>jboss-ejb-api_3.1_spec</artifactId>
+			<scope>provided</scope>
+    </dependency>  
+    <dependency>
+           <groupId>org.jboss.spec.javax.jms</groupId>
+           <artifactId>jboss-jms-api_1.1_spec</artifactId>
+          <scope>provided</scope>
+    </dependency>  
+    <dependency>
+    	<groupId>org.hibernate.javax.persistence</groupId>
+    	<artifactId>hibernate-jpa-2.0-api</artifactId>
+    	 <scope>provided</scope>
     </dependency>
     <dependency>
     	<groupId>org.apache.struts</groupId>
@@ -90,12 +125,12 @@
     	<artifactId>twitter-text</artifactId>
     	<version>1.14.0</version>
     </dependency>
-    <dependency>
+    <!--dependency>
     	<groupId>org.jboss.threads</groupId>
     	<artifactId>jboss-threads</artifactId>
     	<version>2.1.1.Final</version>
     	<scope>provided</scope>
-    </dependency>
+    </dependency-->
     <!--  custom -->
     <dependency>
     	<groupId>com.flickr4java</groupId>
@@ -125,15 +160,15 @@
     <dependency>
     	<groupId>org.jboss.as</groupId>
     	<artifactId>jboss-as-clustering-infinispan</artifactId>
-    	<version>7.2.0.Final</version>
+    	<version>7.4.0.Final-redhat-19</version>
     	<scope>provided</scope>
     </dependency>
-    <dependency>
+    <!--dependency>
     	<groupId>org.picketbox</groupId>
     	<artifactId>jbosssx-bare</artifactId>
     	<version>4.0.20.Final</version>
     	<scope>provided</scope>
-    </dependency>
+    </dependency-->
     <dependency>
     	<groupId>net.gms-world</groupId>
     	<artifactId>gmsworldlayers</artifactId>
@@ -147,15 +182,14 @@
     <dependency>
     	<groupId>org.hibernate</groupId>
     	<artifactId>hibernate-core</artifactId>
-    	<version>4.2.0.Final</version>
     	<scope>provided</scope>
     </dependency>
-    <dependency>
+    <!--dependency>
     	<groupId>javax.transaction</groupId>
     	<artifactId>jta</artifactId>
     	<version>1.1</version>
     	<scope>provided</scope>
-    </dependency>
+    </dependency-->
     <dependency>
     	<groupId>com.fasterxml.jackson.core</groupId>
     	<artifactId>jackson-core</artifactId>
@@ -184,10 +218,10 @@
     <dependency>
     	<groupId>junit</groupId>
     	<artifactId>junit</artifactId>
-    	<version>4.12</version>
     	<scope>test</scope>
     </dependency>
   </dependencies>
+  
   <profiles>
     <profile>
      <!-- When built in OpenShift the 'openshift' profile will be used when invoking mvn. -->
