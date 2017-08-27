@@ -1,0 +1,50 @@
+package net.gmsworld.server.utils.persistence;
+
+import java.util.Calendar;
+import java.util.List;
+
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+
+import net.gmsworld.server.persistence.Token;
+
+@Stateless
+public class TokenPersistenceUtils {
+
+	@PersistenceContext
+    private EntityManager entityManager;
+	
+	public void save(Token t) {
+		entityManager.persist(t);
+		entityManager.flush();
+	}
+	
+	public void update(Token t) {
+		entityManager.merge(t);
+		entityManager.flush();
+	}
+	
+	public boolean isTokenValid(String key, String scope) {
+		TypedQuery<Token> query = entityManager.createNamedQuery(Token.GET_TOKEN, Token.class);
+		query.setParameter("key", key);
+		query.setParameter("scope", scope);
+		try {
+			Token t = query.getSingleResult();
+			t.setCount(t.getCount()+1);
+			t.setLastUsageDate(Calendar.getInstance().getTime());
+			update(t);
+			return true;
+		} catch (NoResultException nre) {
+			return false;
+		}
+	}
+	
+	public List<Token> getTopTokens(int limit) {
+		TypedQuery<Token> query = entityManager.createNamedQuery(Token.GET_TOP_TOKENS, Token.class);
+		query.setMaxResults(limit);
+		return query.getResultList();
+	}
+}

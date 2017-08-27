@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+      "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+      "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+	<package name="net.gmsworld.server.struts" namespace="/" extends="struts-default">
+	
+	    <action name="landmarksProvider" class="net.gmsworld.server.struts.LandmarkProviderAction">
+			<result name="success">/json.jsp</result>
+			<result name="error">/error.jsp</result>
+		</action>
+		
+		<action name="itemProvider" class="net.gmsworld.server.struts.ItemProviderAction">
+			<result name="success">/json.jsp</result>
+			<result name="error">/error.jsp</result>
+		</action>		
+		
+		<action name="addItem" class="net.gmsworld.server.struts.AddItemAction">
+			<result name="success">/json.jsp</result>
+			<result name="error">/error.jsp</result>
+		</action>
+		
+		<action name="layerLandmarks" class="net.gmsworld.server.struts.LayerFormAction" method="execute">
+		    <result type="chain" name="success">
+		        <param name="actionName">layersProvider</param>
+		    </result>
+		    <result name="input">/layers.jsp</result>
+		</action>
+		
+		<action name="searchLayer" class="net.gmsworld.server.struts.LayerFormAction" method="populate">
+		    <result name="populate">/layers.jsp</result>
+		</action>
+		
+		<action name="layersProvider" class="net.gmsworld.server.layers.LayerProviderAction">
+			<result type="chain" name="json">
+            	<param name="actionName">getJSonResult</param>
+            	<param name="namespace">/json</param>
+        	</result>
+        	<result type="chain" name="deflate">
+        		<param name="actionName">getDeflateResult</param>
+            </result>
+			<result name="error">/error.jsp</result>
+		</action>
+		
+		<action name="downloadLandmark" method="executeLocalLayers" class="net.gmsworld.server.layers.LayerProviderAction">
+			<result type="chain" name="json">
+            	<param name="actionName">getJSonResult</param>
+            	<param name="namespace">/json</param>
+        	</result>
+        	<result type="chain" name="deflate">
+        		<param name="actionName">getDeflateResult</param>
+            </result>
+			<result name="error">/error.jsp</result>
+		</action>
+		
+		<action name="fbCheckins" method="executeFBCheckins" class="net.gmsworld.server.layers.LayerProviderAction">
+			<result type="chain" name="json">
+            	<param name="actionName">getJSonResult</param>
+            	<param name="namespace">/json</param>
+        	</result>
+        	<result type="chain" name="deflate">
+        		<param name="actionName">getDeflateResult</param>
+            </result>
+			<result name="error">/error.jsp</result>
+		</action>
+		
+		<action name="fbPhotos" method="executeFBPhotos" class="net.gmsworld.server.layers.LayerProviderAction">
+			<result type="chain" name="json">
+            	<param name="actionName">getJSonResult</param>
+            	<param name="namespace">/json</param>
+        	</result>
+        	<result type="chain" name="deflate">
+        		<param name="actionName">getDeflateResult</param>
+            </result>
+			<result name="error">/error.jsp</result>
+		</action>
+		
+		<action name="fbTagged" method="executeFBTagged" class="net.gmsworld.server.layers.LayerProviderAction">
+			<result type="chain" name="json">
+            	<param name="actionName">getJSonResult</param>
+            	<param name="namespace">/json</param>
+        	</result>
+        	<result type="chain" name="deflate">
+        		<param name="actionName">getDeflateResult</param>
+            </result>
+			<result name="error">/error.jsp</result>
+		</action>
+		
+		<action name="fsCheckins" method="executeFSCheckins" class="net.gmsworld.server.layers.LayerProviderAction">
+			<result type="chain" name="json">
+            	<param name="actionName">getJSonResult</param>
+            	<param name="namespace">/json</param>
+        	</result>
+        	<result type="chain" name="deflate">
+        		<param name="actionName">getDeflateResult</param>
+            </result>
+			<result name="error">/error.jsp</result>
+		</action>
+		
+		<action name="fsRecommended" method="executeFSRecommended" class="net.gmsworld.server.layers.LayerProviderAction">
+			<result type="chain" name="json">
+            	<param name="actionName">getJSonResult</param>
+            	<param name="namespace">/json</param>
+        	</result>
+        	<result type="chain" name="deflate">
+        		<param name="actionName">getDeflateResult</param>
+            </result>
+			<result name="error">/error.jsp</result>
+		</action>
+		
+		<action name="twFriends" method="executeTWFriends" class="net.gmsworld.server.layers.LayerProviderAction">
+			<result type="chain" name="json">
+            	<param name="actionName">getJSonResult</param>
+            	<param name="namespace">/json</param>
+        	</result>
+        	<result type="chain" name="deflate">
+        		<param name="actionName">getDeflateResult</param>
+            </result>
+			<result name="error">/error.jsp</result>
+		</action>
+		
+		<action name="foursquareMerchant" method="executeNamedLayer" class="net.gmsworld.server.layers.LayerProviderAction">
+			<result type="chain" name="json">
+            	<param name="actionName">getJSonResult</param>
+            	<param name="namespace">/json</param>
+        	</result>
+        	<result type="chain" name="deflate">
+        		<param name="actionName">getDeflateResult</param>
+            </result>
+			<result name="error">/error.jsp</result>
+		</action>
+		
+		<action name="*Provider" method="executeNamedLayer" class="net.gmsworld.server.layers.LayerProviderAction">
+			<result type="chain" name="json">
+            	<param name="actionName">getJSonResult</param>
+            	<param name="namespace">/json</param>
+        	</result>
+        	<result type="chain" name="deflate">
+        		<param name="actionName">getDeflateResult</param>
+            </result>
+			<result name="error">/error.jsp</result>
+		</action>
+		
+		<action name="search" method="executeNamedLayer" class="net.gmsworld.server.layers.LayerProviderAction">
+			<result type="chain" name="json">
+            	<param name="actionName">getJSonResult</param>
+            	<param name="namespace">/json</param>
+        	</result>
+        	<result type="chain" name="deflate">
+        		<param name="actionName">getDeflateResult</param>
+            </result>
+			<result name="error">/error.jsp</result>
+		</action>
+		
+		<action name="generateToken" class="net.gmsworld.server.struts.TokenAction" method="createToken">
+			<result type="chain" name="json">
+            	<param name="actionName">getJSonResult</param>
+            	<param name="namespace">/json</param>
+        	</result>
+			<result name="error">/error.jsp</result>
+		</action>
+		
+		<action name="isValidToken" class="net.gmsworld.server.struts.TokenAction" method="isValidToken">
+			<result type="chain" name="json">
+            	<param name="actionName">getJSonResult</param>
+            	<param name="namespace">/json</param>
+        	</result>
+			<result name="error">/error.jsp</result>
+		</action>
+		
+		<action name="getTopTokens" class="net.gmsworld.server.struts.TokenAction" method="getTopTokens">
+			<result type="chain" name="json">
+            	<param name="actionName">getJSonResult</param>
+            	<param name="namespace">/json</param>
+        	</result>
+			<result name="error">/error.jsp</result>
+		</action>
+		
+		<action name="getDeflateResult" class="net.gmsworld.server.layers.DeflateDataAction">
+			<result name="error">/error.jsp</result>
+		</action>
+		
+	</package>
+	
+	<package name="net.gmsworld.server.struts.json" namespace="/json" extends="json-default">
+	     
+	     <action name="getJSonResult" class="net.gmsworld.server.struts.JSonDataAction">
+       	   	<result type="json">
+       	   		<param name="excludeNullProperties">true</param>
+       	   		<param name="enableGZIP">true</param>
+       	    </result>
+         </action>
+      
+	</package>
+</struts>
