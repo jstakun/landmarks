@@ -125,13 +125,12 @@
     	<artifactId>twitter-text</artifactId>
     	<version>1.14.0</version>
     </dependency>
-    <!--dependency>
+    <dependency>
     	<groupId>org.jboss.threads</groupId>
     	<artifactId>jboss-threads</artifactId>
-    	<version>2.1.1.Final</version>
+    	<version>2.2.1.Final-redhat-1</version>
     	<scope>provided</scope>
-    </dependency-->
-    <!--  custom -->
+    </dependency>
     <dependency>
     	<groupId>com.flickr4java</groupId>
     	<artifactId>flickr4java</artifactId>
