@@ -5,7 +5,7 @@ import org.jboss.threads.JBossThreadFactory;
 
 public class JBossThreadProvider implements ThreadFactory {
 
-	private static final JBossThreadFactory threadFactory = new JBossThreadFactory(null, null, null, "GMS World Landmark Loader", null, null);
+	private static final ThreadFactory threadFactory = new JBossThreadFactory(null, null, null, "GMS World Landmark Loader", null, null);
 
 	@Override
 	public Thread newThread(Runnable r) {
