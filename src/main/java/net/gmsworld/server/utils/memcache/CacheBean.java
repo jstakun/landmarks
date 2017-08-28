@@ -3,11 +3,11 @@ package net.gmsworld.server.utils.memcache;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
+//import javax.annotation.Resource;
 import javax.ejb.Singleton;
 
 import org.infinispan.Cache;
-import org.infinispan.manager.EmbeddedCacheManager;
+//import org.infinispan.manager.EmbeddedCacheManager;
 
 import javax.inject.Inject;
 

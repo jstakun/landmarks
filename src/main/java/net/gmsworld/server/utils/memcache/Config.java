@@ -24,7 +24,7 @@ public class Config {
 			.globalJmxStatistics().allowDuplicateDomains(true).enable().build();
 	
 		org.infinispan.configuration.cache.Configuration loc = new org.infinispan.configuration.cache.ConfigurationBuilder()
-			.expiration().lifespan(1,TimeUnit.DAYS)
+			.expiration().lifespan(1,TimeUnit.HOURS)
 			.build();
 		
 		return new DefaultCacheManager(glob, loc, true);
