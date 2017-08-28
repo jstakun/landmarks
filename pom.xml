@@ -175,7 +175,7 @@
  </dependency>
  <dependency>
  	<groupId>org.infinispan</groupId>
- 	<artifactId>infinispan-cdi-embedded</artifactId>
+ 	<artifactId>infinispan-cdi</artifactId>
  	<scope>provided</scope>
  </dependency>
     <!--dependency>
