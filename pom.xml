@@ -34,6 +34,12 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
+			<dependency>
+    			<groupId>org.infinispan</groupId>
+    			<artifactId>infinispan-bom</artifactId>
+    			<version>6.4.1.Final-redhat-1</version>
+    			<type>pom</type>
+			</dependency>
 		</dependencies>
 </dependencyManagement>
   
@@ -156,12 +162,22 @@
     	<artifactId>foursquareapi2</artifactId>
     	<version>0.0.4</version>
     </dependency>
-    <dependency>
+    <!--dependency>
     	<groupId>org.jboss.as</groupId>
     	<artifactId>jboss-as-clustering-infinispan</artifactId>
     	<version>7.4.0.Final-redhat-19</version>
     	<scope>provided</scope>
-    </dependency>
+    </dependency-->
+    <dependency>
+ 	<groupId>org.infinispan</groupId>
+ 	<artifactId>infinispan-core</artifactId>
+ 	<scope>provided</scope>
+ </dependency>
+ <dependency>
+ 	<groupId>org.infinispan</groupId>
+ 	<artifactId>infinispan-cdi</artifactId>
+ 	<scope>provided</scope>
+ </dependency>
     <!--dependency>
     	<groupId>org.picketbox</groupId>
     	<artifactId>jbosssx-bare</artifactId>
@@ -240,6 +256,7 @@
               <archive>
             	<manifestEntries>
                		<Dependencies>org.infinispan</Dependencies>
+               		<Dependencies>org.infinispan.cdi</Dependencies>
             	</manifestEntries>
          	  </archive>
             </configuration>
