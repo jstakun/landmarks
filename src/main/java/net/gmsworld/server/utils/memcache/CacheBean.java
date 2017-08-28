@@ -9,7 +9,7 @@ import javax.ejb.Singleton;
 import org.infinispan.Cache;
 import org.infinispan.manager.EmbeddedCacheManager;
 
-//import javax.inject.Inject;
+import javax.inject.Inject;
 
 @Singleton
 public class CacheBean {
@@ -23,14 +23,14 @@ public class CacheBean {
 	//@Resource(lookup = "java:jboss/infinispan/gmsworld")
 	//private EmbeddedCacheManager container;
 	 
-	//@Inject
-	//private Cache<String, Object> cache;
+	@Inject
+	private Cache<String, Object> cache;
 	
 	@PostConstruct
 	public void start()
     {
 		//cache = container.getCache();
-		//cache.addListener(new LoggingListener());
+		cache.addListener(new LoggingListener());
 	}
 	
 	public void put(String key, Object value) {
