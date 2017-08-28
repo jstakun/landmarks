@@ -138,13 +138,19 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
             	LandmarkPersistenceUtils landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().getService(
             			"java:global/ROOT/LandmarkPersistenceUtils!net.gmsworld.server.utils.persistence.LandmarkPersistenceUtils");
             	List<Landmark> newestLandmarks = landmarkPersistenceUtils.findNewestLandmarks(1);
-            	Landmark newest = newestLandmarks.get(0);
+            	int id = -1;
+            	if (!newestLandmarks.isEmpty()) {
+            		Landmark newest = newestLandmarks.get(0);
             	
-            	logger.log(Level.INFO, "Comparing " + landmark.getName() + ": " + StringUtil.formatCoordE2(landmark.getLatitude()) + "," + StringUtil.formatCoordE2(landmark.getLongitude()) + 
+            		logger.log(Level.INFO, "Comparing " + landmark.getName() + ": " + StringUtil.formatCoordE2(landmark.getLatitude()) + "," + StringUtil.formatCoordE2(landmark.getLongitude()) + 
             			               " with " + newest.getName() + ": " + StringUtil.formatCoordE2(newest.getLatitude()) + "," + StringUtil.formatCoordE2(newest.getLongitude()));
+            		if (newest.compare(landmark)) {
+            			id =  newest.getId(); 
+            		}
+            	}
             	
-            	if (newest.compare(landmark)) {
-            		request.setAttribute("output", "{\"status\":\"ok\",\"id\":" + newest.getId() + ",\"error\":\"Landmark exists\"}");
+            	if (id > 0) {
+            		request.setAttribute("output", "{\"status\":\"ok\",\"id\":" + id + ",\"error\":\"Landmark exists\"}");
             		logger.log(Level.INFO, "Landmark exists.");
             	} else {
             		logger.log(Level.INFO, "New landmark will be created...");
