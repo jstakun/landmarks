@@ -256,7 +256,6 @@
               <archive>
             	<manifestEntries>
                		<Dependencies>org.infinispan</Dependencies>
-               		<Dependencies>org.infinispan.cdi</Dependencies>
             	</manifestEntries>
          	  </archive>
             </configuration>
