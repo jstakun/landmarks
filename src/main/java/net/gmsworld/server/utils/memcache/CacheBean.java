@@ -34,27 +34,27 @@ public class CacheBean {
 	}
 	
 	public void put(String key, Object value) {
-		//cache.put(key, value);
+		cache.put(key, value);
 	}
 	
 	public Object getObject(String key) {
-		//return cache.get(key);
-		return null;
+		return cache.get(key);
+		//return null;
 	}
 	
 	public void putShort(String key, Object value) {
-		//cache.put(key, value, 120, TimeUnit.SECONDS);
+		cache.put(key, value, 120, TimeUnit.SECONDS);
 	}
 	
 	public void increment(String key) {
-		//Integer value = (Integer)cache.get(key);
-		//if (value != null) {
-			//cache.replace(key, value+1);
-		//}
+		Integer value = (Integer)cache.get(key);
+		if (value != null) {
+			cache.replace(key, value+1);
+		}
 	}
 	
 	public boolean containsKey(String key) {
-		//return cache.containsKey(key);
-		return false;
+		return cache.containsKey(key);
+		//return false;
 	}
 }

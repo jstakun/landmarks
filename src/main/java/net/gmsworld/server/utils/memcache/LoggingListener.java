@@ -13,6 +13,10 @@ import org.infinispan.notifications.cachelistener.event.CacheEntryRemovedEvent;
 public class LoggingListener {
 
    private static final Logger logger = Logger.getLogger(LoggingListener.class.getName());
+   
+   public LoggingListener() {
+	   logger.log(Level.INFO, "GMS World cache logging listener created.");
+   }
 
    @CacheEntryCreated
    public void observeAdd(CacheEntryCreatedEvent<?, ?> event) {
