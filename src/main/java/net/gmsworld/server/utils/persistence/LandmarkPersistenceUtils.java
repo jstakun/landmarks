@@ -290,7 +290,13 @@ public class LandmarkPersistenceUtils {
 	
 	public String setFlex(Landmark landmark) {
     	AddressInfo addressInfo = GeocodeHelperFactory.processReverseGeocode(landmark.getLatitude(), landmark.getLongitude());
-    	JSONObject flex = new JSONObject(landmark.getFlex());
+    	String flexStr = landmark.getFlex();
+    	JSONObject flex = null; 
+    	if (flexStr != null) {
+    		flex = new JSONObject(flexStr);
+    	} else {
+    		flex = new JSONObject();
+    	}
     	if (addressInfo != null) {
     		if (!flex.has("cc")) {
     			flex.putOpt("cc", addressInfo.getField(AddressInfo.COUNTRY_CODE));
