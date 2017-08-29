@@ -223,6 +223,14 @@
     </dependency>
   </dependencies>
   
+    <repositories>
+    <repository>
+      <id>gms-world</id>
+      <name>GMS World repo</name>
+      <url>http://external-nexus-service.default.svc:8081/repository/public</url>
+    </repository>
+  </repositories>
+  
   <profiles>
     <profile>
      <!-- When built in OpenShift the 'openshift' profile will be used when invoking mvn. -->
