@@ -54,12 +54,15 @@ public class AuthzFilter implements Filter {
     			} catch (Exception e) {
         			logger.log(Level.SEVERE, e.getMessage(), e);
         		}
+    		} else {
+    			logger.log(Level.WARNING, "Missing token or scope header");
     		}
 		}
     	
     	if (auth) {
             chain.doFilter(request, response);
         } else if (response instanceof HttpServletResponse) {
+        	logger.log(Level.WARNING, "Authorizaton Failed!");
         	((HttpServletResponse)response).sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authorizaton Required!");
         } else {
         	response.getWriter().println("Authorizaton Required!");
