@@ -327,7 +327,7 @@ public class LayerProviderAction extends ActionSupport implements ParameterAware
 	}
 	
 	private String executeLayer(String layerName, int limit, String flex, String flex2, int radius_multiplier) {
-		if (isEmptyAny("latitude", "longitude")) {
+		if (isEmptyAny("latitude", "longitude") && isEmptyAny("lat", "lng")) {
             addActionError("Missing required parameter latitude or longitude");
             logger.log(Level.WARNING, "Missing required parameter latitude or longitude");
             return "error";
