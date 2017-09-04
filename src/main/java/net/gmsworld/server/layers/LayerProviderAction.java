@@ -117,7 +117,7 @@ public class LayerProviderAction extends ActionSupport implements ParameterAware
         
         if (layer != null) {
         	return execute(layer);
-        } else { //Wrong or not implemented layer: Foursquare Merchants
+        } else { //Wrong or not implemented layer
         	addActionError("Wrong or unimplemented layer: " + uri);
     		logger.log(Level.WARNING, "Wrong or unimplemented layer: " + uri); 
         	return "error";
@@ -258,7 +258,7 @@ public class LayerProviderAction extends ActionSupport implements ParameterAware
         	 BoundingBox bb = getBoundingBox();
         	 String amenity = null;
         	 String helper = null;
-        	 if (StringUtils.equals(layer, Commons.OSM_PARKING_LAYER)) {
+        	 if (StringUtils.equals(layer, Commons.OSM_ATM_LAYER)) {
         		 amenity = "atm";
             	 helper = Commons.OSM_ATM_LAYER;
         	 } else if (StringUtils.equals(layer, Commons.OSM_PARKING_LAYER)) {

@@ -22,12 +22,12 @@
     <url-pattern>/s/*</url-pattern>
   </filter-mapping>
   <filter-mapping>
-    <filter-name>struts2</filter-name>
-    <url-pattern>/actions/*</url-pattern>
+    <filter-name>TokenFilter</filter-name>
     <url-pattern>/s/*</url-pattern>
   </filter-mapping>
   <filter-mapping>
-    <filter-name>TokenFilter</filter-name>
+    <filter-name>struts2</filter-name>
+    <url-pattern>/actions/*</url-pattern>
     <url-pattern>/s/*</url-pattern>
   </filter-mapping>
   <security-constraint>
