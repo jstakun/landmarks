@@ -255,7 +255,7 @@ public class LayerProviderAction extends ActionSupport implements ParameterAware
          } else if (StringUtils.equals(layer, Commons.MC_ATM_LAYER)) {
         	 return executeLayer(Commons.MC_ATM_LAYER, limit, null, null, 1);	
          } else if (StringUtils.endsWithAny(layer, new String[]{Commons.OSM_ATM_LAYER, Commons.OSM_PARKING_LAYER, Commons.OSM_TAXI_LAYER})) {
-        	 BoundingBox bb = getBoundingBox();
+        	 //BoundingBox bb = getBoundingBox();
         	 String amenity = null;
         	 String helper = null;
         	 if (StringUtils.equals(layer, Commons.OSM_ATM_LAYER)) {
@@ -268,14 +268,14 @@ public class LayerProviderAction extends ActionSupport implements ParameterAware
         		amenity = "taxi";
         		helper = Commons.OSM_TAXI_LAYER;
         	 }
-         	 if (StringUtils.isNotEmpty(amenity) && StringUtils.isNotEmpty(helper)) {
-         		 String bbox = StringUtil.formatCoordE6(bb.west) + "," + StringUtil.formatCoordE6(bb.south) + "," + 
-         				StringUtil.formatCoordE6(bb.east) + "," + StringUtil.formatCoordE6(bb.north);         	
-         		 return executeLayer(helper, limit, amenity, bbox, 1);       	 
-         	 } else {
-         		logger.log(Level.WARNING, "Wrong osm layer selected " +  layer + "!");
-         		return chainResult(new ArrayList<ExtendedLandmark>());
-         	 }
+         	 //if (StringUtils.isNotEmpty(amenity) && StringUtils.isNotEmpty(helper)) {
+         	//	 String bbox = StringUtil.formatCoordE6(bb.west) + "," + StringUtil.formatCoordE6(bb.south) + "," + 
+         	//			StringUtil.formatCoordE6(bb.east) + "," + StringUtil.formatCoordE6(bb.north);         	
+         		 return executeLayer(helper, limit, amenity, null, 1);       	 
+         	 //} else {
+         	//	logger.log(Level.WARNING, "Wrong osm layer selected " +  layer + "!");
+         	//	return chainResult(new ArrayList<ExtendedLandmark>());
+         	 //}
          } else if (StringUtils.equals(layer, "search")) {
         	 String token = null;
              if (StringUtils.isNotEmpty(getParameter("token"))) {
