@@ -181,10 +181,7 @@
 		</action>
 		
 		<action name="emailer" class="net.gmsworld.server.struts.MailAction" method="execute">
-            <result type="chain" name="json">
-            	<param name="actionName">getJSonResult</param>
-            	<param name="namespace">/json</param>
-        	</result>
+            <result name="success">/json.jsp</result>
             <result name="error">/error.jsp</result>
         </action>
     	

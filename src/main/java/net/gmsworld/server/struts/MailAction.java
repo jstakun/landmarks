@@ -12,6 +12,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.interceptor.ServletRequestAware;
 
 import com.opensymphony.xwork2.ActionSupport;
@@ -61,8 +62,13 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	              PasswordAuthentication(from, password);
 	             }});
 	          
-	          session.setDebug(true);
-
+	          String debug = System.getenv("SMTP_DEBUG");
+	          if (StringUtils.equalsIgnoreCase(debug, "true")) {
+	        	  session.setDebug(true);
+	          } else {
+	        	  session.setDebug(false);
+	          }
+	          
 	          Message message = new MimeMessage(session);
 	          message.setFrom(new InternetAddress(from));
 	          message.setRecipients(Message.RecipientType.TO, 
