@@ -38,14 +38,24 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    static
 	    {
 	       String host = System.getenv("SMTP_HOST");
-	       String port = System.getenv("SMTP_PORT");	
+	       if (StringUtils.isEmpty(host)) {
+	    	   host = "localhost";
+	       }
+	       String port = System.getenv("SMTP_PORT");
+	       if (StringUtils.isEmpty(port)) {
+	    	   port = "25";
+	       }
 	       Logger.getLogger("MailAction").log(Level.INFO, "Mail agent will connect to " + host + ":" + port);
 	       properties.put("mail.smtp.host", host);
-	       //properties.put("mail.smtp.socketFactory.port", port);
-	       //properties.put("mail.smtp.socketFactory.class",
-	       //             "javax.net.ssl.SSLSocketFactory");
-	       properties.put("mail.smtp.auth", "true");
-	       properties.put("mail.smtp.port", port);
+	       String sslport = System.getenv("SMTP_SSL_PORT");
+	       if (StringUtils.isNotEmpty(sslport)) {
+	          properties.put("mail.smtp.socketFactory.port", sslport);
+	          properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+	          properties.put("mail.smtp.port", sslport);
+	       } else {
+	    	   properties.put("mail.smtp.port", port);
+	       }
+	       properties.put("mail.smtp.auth", "true");      
 	    }
 	    
 	    @Override
