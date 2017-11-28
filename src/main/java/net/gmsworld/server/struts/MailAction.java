@@ -45,14 +45,15 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	       if (StringUtils.isEmpty(port)) {
 	    	   port = "25";
 	       }
-	       Logger.getLogger("MailAction").log(Level.INFO, "Mail agent will connect to " + host + ":" + port);
 	       properties.put("mail.smtp.host", host);
 	       String sslport = System.getenv("SMTP_SSL_PORT");
 	       if (StringUtils.isNotEmpty(sslport)) {
-	          properties.put("mail.smtp.socketFactory.port", sslport);
-	          properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-	          properties.put("mail.smtp.port", sslport);
+	    	   Logger.getLogger("MailAction").log(Level.INFO, "Mail agent will connect to " + host + ":" + sslport);
+		       properties.put("mail.smtp.socketFactory.port", sslport);
+	           properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+	           properties.put("mail.smtp.port", sslport);
 	       } else {
+	    	   Logger.getLogger("MailAction").log(Level.INFO, "Mail agent will connect to " + host + ":" + port);
 	    	   properties.put("mail.smtp.port", port);
 	       }
 	       properties.put("mail.smtp.auth", "true");      
@@ -68,7 +69,7 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    {
 	       try
 	       {
-	          Session session = Session.getInstance(properties,  
+	          Session session = Session.getDefaultInstance(properties,  
 	             new javax.mail.Authenticator() {
 	              protected PasswordAuthentication 
 	              getPasswordAuthentication() {
