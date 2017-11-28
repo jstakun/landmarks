@@ -11,6 +11,7 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeUtility;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
@@ -90,8 +91,8 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	          message.setFrom(new InternetAddress(from, fromNick));
 	          message.setRecipients(Message.RecipientType.TO, 
 	             InternetAddress.parse(to)); //new InternetAddress(to, toNick)
-	          message.setSubject(subject);
-	          message.setText(body);
+	          message.setSubject(MimeUtility.encodeText(subject, "utf-8", "B"));
+	          message.setText(MimeUtility.encodeText(body, "utf-8", "B"));
 	          message.setSentDate(new Date());
 	          Transport.send(message);
 	          String output = "{\"status\":\"Message sent to " + to + "\"}";
