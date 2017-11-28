@@ -1,5 +1,6 @@
 package net.gmsworld.server.struts;
 
+import java.util.Date;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,6 +30,9 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    private String to;
 	    private String subject;
 	    private String body;
+	    private String fromNick;
+	    private String toNick;
+	    
 
 	    static Properties properties = new Properties();
 	    static
@@ -70,11 +74,12 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	          }
 	          
 	          Message message = new MimeMessage(session);
-	          message.setFrom(new InternetAddress(from));
+	          message.setFrom(new InternetAddress(from, fromNick));
 	          message.setRecipients(Message.RecipientType.TO, 
-	             InternetAddress.parse(to));
+	             InternetAddress.parse(to)); //new InternetAddress(to, toNick)
 	          message.setSubject(subject);
 	          message.setText(body);
+	          message.setSentDate(new Date());
 	          Transport.send(message);
 	          String output = "{\"status\":\"Message sent to " + to + "\"}";
 	          request.setAttribute("output", output);
@@ -135,4 +140,20 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    public static void setProperties(Properties properties) {
 	     MailAction.properties = properties;
 	    }
+
+		public String getFromNick() {
+			return fromNick;
+		}
+
+		public void setFromNick(String fromNick) {
+			this.fromNick = fromNick;
+		}
+
+		public String getToNick() {
+			return toNick;
+		}
+
+		public void setToNick(String toNick) {
+			this.toNick = toNick;
+		}
 	}
