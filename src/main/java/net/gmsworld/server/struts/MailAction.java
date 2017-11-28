@@ -87,13 +87,12 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	        	  session.setDebug(false);
 	          }
 	          
-	          Message message = new MimeMessage(session);
+	          MimeMessage message = new MimeMessage(session);
 	          message.setFrom(new InternetAddress(from, fromNick));
 	          message.setRecipients(Message.RecipientType.TO, 
 	             InternetAddress.parse(to)); //new InternetAddress(to, toNick)
-	          message.setSubject(MimeUtility.encodeText(subject, "utf-8", "B"));
-	          //message.setText(body);
-	          message.setContent(body, "text/plain; charset=UTF-8");
+	          message.setSubject(subject, "UTF-8");
+	          message.setText(body, "UTF-8");
 	          message.setSentDate(new Date());
 	          Transport.send(message);
 	          String output = "{\"status\":\"Message sent to " + to + "\"}";
