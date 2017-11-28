@@ -52,6 +52,7 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 		       properties.put("mail.smtp.socketFactory.port", sslport);
 	           properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
 	           properties.put("mail.smtp.port", sslport);
+	           properties.put("mail.smtp.ssl.enable", "true");
 	       } else {
 	    	   Logger.getLogger("MailAction").log(Level.INFO, "Mail agent will connect to " + host + ":" + port);
 	    	   properties.put("mail.smtp.port", port);
