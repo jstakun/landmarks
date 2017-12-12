@@ -7,6 +7,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 public class ServiceLocator {
+	
 	private static ServiceLocator serviceLocator = null;
 	InitialContext context = null;
     Map<String, Object> serviceCache = null;
