@@ -4,7 +4,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.ejb.EJB;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.struts2.interceptor.ParameterAware;
@@ -13,17 +12,15 @@ import org.apache.struts2.interceptor.ServletRequestAware;
 import com.opensymphony.xwork2.ActionSupport;
 
 import net.gmsworld.server.persistence.Device;
+import net.gmsworld.server.utils.ServiceLocator;
 import net.gmsworld.server.utils.persistence.DevicePersistenceUtils;
 
 public class DeviceAction extends ActionSupport implements ParameterAware, ServletRequestAware {
 
-	 @EJB
-	 private DevicePersistenceUtils devicePersistenceUtils;
-	 
-	 private Map<String, String[]> parameters;
-	 private HttpServletRequest request;
+	private Map<String, String[]> parameters;
+	private HttpServletRequest request;
 	private static final Logger logger = Logger.getLogger(DeviceAction.class.getName());
-	 private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 			
 	@Override
 	public void setParameters(Map<String, String[]> arg0) {
@@ -46,6 +43,8 @@ public class DeviceAction extends ActionSupport implements ParameterAware, Servl
 				Integer pin = Integer.valueOf(getParameter("pin") );
 				String username = getParameter("username");
 				Device device = new Device(imei, token, pin, username) ;
+				DevicePersistenceUtils devicePersistenceUtils = (DevicePersistenceUtils) ServiceLocator.getInstance().getService(
+						"java:global/ROOT/DevicePersistenceUtils!net.gmsworld.server.utils.persistence.DevicePersistenceUtils");			    
 				devicePersistenceUtils.save(device);
 				request.setAttribute(JSonDataAction.JSON_OUTPUT, device);
 				return "json";
@@ -66,6 +65,8 @@ public class DeviceAction extends ActionSupport implements ParameterAware, Servl
 				Long imei = Long.valueOf(getParameter("imei"));
 				String token = getParameter("token");
 				Integer pin = Integer.valueOf(getParameter("pin") );
+				DevicePersistenceUtils devicePersistenceUtils = (DevicePersistenceUtils) ServiceLocator.getInstance().getService(
+						"java:global/ROOT/DevicePersistenceUtils!net.gmsworld.server.utils.persistence.DevicePersistenceUtils");
 				Device device = devicePersistenceUtils.findDeviceByImei(imei);
 				if (token != null) {
 					device.setToken(token);
