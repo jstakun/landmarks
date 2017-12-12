@@ -3,7 +3,7 @@ package net.gmsworld.server.utils.persistence;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
@@ -11,7 +11,7 @@ import javax.persistence.TypedQuery;
 
 import net.gmsworld.server.persistence.Device;
 
-@ApplicationScoped 
+@Stateless
 public class DevicePersistenceUtils {
 
 	@PersistenceContext

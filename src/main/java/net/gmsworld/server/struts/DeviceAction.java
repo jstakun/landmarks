@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.inject.Inject;
+import javax.ejb.EJB;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.struts2.interceptor.ParameterAware;
@@ -17,8 +17,9 @@ import net.gmsworld.server.utils.persistence.DevicePersistenceUtils;
 
 public class DeviceAction extends ActionSupport implements ParameterAware, ServletRequestAware {
 
-	 @Inject
+	 @EJB
 	 private DevicePersistenceUtils devicePersistenceUtils;
+	 
 	 private Map<String, String[]> parameters;
 	 private HttpServletRequest request;
 	private static final Logger logger = Logger.getLogger(DeviceAction.class.getName());
