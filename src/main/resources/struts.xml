@@ -192,6 +192,14 @@
 			<result name="error">/error.jsp</result>
 		</action>
 		
+		<action name="getDevice" class="net.gmsworld.server.struts.DeviceAction" method="getDevice">
+			<result type="chain" name="json">
+            	<param name="actionName">getJSonResult</param>
+            	<param name="namespace">/json</param>
+        	</result>
+			<result name="error">/error.jsp</result>
+		</action>
+		
 		<action name="getDeflateResult" class="net.gmsworld.server.layers.DeflateDataAction">
 			<result name="error">/error.jsp</result>
 		</action>

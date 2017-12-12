@@ -59,24 +59,56 @@ public class DeviceAction extends ActionSupport implements ParameterAware, Servl
 		}
 	}
 	
+	//can update only pin, token and username
 	public String updateDevice() {
-		if (getParameter("imei") != null) {
+		if (getParameter("imei") != null && getParameter("pin") != null) {
 			try {
 				Long imei = Long.valueOf(getParameter("imei"));
 				String token = getParameter("token");
-				Integer pin = Integer.valueOf(getParameter("pin") );
+				Integer pin = Integer.valueOf(getParameter("pin"));
+				String username = getParameter("username");
 				DevicePersistenceUtils devicePersistenceUtils = (DevicePersistenceUtils) ServiceLocator.getInstance().getService(
 						"java:global/ROOT/DevicePersistenceUtils!net.gmsworld.server.utils.persistence.DevicePersistenceUtils");
-				Device device = devicePersistenceUtils.findDeviceByImei(imei);
+				Device device = devicePersistenceUtils.findDeviceByImeiAndPin(imei, pin);
 				if (token != null) {
 					device.setToken(token);
 				}
 				if (pin != null) {
 					device.setPin(pin);
 				}
+				if (username != null) {
+					device.setUsername(username);
+				}
 				devicePersistenceUtils.update(device);
 				request.setAttribute(JSonDataAction.JSON_OUTPUT, device);
 				return "json";
+			} catch (Exception e) {
+				logger.log(Level.SEVERE, e.getMessage(), e);
+				addActionError(e.getMessage());
+		    	return ERROR;
+			}
+		} else {
+			addActionError("Missing required parameter!");
+	    	return ERROR;
+		}
+	}
+	
+	public String getDevice() {
+		if (getParameter("imei") != null && getParameter("pin") != null) {
+			try {
+				Long imei = Long.valueOf(getParameter("imei"));
+				Integer pin = Integer.valueOf(getParameter("pin") );
+				String username = getParameter("username");
+				DevicePersistenceUtils devicePersistenceUtils = (DevicePersistenceUtils) ServiceLocator.getInstance().getService(
+						"java:global/ROOT/DevicePersistenceUtils!net.gmsworld.server.utils.persistence.DevicePersistenceUtils");			    
+				Device device = devicePersistenceUtils.findDeviceByImeiAndPin(imei, pin);
+				if (device  != null) {
+					request.setAttribute(JSonDataAction.JSON_OUTPUT, device);
+					return "json";
+				} else {
+					addActionError("No device found!");
+					return ERROR;
+				}
 			} catch (Exception e) {
 				logger.log(Level.SEVERE, e.getMessage(), e);
 				addActionError(e.getMessage());
