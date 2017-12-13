@@ -118,6 +118,44 @@ public class DeviceAction extends ActionSupport implements ParameterAware, Servl
 	    	return ERROR;
 		}
 	}
+	
+	public String createOrUpdateDevice() {
+		if (getParameter("imei") != null && getParameter("pin") != null) {
+			try {
+				Long imei = Long.valueOf(getParameter("imei"));
+				Integer pin = Integer.valueOf(getParameter("pin") );
+				String token = getParameter("token");
+				String username = getParameter("username");
+				DevicePersistenceUtils devicePersistenceUtils = (DevicePersistenceUtils) ServiceLocator.getInstance().getService(
+						"java:global/ROOT/DevicePersistenceUtils!net.gmsworld.server.utils.persistence.DevicePersistenceUtils");			    
+				Device device = devicePersistenceUtils.findDeviceByImeiAndPin(imei, pin);
+				if (device  != null) {
+					if (token != null) {
+						device.setToken(token);
+					}
+					if (pin != null) {
+						device.setPin(pin);
+					}
+					if (username != null) {
+						device.setUsername(username);
+					}
+					devicePersistenceUtils.update(device);
+				} else {
+					device = new Device(imei, token, pin, username) ;
+					devicePersistenceUtils.save(device);
+				}
+				request.setAttribute(JSonDataAction.JSON_OUTPUT, device);
+				return "json";
+			} catch (Exception e) {
+				logger.log(Level.SEVERE, e.getMessage(), e);
+				addActionError(e.getMessage());
+		    	return ERROR;
+			}
+		} else {
+			addActionError("Missing required parameter!");
+	    	return ERROR;
+		}
+	}
 
 	@Override
 	public void setServletRequest(HttpServletRequest arg0) {

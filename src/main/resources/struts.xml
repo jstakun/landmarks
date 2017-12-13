@@ -176,15 +176,7 @@
 			<result name="error">/error.jsp</result>
 		</action>
 		
-		<action name="addDevice" class="net.gmsworld.server.struts.DeviceAction" method="createDevice">
-			<result type="chain" name="json">
-            	<param name="actionName">getJSonResult</param>
-            	<param name="namespace">/json</param>
-        	</result>
-			<result name="error">/error.jsp</result>
-		</action>
-		
-		<action name="updateDevice" class="net.gmsworld.server.struts.DeviceAction" method="updateDevice">
+		<action name="setupDevice" class="net.gmsworld.server.struts.DeviceAction" method="createOrUpdateDevice">
 			<result type="chain" name="json">
             	<param name="actionName">getJSonResult</param>
             	<param name="namespace">/json</param>
