@@ -128,7 +128,7 @@ public class DeviceAction extends ActionSupport implements ParameterAware, Servl
 				String username = getParameter("username");
 				DevicePersistenceUtils devicePersistenceUtils = (DevicePersistenceUtils) ServiceLocator.getInstance().getService(
 						"java:global/ROOT/DevicePersistenceUtils!net.gmsworld.server.utils.persistence.DevicePersistenceUtils");			    
-				Device device = devicePersistenceUtils.findDeviceByImeiAndPin(imei, pin);
+				Device device = devicePersistenceUtils.findDeviceByImei(imei);
 				if (device  != null) {
 					if (token != null) {
 						device.setToken(token);
