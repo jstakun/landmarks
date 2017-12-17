@@ -1,7 +1,6 @@
 package net.gmsworld.server.struts;
 
 import java.io.FileInputStream;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.logging.Level;
@@ -176,8 +175,10 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 	}
 
 	private static String getAccessToken() throws Exception {
-		  String fcmConfig = System.getProperty("FCM_CONFIG");
-		  logger.log(Level.INFO, "Opening: " + fcmConfig);
+		  String fcmConfig = System.getenv("FCM_CONFIG");
+		  if (fcmConfig == null) {
+			  throw new Exception("Please set environment variable FCM_CONFIG!");
+		  } 
 		  FileInputStream is = new FileInputStream(fcmConfig);
 		  if (is.available() <= 0) {
 			  try {
