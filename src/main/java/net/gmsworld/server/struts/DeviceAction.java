@@ -33,6 +33,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
     private String username;
     private String command;
     private String name;
+    private String args;
     
     
 	public String createDevice() {
@@ -157,7 +158,11 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 				Device device = devicePersistenceUtils.findDeviceByImeiAndPin(imei, pin);
 				if (device  != null) {
 					String url = "https://fcm.googleapis.com/v1/projects/" + Commons.getProperty(Property.FCM_PROJECT) + "/messages:send";
-					String data = "{\"message\":{\"token\":\"" + token + "\",\"data\":{\"command\": \"" + command + "\",\"pin\":\"" + pin + "\",\"imei\":\"" + imei + "\"}}}";
+					String data = "{\"message\":{\"token\":\"" + token + "\",\"data\":{\"command\": \"" + command + "\",\"pin\":\"" + pin + "\",\"imei\":\"" + imei + "\"";
+					if (StringUtils.isNotEmpty(args)) {
+						data  += ",\"args\":\"" + args + "\"";
+					}
+					data += "}}}";
 				    String response = HttpUtils.processFileRequestWithOtherAuthn(new URL(url), "POST", "application/json", data, "application/json", "Bearer " + getAccessToken());
 					logger.log(Level.INFO, "Received following response: " + response);
 					if (StringUtils.startsWith(response, "{")) {
@@ -252,5 +257,13 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getArgs() {
+		return args;
+	}
+
+	public void setArgs(String args) {
+		this.args = args;
 	}
 }

@@ -103,5 +103,4 @@ public class TokenAction extends ActionSupport implements ParameterAware, Servle
 	    	return ERROR;
 		}
 	}
-
 }

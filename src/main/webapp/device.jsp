@@ -15,12 +15,12 @@
    		<label for="pin">PIN*</label><br/>
    		<input type="password" name="pin" required/><br/>
    		<label for="command">Command*</label><br/>
-   		 <select>
+   		 <select name="command" required>
   			<option value="pingdlt">Ping</option>
  			<option value="locatedlt">Locate</option>
 		</select> <br/>
    		<label for="params">Command parameters</label><br/>
-   		<input type="text" name="params"/><br/>
+   		<input type="text" name="args"/><br/>
    		<input type="submit" value="Send Command"/>
    </form>
 </body>
