@@ -32,11 +32,13 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
     private String token;
     private String username;
     private String command;
+    private String name;
+    
     
 	public String createDevice() {
 		if (imei != null && pin != null) {
 			try {
-				Device device = new Device(imei, token, pin, username) ;
+				Device device = new Device(imei, token, pin, username, name) ;
 				DevicePersistenceUtils devicePersistenceUtils = (DevicePersistenceUtils) ServiceLocator.getInstance().getService(
 						"java:global/ROOT/DevicePersistenceUtils!net.gmsworld.server.utils.persistence.DevicePersistenceUtils");			    
 				devicePersistenceUtils.save(device);
@@ -68,6 +70,9 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 				}
 				if (username != null) {
 					device.setUsername(username);
+				}
+				if (name != null) {
+					device.setName(name);
 				}
 				devicePersistenceUtils.update(device);
 				request.setAttribute(JSonDataAction.JSON_OUTPUT, device);
@@ -123,9 +128,12 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 					if (username != null) {
 						device.setUsername(username);
 					}
+					if (name != null) {
+						device.setName(name);
+					}
 					devicePersistenceUtils.update(device);
 				} else {
-					device = new Device(imei, token, pin, username) ;
+					device = new Device(imei, token, pin, username, name) ;
 					devicePersistenceUtils.save(device);
 				}
 				request.setAttribute(JSonDataAction.JSON_OUTPUT, device);
@@ -236,5 +244,13 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 
 	public void setCommand(String command) {
 		this.command = command;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 }

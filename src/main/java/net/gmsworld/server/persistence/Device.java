@@ -40,12 +40,13 @@ public class Device implements Serializable {
 	
 	 private static final long serialVersionUID = 1L;
 
-	public Device(Long imei, String token, Integer pin, String username) {
+	public Device(Long imei, String token, Integer pin, String username, String name) {
 		this();
 		this.imei = imei;
 		this.token = token;
 		this.pin = pin;
 		this.username = username;
+		this.name = name;
 	}
 	
 	public Device() {
