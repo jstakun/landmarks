@@ -35,7 +35,10 @@ public class Device implements Serializable {
 	private String username;
 	 @Column(name = "CREATION_DATE")
 	private Date creationDate;
-	private static final long serialVersionUID = 1L;
+	 @Column(name = "NAME")
+	private String name;
+	
+	 private static final long serialVersionUID = 1L;
 
 	public Device(Long imei, String token, Integer pin, String username) {
 		this();
@@ -83,5 +86,12 @@ public class Device implements Serializable {
 	public void setCreationDate(Date creationDate) {
 		this.creationDate = creationDate;
 	}
-   
+    
+	public String getName() {
+		return this.name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}   
 }
