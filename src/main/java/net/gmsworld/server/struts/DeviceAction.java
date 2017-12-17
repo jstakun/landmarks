@@ -177,6 +177,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 
 	private static String getAccessToken() throws Exception {
 		  String fcmConfig = System.getProperty("FCM_CONFIG");
+		  logger.log(Level.INFO, "Opening: " + fcmConfig);
 		  FileInputStream is = new FileInputStream(fcmConfig);
 		  if (is.available() <= 0) {
 			  try {
