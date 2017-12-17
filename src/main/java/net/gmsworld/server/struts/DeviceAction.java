@@ -1,5 +1,6 @@
 package net.gmsworld.server.struts;
 
+import java.io.FileInputStream;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.logging.Level;
@@ -164,7 +165,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 				}
 			} catch (Exception e) {
 				logger.log(Level.SEVERE, e.getMessage(), e);
-				addActionError(e.getMessage());
+				addActionError("Internal error: " + e.getMessage());
 		    	return ERROR;
 			}
 		} else {
@@ -174,7 +175,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 	}
 
 	private static String getAccessToken() throws Exception {
-		  GoogleCredential googleCredential = GoogleCredential.fromStream(DevicePersistenceUtils.class.getResourceAsStream("/fcm.json"))
+		  GoogleCredential googleCredential = GoogleCredential.fromStream(new FileInputStream(System.getProperty("FCM_CONFIG")))
 		      .createScoped(Arrays.asList("https://www.googleapis.com/auth/firebase.messaging"));
 		  googleCredential.refreshToken();
 		  return googleCredential.getAccessToken();
