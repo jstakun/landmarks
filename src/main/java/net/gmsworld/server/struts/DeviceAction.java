@@ -1,47 +1,40 @@
 package net.gmsworld.server.struts;
 
-import java.util.Map;
+import java.net.URL;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.struts2.interceptor.ParameterAware;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.interceptor.ServletRequestAware;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.opensymphony.xwork2.ActionSupport;
 
+import net.gmsworld.server.config.Commons;
+import net.gmsworld.server.config.Commons.Property;
 import net.gmsworld.server.persistence.Device;
+import net.gmsworld.server.utils.HttpUtils;
 import net.gmsworld.server.utils.ServiceLocator;
 import net.gmsworld.server.utils.persistence.DevicePersistenceUtils;
 
-public class DeviceAction extends ActionSupport implements ParameterAware, ServletRequestAware {
+public class DeviceAction extends ActionSupport implements ServletRequestAware {
 
-	private Map<String, String[]> parameters;
 	private HttpServletRequest request;
 	private static final Logger logger = Logger.getLogger(DeviceAction.class.getName());
 	private static final long serialVersionUID = 1L;
-			
-	@Override
-	public void setParameters(Map<String, String[]> arg0) {
-		this.parameters = arg0;
-	}
 	
-	private String getParameter(String key) {
-		if (parameters.containsKey(key)) {
-			return parameters.get(key)[0];
-		} else {
-			return null;
-		}
-	}
-	
+	private Long imei;
+    private Integer pin;
+    private String token;
+    private String username;
+    private String command;
+    
 	public String createDevice() {
-		if (getParameter("imei") != null && getParameter("pin") != null) {
+		if (imei != null && pin != null) {
 			try {
-				Long imei = Long.valueOf(getParameter("imei"));
-				String token = getParameter("token");
-				Integer pin = Integer.valueOf(getParameter("pin") );
-				String username = getParameter("username");
 				Device device = new Device(imei, token, pin, username) ;
 				DevicePersistenceUtils devicePersistenceUtils = (DevicePersistenceUtils) ServiceLocator.getInstance().getService(
 						"java:global/ROOT/DevicePersistenceUtils!net.gmsworld.server.utils.persistence.DevicePersistenceUtils");			    
@@ -61,12 +54,8 @@ public class DeviceAction extends ActionSupport implements ParameterAware, Servl
 	
 	//can update only pin, token and username
 	public String updateDevice() {
-		if (getParameter("imei") != null && getParameter("pin") != null) {
+		if (imei != null && pin != null) {
 			try {
-				Long imei = Long.valueOf(getParameter("imei"));
-				String token = getParameter("token");
-				Integer pin = Integer.valueOf(getParameter("pin"));
-				String username = getParameter("username");
 				DevicePersistenceUtils devicePersistenceUtils = (DevicePersistenceUtils) ServiceLocator.getInstance().getService(
 						"java:global/ROOT/DevicePersistenceUtils!net.gmsworld.server.utils.persistence.DevicePersistenceUtils");
 				Device device = devicePersistenceUtils.findDeviceByImeiAndPin(imei, pin);
@@ -94,10 +83,8 @@ public class DeviceAction extends ActionSupport implements ParameterAware, Servl
 	}
 	
 	public String getDevice() {
-		if (getParameter("imei") != null && getParameter("pin") != null) {
+		if (imei != null && pin != null) {
 			try {
-				Long imei = Long.valueOf(getParameter("imei"));
-				Integer pin = Integer.valueOf(getParameter("pin") );
 				DevicePersistenceUtils devicePersistenceUtils = (DevicePersistenceUtils) ServiceLocator.getInstance().getService(
 						"java:global/ROOT/DevicePersistenceUtils!net.gmsworld.server.utils.persistence.DevicePersistenceUtils");			    
 				Device device = devicePersistenceUtils.findDeviceByImeiAndPin(imei, pin);
@@ -120,12 +107,8 @@ public class DeviceAction extends ActionSupport implements ParameterAware, Servl
 	}
 	
 	public String createOrUpdateDevice() {
-		if (getParameter("imei") != null && getParameter("pin") != null) {
+		if (imei != null && pin != null) {
 			try {
-				Long imei = Long.valueOf(getParameter("imei"));
-				Integer pin = Integer.valueOf(getParameter("pin") );
-				String token = getParameter("token");
-				String username = getParameter("username");
 				DevicePersistenceUtils devicePersistenceUtils = (DevicePersistenceUtils) ServiceLocator.getInstance().getService(
 						"java:global/ROOT/DevicePersistenceUtils!net.gmsworld.server.utils.persistence.DevicePersistenceUtils");			    
 				Device device = devicePersistenceUtils.findDeviceByImei(imei);
@@ -156,9 +139,89 @@ public class DeviceAction extends ActionSupport implements ParameterAware, Servl
 	    	return ERROR;
 		}
 	}
+	
+	public String commandDevice() {
+		if (imei != null && pin != null && command != null) {
+			try {
+				DevicePersistenceUtils devicePersistenceUtils = (DevicePersistenceUtils) ServiceLocator.getInstance().getService(
+						"java:global/ROOT/DevicePersistenceUtils!net.gmsworld.server.utils.persistence.DevicePersistenceUtils");			    
+				Device device = devicePersistenceUtils.findDeviceByImeiAndPin(imei, pin);
+				if (device  != null) {
+					String url = "https://fcm.googleapis.com/v1/projects/" + Commons.getProperty(Property.FCM_PROJECT) + "/messages:send";
+					String data = "{\"message\":{\"token\":\"" + token + "\",\"data\":{\"command\": \"" + command + "\",\"pin\":\"" + pin + "\",\"imei\":\"" + imei + "\"}}}";
+				    String response = HttpUtils.processFileRequestWithOtherAuthn(new URL(url), "POST", "application/json", data, "application/json", "Bearer " + getAccessToken());
+					logger.log(Level.INFO, "Received following response: " + response);
+					if (StringUtils.startsWith(response, "{")) {
+						request.setAttribute("output", response);
+						return SUCCESS;
+					} else {
+						addActionError("Failed to send command. Try again later!");
+				    	return ERROR;
+					}
+				} else {
+					addActionError("No device found!");
+			    	return ERROR;
+				}
+			} catch (Exception e) {
+				logger.log(Level.SEVERE, e.getMessage(), e);
+				addActionError(e.getMessage());
+		    	return ERROR;
+			}
+		} else {
+			addActionError("Missing required parameter!");
+	    	return ERROR;
+		}
+	}
 
+	private static String getAccessToken() throws Exception {
+		  GoogleCredential googleCredential = GoogleCredential.fromStream(DevicePersistenceUtils.class.getResourceAsStream("/fcm.json"))
+		      .createScoped(Arrays.asList("https://www.googleapis.com/auth/firebase.messaging"));
+		  googleCredential.refreshToken();
+		  return googleCredential.getAccessToken();
+	}
+	
 	@Override
 	public void setServletRequest(HttpServletRequest arg0) {
 		this.request = arg0;
+	}
+
+	public Long getImei() {
+		return imei;
+	}
+
+	public void setImei(Long imei) {
+		this.imei = imei;
+	}
+
+	public Integer getPin() {
+		return pin;
+	}
+
+	public void setPin(Integer pin) {
+		this.pin = pin;
+	}
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getCommand() {
+		return command;
+	}
+
+	public void setCommand(String command) {
+		this.command = command;
 	}
 }
