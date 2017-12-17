@@ -1,6 +1,7 @@
 package net.gmsworld.server.struts;
 
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.logging.Level;
@@ -175,8 +176,17 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 	}
 
 	private static String getAccessToken() throws Exception {
-		  GoogleCredential googleCredential = GoogleCredential.fromStream(new FileInputStream(System.getProperty("FCM_CONFIG")))
-		      .createScoped(Arrays.asList("https://www.googleapis.com/auth/firebase.messaging"));
+		  String fcmConfig = System.getProperty("FCM_CONFIG");
+		  FileInputStream is = new FileInputStream(fcmConfig);
+		  if (is.available() <= 0) {
+			  try {
+				  is.close();
+			  } catch (Exception e) {}
+			  throw new Exception("Unable to open " + fcmConfig);
+		  } else {
+			  logger.log(Level.INFO, fcmConfig + " found");
+		  }
+		  GoogleCredential googleCredential = GoogleCredential.fromStream(is).createScoped(Arrays.asList("https://www.googleapis.com/auth/firebase.messaging"));
 		  googleCredential.refreshToken();
 		  return googleCredential.getAccessToken();
 	}
