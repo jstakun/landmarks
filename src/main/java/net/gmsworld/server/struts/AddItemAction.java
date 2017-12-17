@@ -382,7 +382,7 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
         	    }
     			landmarkPersistenceUtils.update(landmark);	
     			logger.log(Level.INFO, "Landmark " + landmark.getId() + " has been updated in " + (System.currentTimeMillis()-start) + " millis.");
-			} catch (NamingException e) {
+			} catch (Exception e) {
             	logger.log(Level.SEVERE, e.getMessage(), e);
 			}
 		}
