@@ -163,6 +163,8 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 						data  += ",\"args\":\"" + args + "\"";
 					}
 					data += "}}}";
+					logger.log(Level.INFO, "Sending: " + data);
+					logger.log(Level.INFO, "To: " + url);
 				    String response = HttpUtils.processFileRequestWithOtherAuthn(new URL(url), "POST", "application/json", data, "application/json", "Bearer " + getAccessToken());
 					logger.log(Level.INFO, "Received following response: " + response);
 					if (StringUtils.startsWith(response, "{")) {
