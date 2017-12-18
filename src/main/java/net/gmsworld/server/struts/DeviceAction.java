@@ -158,13 +158,13 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 				Device device = devicePersistenceUtils.findDeviceByImeiAndPin(imei, pin);
 				if (device  != null) {
 					String url = "https://fcm.googleapis.com/v1/projects/" + Commons.getProperty(Property.FCM_PROJECT) + "/messages:send";
-					String data = "{\"message\":{\"token\":\"" + token + "\",\"data\":{\"command\": \"" + command + "\",\"pin\":\"" + pin + "\",\"imei\":\"" + imei + "\"";
+					String data = "{\"message\":{\"token\":\"" + device.getToken() + "\",\"data\":{\"command\": \"" + command + "\",\"pin\":\"" + pin + "\",\"imei\":\"" + imei + "\"";
 					if (StringUtils.isNotEmpty(args)) {
 						data  += ",\"args\":\"" + args + "\"";
 					}
 					data += "}}}";
-					logger.log(Level.INFO, "Sending: " + data);
-					logger.log(Level.INFO, "To: " + url);
+					//logger.log(Level.INFO, "Sending: " + data);
+					//logger.log(Level.INFO, "To: " + url);
 				    String response = HttpUtils.processFileRequestWithOtherAuthn(new URL(url), "POST", "application/json", data, "application/json", "Bearer " + getAccessToken());
 					logger.log(Level.INFO, "Received following response: " + response);
 					if (StringUtils.startsWith(response, "{")) {
