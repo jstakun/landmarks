@@ -3,6 +3,7 @@ package net.gmsworld.server.struts;
 import java.io.FileInputStream;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -56,7 +57,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 		}
 	}
 	
-	//can update only pin, token and username
+	//can update only pin, token, name and username
 	public String updateDevice() {
 		if (imei != null && pin != null) {
 			try {
@@ -75,6 +76,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 				if (name != null) {
 					device.setName(name);
 				}
+				device.setCreationDate(new Date());
 				devicePersistenceUtils.update(device);
 				request.setAttribute(JSonDataAction.JSON_OUTPUT, device);
 				return "json";
@@ -132,6 +134,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 					if (name != null) {
 						device.setName(name);
 					}
+					device.setCreationDate(new Date());
 					devicePersistenceUtils.update(device);
 				} else {
 					device = new Device(imei, token, pin, username, name) ;
