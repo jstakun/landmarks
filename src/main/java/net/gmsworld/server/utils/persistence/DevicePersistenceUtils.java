@@ -1,5 +1,6 @@
 package net.gmsworld.server.utils.persistence;
 
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -41,6 +42,20 @@ public class DevicePersistenceUtils {
 		}					
 	    return d;
 	}
+	
+	public List<Device> findDeviceByNameAndUsername(String name, String username) {
+		TypedQuery<Device> query = entityManager.createNamedQuery(Device.FIND_BY_NAME_AND_USERNAME, Device.class);
+		query.setParameter("name", name);
+		query.setParameter("username", username);
+		List<Device> dl = null;
+		try {
+			dl= query.getResultList();
+		} catch (NoResultException nre) {
+			logger.log(Level.WARNING, "No device found with name {0}", name);
+		}					
+	    return dl;
+	}
+	
 	
 	public Device findDeviceByImei(Long imei) {
 		TypedQuery<Device> query = entityManager.createNamedQuery(Device.FIND_BY_IMEI, Device.class);

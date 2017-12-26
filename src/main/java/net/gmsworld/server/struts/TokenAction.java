@@ -20,36 +20,22 @@ import org.apache.struts2.interceptor.ServletRequestAware;
 
 import com.opensymphony.xwork2.ActionSupport;
 
-public class TokenAction extends ActionSupport implements ParameterAware, ServletRequestAware {
+public class TokenAction extends ActionSupport implements ServletRequestAware {
 	
 	private static final Logger logger = Logger.getLogger(TokenAction.class.getName());
-	private Map<String, String[]> parameters;
 	private HttpServletRequest request;
 	private static final long serialVersionUID = 1L;
-
-	@Override
-	public void setParameters(Map<String, String[]> arg0) {
-		this.parameters = arg0;		
-	}
-	
-	@Override
-	public void setServletRequest(HttpServletRequest request) {
-		this.request = request;
-	}
-	
-	private String getParameter(String key) {
-		if (parameters.containsKey(key)) {
-			return parameters.get(key)[0];
-		} else {
-			return null;
-		}
+    private String scope, user, key;
+    private Integer limit;
+    
+    @Override
+	public void setServletRequest(HttpServletRequest arg0) {
+		this.request = arg0;
 	}
 	
 	public String createToken() {
-		if (getParameter("scope") != null) {
+		if (scope != null) {
 			try {
-				String scope = getParameter("scope");
-				String user = getParameter("user");
 				Date validityDate = DateUtils.afterOneHundredYearsFromNow();
 				String key = TokenUtils.generateToken();
 				Token token = new Token(key, validityDate, scope, user);
@@ -70,12 +56,12 @@ public class TokenAction extends ActionSupport implements ParameterAware, Servle
 	}
 	
 	public String isValidToken() {
-		if (getParameter("key") != null && getParameter("scope") != null) {
+		if (key != null && scope != null) {
 			boolean isValid = false;
 			try {
 				TokenPersistenceUtils tokenPersistenceUtils = (TokenPersistenceUtils) ServiceLocator.getInstance().getService(		
 					"java:global/ROOT/TokenPersistenceUtils!net.gmsworld.server.utils.persistence.TokenPersistenceUtils");
-				isValid = tokenPersistenceUtils.isTokenValid(getParameter("key"), getParameter("scope"));
+				isValid = tokenPersistenceUtils.isTokenValid(key, scope);
 				request.setAttribute(JSonDataAction.JSON_OUTPUT, isValid);
 		 		return "json";
 			} catch (Exception e) {
@@ -91,7 +77,9 @@ public class TokenAction extends ActionSupport implements ParameterAware, Servle
 	
 	public String getTopTokens() {
 		try {
-			int limit = NumberUtils.getInt(getParameter("limit"), 10);		
+			if (limit == null) {
+				limit = 10;
+			}
 			TokenPersistenceUtils tokenPersistenceUtils = (TokenPersistenceUtils) ServiceLocator.getInstance().getService(		
 				"java:global/ROOT/TokenPersistenceUtils!net.gmsworld.server.utils.persistence.TokenPersistenceUtils");
 			List<Token> tokens = tokenPersistenceUtils.getTopTokens(limit);
@@ -102,5 +90,37 @@ public class TokenAction extends ActionSupport implements ParameterAware, Servle
 			addActionError(e.getMessage());
 	    	return ERROR;
 		}
+	}
+
+	public String getScope() {
+		return scope;
+	}
+
+	public void setScope(String scope) {
+		this.scope = scope;
+	}
+
+	public String getUser() {
+		return user;
+	}
+
+	public void setUser(String user) {
+		this.user = user;
+	}
+
+	public String getKey() {
+		return key;
+	}
+
+	public void setKey(String key) {
+		this.key = key;
+	}
+
+	public Integer getLimit() {
+		return limit;
+	}
+
+	public void setLimit(Integer limit) {
+		this.limit = limit;
 	}
 }

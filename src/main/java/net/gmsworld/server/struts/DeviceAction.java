@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -93,12 +94,47 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 	
 	public String getDevice() {
 		if (imei != null && pin != null) {
+			return getDeviceByImei();
+		} else if (name != null && username != null) {
+			return getDeviceByName();
+		} else {
+			addActionError("Missing required parameter!");
+	    	return ERROR;
+		}
+	}
+	
+	private String getDeviceByImei() {
+		if (imei != null && pin != null) {
 			try {
 				DevicePersistenceUtils devicePersistenceUtils = (DevicePersistenceUtils) ServiceLocator.getInstance().getService(
 						"java:global/ROOT/DevicePersistenceUtils!net.gmsworld.server.utils.persistence.DevicePersistenceUtils");			    
 				Device device = devicePersistenceUtils.findDeviceByImeiAndPin(imei, pin);
 				if (device  != null) {
 					request.setAttribute(JSonDataAction.JSON_OUTPUT, device);
+					return "json";
+				} else {
+					addActionError("No device found!");
+					return ERROR;
+				}
+			} catch (Exception e) {
+				logger.log(Level.SEVERE, e.getMessage(), e);
+				addActionError(e.getMessage());
+		    	return ERROR;
+			}
+		} else {
+			addActionError("Missing required parameter!");
+	    	return ERROR;
+		}
+	}
+	
+	private String getDeviceByName() {
+		if (name != null && username != null) {
+			try {
+				DevicePersistenceUtils devicePersistenceUtils = (DevicePersistenceUtils) ServiceLocator.getInstance().getService(
+						"java:global/ROOT/DevicePersistenceUtils!net.gmsworld.server.utils.persistence.DevicePersistenceUtils");			    
+				List<Device> devices = devicePersistenceUtils.findDeviceByNameAndUsername(name, username);
+				if (devices  != null && !devices.isEmpty()) {
+					request.setAttribute(JSonDataAction.JSON_OUTPUT, devices);
 					return "json";
 				} else {
 					addActionError("No device found!");
