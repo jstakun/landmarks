@@ -4,7 +4,6 @@ import java.io.FileInputStream;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -36,7 +35,6 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
     private String command;
     private String name;
     private String args;
-    
     
 	public String createDevice() {
 		if (imei != null && pin != null) {
@@ -128,13 +126,13 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 	}
 	
 	private String getDeviceByName() {
-		if (name != null && username != null) {
+		if (name != null && username != null && pin != null) {
 			try {
 				DevicePersistenceUtils devicePersistenceUtils = (DevicePersistenceUtils) ServiceLocator.getInstance().getService(
 						"java:global/ROOT/DevicePersistenceUtils!net.gmsworld.server.utils.persistence.DevicePersistenceUtils");			    
-				List<Device> devices = devicePersistenceUtils.findDeviceByNameAndUsername(name, username);
-				if (devices  != null && !devices.isEmpty()) {
-					request.setAttribute(JSonDataAction.JSON_OUTPUT, devices);
+				Device device = devicePersistenceUtils.findDeviceByNameAndUsername(name, username, pin);
+				if (device  != null) {
+					request.setAttribute(JSonDataAction.JSON_OUTPUT, device);
 					return "json";
 				} else {
 					addActionError("No device found!");
@@ -190,11 +188,16 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 	}
 	
 	public String commandDevice() {
-		if (imei != null && pin != null && command != null) {
+		if ((imei != null  || (name != null && username != null)) && pin != null && command != null) {
 			try {
 				DevicePersistenceUtils devicePersistenceUtils = (DevicePersistenceUtils) ServiceLocator.getInstance().getService(
-						"java:global/ROOT/DevicePersistenceUtils!net.gmsworld.server.utils.persistence.DevicePersistenceUtils");			    
-				Device device = devicePersistenceUtils.findDeviceByImeiAndPin(imei, pin);
+						"java:global/ROOT/DevicePersistenceUtils!net.gmsworld.server.utils.persistence.DevicePersistenceUtils");	
+				Device device = null;
+				if (imei != null) {
+					device = devicePersistenceUtils.findDeviceByImeiAndPin(imei, pin);
+				} else if (name != null && username != null) {
+					device = devicePersistenceUtils.findDeviceByNameAndUsername(name, username, pin);
+				}
 				if (device  != null) {
 					String url = "https://fcm.googleapis.com/v1/projects/" + Commons.getProperty(Property.FCM_PROJECT) + "/messages:send";
 					String data = "{\"message\":{\"token\":\"" + device.getToken() + "\",\"data\":{\"command\": \"" + command + "\",\"pin\":\"" + pin + "\",\"imei\":\"" + imei + "\"";

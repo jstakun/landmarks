@@ -17,7 +17,7 @@ import javax.persistence.*;
 @NamedQueries({
 	@NamedQuery(name = "Device.findByImei", query = "select d from Device d where d.imei = :imei"),
 	@NamedQuery(name = "Device.findByImeiAndPin", query = "select d from Device d where d.imei = :imei and d.pin = :pin"),
-	@NamedQuery(name = "Device.findByNameAndUsername", query = "select d from Device d where d.name = :name and d.username = :username"),
+	@NamedQuery(name = "Device.findByNameAndUsername", query = "select d from Device d where d.name = :name and d.username = :username and d.pin = :pin"),
 })
 
 public class Device implements Serializable {

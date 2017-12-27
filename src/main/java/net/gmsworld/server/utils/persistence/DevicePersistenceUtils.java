@@ -43,17 +43,21 @@ public class DevicePersistenceUtils {
 	    return d;
 	}
 	
-	public List<Device> findDeviceByNameAndUsername(String name, String username) {
+	public Device findDeviceByNameAndUsername(String name, String username, Integer pin) {
 		TypedQuery<Device> query = entityManager.createNamedQuery(Device.FIND_BY_NAME_AND_USERNAME, Device.class);
 		query.setParameter("name", name);
 		query.setParameter("username", username);
-		List<Device> dl = null;
+		query.setParameter("pin", pin);
+		Device d = null;
 		try {
-			dl= query.getResultList();
+			List<Device> dl = query.getResultList();
+			if (!dl.isEmpty()) {
+				d = dl.get(0);
+			}
 		} catch (NoResultException nre) {
 			logger.log(Level.WARNING, "No device found with name {0}", name);
 		}					
-	    return dl;
+	    return d;
 	}
 	
 	
