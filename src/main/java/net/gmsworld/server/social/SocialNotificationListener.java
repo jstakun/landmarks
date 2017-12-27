@@ -1,13 +1,13 @@
 package net.gmsworld.server.social;
 
-import java.util.logging.Level;
+/*import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ejb.MessageDriven;
 import javax.ejb.ActivationConfigProperty;
 import javax.jms.Message;
 import javax.jms.MessageListener;
-import javax.jms.TextMessage;
+import javax.jms.TextMessage;*/
 
 
 /*@MessageDriven(name = "SocialNotificationMDB", activationConfig = {
