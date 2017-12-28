@@ -39,7 +39,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 	public String createDevice() {
 		if (imei != null && pin != null) {
 			try {
-				Device device = new Device(imei, token, pin, username, name) ;
+				Device device = new Device(imei, token, pin, username, name.replace(" ", "-")) ;
 				DevicePersistenceUtils devicePersistenceUtils = (DevicePersistenceUtils) ServiceLocator.getInstance().getService(
 						"java:global/ROOT/DevicePersistenceUtils!net.gmsworld.server.utils.persistence.DevicePersistenceUtils");			    
 				devicePersistenceUtils.save(device);
@@ -73,7 +73,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 					device.setUsername(username);
 				}
 				if (name != null) {
-					device.setName(name);
+					device.setName(name.replace(" ", "-"));
 				}
 				device.setCreationDate(new Date());
 				devicePersistenceUtils.update(device);
@@ -166,12 +166,12 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 						device.setUsername(username);
 					}
 					if (name != null) {
-						device.setName(name);
+						device.setName(name.replace(" ", "-"));
 					}
 					device.setCreationDate(new Date());
 					devicePersistenceUtils.update(device);
 				} else {
-					device = new Device(imei, token, pin, username, name) ;
+					device = new Device(imei, token, pin, username, name.replace(" ", "-")) ;
 					devicePersistenceUtils.save(device);
 				}
 				request.setAttribute(JSonDataAction.JSON_OUTPUT, device);
@@ -231,7 +231,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 		}
 	}
 
-	private static String getAccessToken() throws Exception {
+	private String getAccessToken() throws Exception {
 		  String fcmConfig = System.getenv("FCM_CONFIG");
 		  if (fcmConfig == null) {
 			  throw new Exception("Please set environment variable FCM_CONFIG!");
