@@ -18,6 +18,7 @@
    		 <select name="command" required>
   			<option value="pingdlt">Ping</option>
  			<option value="locatedlt">Locate</option>
+ 			<option value="radiusdlt">Radius</option>
 		</select> <br/>
    		<label for="params">Command parameters</label><br/>
    		<input type="text" name="args"/><br/>
