@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.interceptor.ServletRequestAware;
+import org.json.JSONObject;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.opensymphony.xwork2.ActionSupport;
@@ -35,6 +36,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
     private String command;
     private String name;
     private String args;
+    private Long ttl;
     
 	public String createDevice() {
 		if (imei != null && pin != null) {
@@ -200,14 +202,21 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 				}
 				if (device  != null) {
 					String url = "https://fcm.googleapis.com/v1/projects/" + Commons.getProperty(Property.FCM_PROJECT) + "/messages:send";
-					String data = "{\"message\":{\"token\":\"" + device.getToken() + "\",\"data\":{\"command\": \"" + command + "\",\"pin\":\"" + pin + "\",\"imei\":\"" + imei + "\"";
+					JSONObject data = new JSONObject().put("command", command).put("pin", pin).put("imei", imei);
 					if (StringUtils.isNotEmpty(args)) {
-						data  += ",\"args\":\"" + args + "\"";
+						data .put("args", args);
 					}
-					data += "}}}";
-					//logger.log(Level.INFO, "Sending: " + data);
+					if (ttl == null || ttl < 0) {
+						ttl = 300L; //defaults to 300 seconds
+					}
+					JSONObject android = new JSONObject().put("ttl", ttl + "s");
+					JSONObject webpush = new JSONObject().put("headers", new JSONObject().put("TTL", ttl));
+					JSONObject apns = new JSONObject().put("headers", new JSONObject().put("apns-expiration", (((System.currentTimeMillis() + (ttl*1000L))/1000)) ));
+					JSONObject content = new JSONObject().put("message", new JSONObject().put("token", device.getToken()).put("data", data).put("android", android).put("webpush", webpush).put("apns", apns));
+					
+					logger.log(Level.INFO, "Sending: " + content.toString());
 					//logger.log(Level.INFO, "To: " + url);
-				    String response = HttpUtils.processFileRequestWithOtherAuthn(new URL(url), "POST", "application/json", data, "application/json", "Bearer " + getAccessToken());
+				    String response = HttpUtils.processFileRequestWithOtherAuthn(new URL(url), "POST", "application/json", content.toString(), "application/json", "Bearer " + getAccessToken());
 					logger.log(Level.INFO, "Received following response: " + response);
 					if (StringUtils.startsWith(response, "{")) {
 						request.setAttribute("output", response);
@@ -309,5 +318,13 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 
 	public void setArgs(String args) {
 		this.args = args;
+	}
+
+	public Long getTtl() {
+		return ttl;
+	}
+
+	public void setTtl(Long ttl) {
+		this.ttl = ttl;
 	}
 }
