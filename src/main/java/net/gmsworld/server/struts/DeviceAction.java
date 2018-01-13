@@ -209,9 +209,9 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 					if (ttl == null || ttl < 0) {
 						ttl = 300L; //defaults to 300 seconds
 					}
-					JSONObject android = new JSONObject().put("ttl", Long.toString(ttl) + "s");
-					JSONObject webpush = new JSONObject().put("headers", new JSONObject().put("TTL", Long.toString(ttl)));
-					JSONObject apns = new JSONObject().put("headers", new JSONObject().put("apns-expiration", Long.toString((((System.currentTimeMillis() + (ttl*1000L))/1000)))));
+					JSONObject android = new JSONObject().put("ttl", Long.toString(ttl) + "s").put("priority","high");
+					JSONObject webpush = new JSONObject().put("headers", new JSONObject().put("TTL", Long.toString(ttl)).put("Urgency","high"));
+					JSONObject apns = new JSONObject().put("headers", new JSONObject().put("apns-expiration", Long.toString((((System.currentTimeMillis() + (ttl*1000L))/1000)))).put("apns-priority","10"));
 					JSONObject content = new JSONObject().put("message", new JSONObject().put("token", device.getToken()).put("data", data).put("android", android).put("webpush", webpush).put("apns", apns));
 					
 					//logger.log(Level.INFO, "Sending: " + content.toString());
