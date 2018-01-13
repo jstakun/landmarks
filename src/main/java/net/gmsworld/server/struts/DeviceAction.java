@@ -214,7 +214,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 					JSONObject apns = new JSONObject().put("headers", new JSONObject().put("apns-expiration", Long.toString((((System.currentTimeMillis() + (ttl*1000L))/1000)))));
 					JSONObject content = new JSONObject().put("message", new JSONObject().put("token", device.getToken()).put("data", data).put("android", android).put("webpush", webpush).put("apns", apns));
 					
-					logger.log(Level.INFO, "Sending: " + content.toString());
+					//logger.log(Level.INFO, "Sending: " + content.toString());
 					//logger.log(Level.INFO, "To: " + url);
 				    String response = HttpUtils.processFileRequestWithOtherAuthn(new URL(url), "POST", "application/json", content.toString(), "application/json", "Bearer " + getAccessToken());
 					logger.log(Level.INFO, "Received following response: " + response);
