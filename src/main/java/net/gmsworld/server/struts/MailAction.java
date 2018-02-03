@@ -92,7 +92,7 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	             InternetAddress.parse(to)); //new InternetAddress(to, toNick)
 	          message.setSubject(subject, "UTF-8");
 	          if (StringUtils.endsWith(contentType, "html")) {
-	        	  message.setContent(body, "text/html");
+	        	  message.setContent(body, "text/html; charset=UTF-8");
 	          } else {
 	        	  message.setText(body, "UTF-8");
 	          }
