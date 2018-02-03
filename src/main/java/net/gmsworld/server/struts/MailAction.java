@@ -20,19 +20,19 @@ import com.opensymphony.xwork2.ActionSupport;
 
 public class MailAction extends ActionSupport implements ServletRequestAware {
 
-	 private static final long serialVersionUID = 1L;
-	 private Logger logger = Logger.getLogger(getClass().getName());
+	    private static final long serialVersionUID = 1L;
+	    private Logger logger = Logger.getLogger(getClass().getName());
 	 
-	 private HttpServletRequest request;
+	    private HttpServletRequest request;
 		
-	 private String from;
+	    private String from;
 	    private String password;
 	    private String to;
 	    private String subject;
 	    private String body;
 	    private String fromNick;
 	    private String toNick;
-	    
+	    private String contentType;
 
 	    static Properties properties = new Properties();
 	    static
@@ -91,8 +91,13 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	          message.setRecipients(Message.RecipientType.TO, 
 	             InternetAddress.parse(to)); //new InternetAddress(to, toNick)
 	          message.setSubject(subject, "UTF-8");
-	          message.setText(body, "UTF-8");
+	          if (StringUtils.endsWith(contentType, "html")) {
+	        	  message.setContent(body, "text/html");
+	          } else {
+	        	  message.setText(body, "UTF-8");
+	          }
 	          message.setSentDate(new Date());
+	         
 	          Transport.send(message);
 	          String output = "{\"status\":\"Message sent to " + to + "\"}";
 	          request.setAttribute("output", output);
@@ -168,5 +173,13 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 
 		public void setToNick(String toNick) {
 			this.toNick = toNick;
+		}
+
+		public String getContentType() {
+			return contentType;
+		}
+
+		public void setContentType(String contentType) {
+			this.contentType = contentType;
 		}
 	}
