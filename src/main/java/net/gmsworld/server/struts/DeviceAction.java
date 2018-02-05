@@ -95,7 +95,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 	public String getDevice() {
 		if (imei != null && pin != null) {
 			return getDeviceByImei();
-		} else if (name != null && username != null) {
+		} else if (name != null && username != null  && pin != null) {
 			return getDeviceByName();
 		} else {
 			addActionError("Missing required parameter!");
