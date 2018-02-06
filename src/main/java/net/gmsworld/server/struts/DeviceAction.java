@@ -41,7 +41,10 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 	public String createDevice() {
 		if (imei != null && pin != null) {
 			try {
-				Device device = new Device(imei, token, pin, username, name.replace(" ", "-")) ;
+				if (name != null) {
+					name = name.replace(" ", "-");
+				}
+				Device device = new Device(imei, token, pin, username, name) ;
 				DevicePersistenceUtils devicePersistenceUtils = (DevicePersistenceUtils) ServiceLocator.getInstance().getService(
 						"java:global/ROOT/DevicePersistenceUtils!net.gmsworld.server.utils.persistence.DevicePersistenceUtils");			    
 				devicePersistenceUtils.save(device);
@@ -173,7 +176,10 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 					device.setCreationDate(new Date());
 					devicePersistenceUtils.update(device);
 				} else {
-					device = new Device(imei, token, pin, username, name.replace(" ", "-")) ;
+					if (name != null) {
+						name = name.replace(" ", "-");
+					}
+					device = new Device(imei, token, pin, username, name) ;
 					devicePersistenceUtils.save(device);
 				}
 				request.setAttribute(JSonDataAction.JSON_OUTPUT, device);
