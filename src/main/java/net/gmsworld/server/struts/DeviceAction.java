@@ -37,6 +37,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
     private String name;
     private String args;
     private Long ttl;
+    private Integer oldPin;
     
 	public String createDevice() {
 		if (imei != null && pin != null) {
@@ -67,11 +68,16 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 			try {
 				DevicePersistenceUtils devicePersistenceUtils = (DevicePersistenceUtils) ServiceLocator.getInstance().getService(
 						"java:global/ROOT/DevicePersistenceUtils!net.gmsworld.server.utils.persistence.DevicePersistenceUtils");
-				Device device = devicePersistenceUtils.findDeviceByImeiAndPin(imei, pin);
+				Device device = null;
+				if (oldPin != null) {
+					device = devicePersistenceUtils.findDeviceByImeiAndPin(imei, oldPin);
+				} else {
+					device = devicePersistenceUtils.findDeviceByImeiAndPin(imei, pin);
+				}
 				if (token != null) {
 					device.setToken(token);
 				}
-				if (pin != null) {
+				if (oldPin != null && oldPin == device.getPin()) {
 					device.setPin(pin);
 				}
 				if (username != null) {
@@ -159,12 +165,17 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 			try {
 				DevicePersistenceUtils devicePersistenceUtils = (DevicePersistenceUtils) ServiceLocator.getInstance().getService(
 						"java:global/ROOT/DevicePersistenceUtils!net.gmsworld.server.utils.persistence.DevicePersistenceUtils");			    
-				Device device = devicePersistenceUtils.findDeviceByImei(imei);
+				Device device = null;
+				if (oldPin != null) {
+					device = devicePersistenceUtils.findDeviceByImeiAndPin(imei, oldPin);
+				} else {
+					device = devicePersistenceUtils.findDeviceByImeiAndPin(imei, pin);
+				}
 				if (device  != null) {
 					if (token != null) {
 						device.setToken(token);
 					}
-					if (pin != null) {
+					if (oldPin != null && oldPin == device.getPin()) {
 						device.setPin(pin);
 					}
 					if (username != null) {
@@ -332,5 +343,13 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 
 	public void setTtl(Long ttl) {
 		this.ttl = ttl;
+	}
+
+	public Integer getOldPin() {
+		return oldPin;
+	}
+
+	public void setOldPin(Integer oldPin) {
+		this.oldPin = oldPin;
 	}
 }
