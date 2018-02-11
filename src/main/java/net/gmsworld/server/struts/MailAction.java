@@ -71,49 +71,66 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 
 	    public String execute() 
 	    {
-	       try
-	       {
-	          Session session = Session.getDefaultInstance(properties,  
-	             new javax.mail.Authenticator() {
-	              protected PasswordAuthentication 
-	              getPasswordAuthentication() {
-	              return new 
-	              PasswordAuthentication(from, password);
-	             }});
+	       if (StringUtils.isNotEmpty(from) && StringUtils.isNotEmpty(to) && (StringUtils.isNotEmpty(body) || StringUtils.isNotEmpty(subject))) {	    	
+	    	   try
+	    	   {
+	    		   Session session = Session.getDefaultInstance(properties,  
+	    				   new javax.mail.Authenticator() {
+	    			   protected PasswordAuthentication 
+	    			   getPasswordAuthentication() {
+	    				   return new 
+	    						   PasswordAuthentication(from, password);
+	    			   }});
 	          
-	          String debug = System.getenv("SMTP_DEBUG");
-	          if (StringUtils.equalsIgnoreCase(debug, "true")) {
-	        	  session.setDebug(true);
-	          } else {
-	        	  session.setDebug(false);
-	          }
+	    		   String debug = System.getenv("SMTP_DEBUG");
+	    		   if (StringUtils.equalsIgnoreCase(debug, "true")) {
+	    			   session.setDebug(true);
+	    		   } else {
+	    			   session.setDebug(false);
+	    		   }
 	          
-	          MimeMessage message = new MimeMessage(session);
-	          message.setFrom(new InternetAddress(from, fromNick));
-	          message.setRecipients(Message.RecipientType.TO, 
-	             InternetAddress.parse(to)); //new InternetAddress(to, toNick)
-	          if (cc != null) {
-	        	  message.setRecipients(Message.RecipientType.CC, 
-	     	             InternetAddress.parse(cc));  //new InternetAddress(cc, ccNick)
-	          }
-	          message.setSubject(subject, "UTF-8");
-	          if (StringUtils.endsWith(contentType, "html")) {
-	        	  message.setContent(body, "text/html; charset=UTF-8");
-	          } else {
-	        	  message.setText(body, "UTF-8");
-	          }
-	          message.setSentDate(new Date());
+	    		   MimeMessage message = new MimeMessage(session);
+	          
+	    		   message.setFrom(new InternetAddress(from, fromNick));
+	          
+	    		   if (StringUtils.isNotEmpty(to) && StringUtils.isNotEmpty(toNick)) {
+	    			   message.setRecipient(Message.RecipientType.TO, new InternetAddress(to, toNick));
+	    		   } else {
+	    			   message.setRecipients(Message.RecipientType.TO,  InternetAddress.parse(to)); 
+	    		   }
+	          
+	    		   if (StringUtils.isNotEmpty(cc) && StringUtils.isNotEmpty(ccNick)) {
+	    			   message.setRecipient(Message.RecipientType.CC, new InternetAddress(cc, ccNick));
+	    		   } else if (StringUtils.isNotEmpty(cc)) {
+	    			   message.setRecipients(Message.RecipientType.CC, InternetAddress.parse(cc));  
+	    		   }
+	          
+	    		   if (StringUtils.isNotEmpty(subject)) {
+	    			   message.setSubject(subject, "UTF-8");
+	    		   }
+	          
+	    		   if (StringUtils.endsWith(contentType, "html") && StringUtils.isNotEmpty(body)) {
+	    			   message.setContent(body, "text/html; charset=UTF-8");
+	    		   } else if (StringUtils.isNotEmpty(body)) {
+	    			   message.setText(body, "UTF-8");
+	    		   }
+	          
+	    		   message.setSentDate(new Date());
 	         
-	          Transport.send(message);
-	          String output = "{\"status\":\"Message sent to " + to + "\"}";
-	          request.setAttribute("output", output);
-	          return SUCCESS;
-	       }
-	       catch(Exception e)
-	       {
-	          logger.log(Level.SEVERE, e.getMessage(), e);
-	          addActionError(e.getMessage());
-	          return ERROR;  
+	    		   Transport.send(message);
+	    		   String output = "{\"status\":\"Message sent to " + to + "\"}";
+	    		   request.setAttribute("output", output);
+	    		   return SUCCESS;
+	    	   }
+	    	   catch(Exception e)
+	    	   {
+	    		   logger.log(Level.SEVERE, e.getMessage(), e);
+	    		   addActionError(e.getMessage());
+	    		   return ERROR;  
+	    	   }
+	       } else {
+	    	   addActionError("Missing required parameters!");
+		       return ERROR; 
 	       }
 	    }
 
