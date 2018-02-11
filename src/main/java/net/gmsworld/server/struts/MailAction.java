@@ -33,7 +33,9 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    private String fromNick;
 	    private String toNick;
 	    private String contentType;
-
+	    private String cc;
+	    private String ccNick;
+	    
 	    static Properties properties = new Properties();
 	    static
 	    {
@@ -90,6 +92,10 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	          message.setFrom(new InternetAddress(from, fromNick));
 	          message.setRecipients(Message.RecipientType.TO, 
 	             InternetAddress.parse(to)); //new InternetAddress(to, toNick)
+	          if (cc != null) {
+	        	  message.setRecipients(Message.RecipientType.CC, 
+	     	             InternetAddress.parse(cc));  //new InternetAddress(cc, ccNick)
+	          }
 	          message.setSubject(subject, "UTF-8");
 	          if (StringUtils.endsWith(contentType, "html")) {
 	        	  message.setContent(body, "text/html; charset=UTF-8");
@@ -181,5 +187,21 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 
 		public void setContentType(String contentType) {
 			this.contentType = contentType;
+		}
+
+		public String getCc() {
+			return cc;
+		}
+
+		public void setCc(String cc) {
+			this.cc = cc;
+		}
+
+		public String getCcNick() {
+			return ccNick;
+		}
+
+		public void setCcNick(String ccNick) {
+			this.ccNick = ccNick;
 		}
 	}
