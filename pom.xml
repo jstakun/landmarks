@@ -127,11 +127,6 @@
     	<version>r938</version>
     </dependency>
     <dependency>
-    	<groupId>com.restfb</groupId>
-    	<artifactId>restfb</artifactId>
-    	<version>1.31.0</version>
-    </dependency>
-    <dependency>
     	<groupId>com.google.apis</groupId>
     	<artifactId>google-api-services-freebase</artifactId>
     	<version>${freebase.version}</version>
@@ -150,11 +145,6 @@
     	<groupId>com.twitter</groupId>
     	<artifactId>twitter-text</artifactId>
     	<version>1.14.0</version>
-    </dependency>
-    <dependency>
-    	<groupId>com.flickr4java</groupId>
-    	<artifactId>flickr4java</artifactId>
-    	<version>2.16</version>
     </dependency>
     <dependency>
     	<groupId>com.mastercard.api</groupId>
@@ -179,7 +169,7 @@
     <dependency>
     	<groupId>net.gms-world</groupId>
     	<artifactId>gmsworldlayers</artifactId>
-    	<version>0.0.4.25</version>
+    	<version>0.0.4.26</version>
     </dependency>
     <dependency>
     	<groupId>commons-lang</groupId>
