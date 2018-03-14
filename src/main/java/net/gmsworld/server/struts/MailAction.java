@@ -118,7 +118,8 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    		   message.setSentDate(new Date());
 	         
 	    		   Transport.send(message);
-	    		   String output = "{\"status\":\"Message sent to " + to + "\"}";
+	    		   String output = "{\"status\":\"Message " + message.getMessageID() + " sent to " + to + "\"}";
+	    		   logger.log(Level.INFO, "Message " + message.getMessageID() + " sent to " + to);
 	    		   request.setAttribute("output", output);
 	    		   return SUCCESS;
 	    	   }
