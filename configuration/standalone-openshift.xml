@@ -124,19 +124,26 @@
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:datasources:1.2">
             <datasources>
-                <xa-datasource jndi-name="java:jboss/datasources/LandmarksDS" pool-name="landmarks_postgresql-DB" use-java-context="true" enabled="true"> <xa-datasource-property name="DatabaseName">landmarksdb</xa-datasource-property> <xa-datasource-property name="PortNumber">5432</xa-datasource-property> <xa-datasource-property name="ServerName">landmarksdb</xa-datasource-property> <driver>postgresql</driver> <security> <user-name>admin</user-name> <password>manager1</password> </security> <validation> <validate-on-match>true</validate-on-match> <background-validation>false</background-validation> <valid-connection-checker class-name="org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLValidConnectionChecker"></valid-connection-checker> <exception-sorter class-name="org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLExceptionSorter"></exception-sorter> </validation> </xa-datasource>
-<!-- ##DATASOURCES## -->
+                <xa-datasource jndi-name="java:jboss/datasources/LandmarksDS" pool-name="landmarks_postgresql-DB" use-java-context="true" enabled="true"> 
+                    <xa-datasource-property name="DatabaseName">${env.DB_DATABASE:example}</xa-datasource-property> 
+                    <xa-datasource-property name="PortNumber">${env.LANDMARKS_POSTGRESQL_SERVICE_PORT:5432}</xa-datasource-property> 
+                    <xa-datasource-property name="ServerName">${env.LANDMARKS_POSTGRESQL_SERVICE_HOST:localhost}</xa-datasource-property> 
+                    <driver>postgresql</driver> 
+                    <security> 
+                    	<user-name>${env.DB_USERNAME:admin}</user-name> 
+                    	<password>${env.DB_PASSWORD:admin}</password> 
+                    </security> 
+                    <validation> 
+                        <validate-on-match>true</validate-on-match> 
+                        <background-validation>false</background-validation> 
+                        <valid-connection-checker class-name="org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLValidConnectionChecker" />
+                        <exception-sorter class-name="org.jboss.jca.adapters.jdbc.extensions.postgres.PostgreSQLExceptionSorter"/> 
+                    </validation> 
+                 </xa-datasource>
                 <drivers>
-                    <!--driver name="h2" module="com.h2database.h2">
-                        <xa-datasource-class>org.h2.jdbcx.JdbcDataSource</xa-datasource-class>
-                    </driver>
-                    <driver name="mysql" module="com.mysql">
-                        <xa-datasource-class>com.mysql.jdbc.jdbc2.optional.MysqlXADataSource</xa-datasource-class>
-                    </driver-->
                     <driver name="postgresql" module="org.postgresql">
                         <xa-datasource-class>org.postgresql.xa.PGXADataSource</xa-datasource-class>
                     </driver>
-                    <!-- ##DRIVERS## -->
                 </drivers>
             </datasources>
         </subsystem>
@@ -176,7 +183,11 @@
                 <cluster-passivation-store name="infinispan" cache-container="ejb"/>
             </passivation-stores>
             <async thread-pool-name="default"/>
-                        <timer-service thread-pool-name="default" default-data-store="default-file-store">                <data-stores>                    <file-data-store name="default-file-store" path="timer-service-data" relative-to="jboss.server.data.dir"/>                    <!-- ##DATASTORES## -->                </data-stores>            </timer-service>
+                        <timer-service thread-pool-name="default" default-data-store="default-file-store">               
+                           <data-stores>                    
+                             <file-data-store name="default-file-store" path="timer-service-data" relative-to="jboss.server.data.dir"/>                          
+                           </data-stores>           
+                        </timer-service>
             <remote connector-ref="remoting-connector" thread-pool-name="default"/>
             <thread-pools>
                 <thread-pool name="default">
