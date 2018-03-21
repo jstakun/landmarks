@@ -125,11 +125,6 @@
 	</dependency>
     <dependency>
     	<groupId>net.gms-world</groupId>
-    	<artifactId>foursquareapi2</artifactId>
-    	<version>0.0.4</version>
-    </dependency>
-    <dependency>
-    	<groupId>net.gms-world</groupId>
     	<artifactId>gmsworldlayers</artifactId>
     	<version>0.0.4.26</version>
     </dependency>
