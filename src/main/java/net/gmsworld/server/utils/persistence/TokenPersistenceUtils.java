@@ -3,7 +3,6 @@ package net.gmsworld.server.utils.persistence;
 import java.util.Calendar;
 import java.util.List;
 
-import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
@@ -11,7 +10,6 @@ import javax.persistence.TypedQuery;
 
 import net.gmsworld.server.persistence.Token;
 
-@Stateless
 public class TokenPersistenceUtils {
 
 	@PersistenceContext

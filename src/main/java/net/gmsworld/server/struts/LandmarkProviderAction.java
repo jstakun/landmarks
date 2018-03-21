@@ -93,8 +93,7 @@ public class LandmarkProviderAction extends ActionSupport implements ParameterAw
 		List<Landmark> newestLandmarks = CacheUtil.getList(Landmark.class, key);
 		try {
 			if (newestLandmarks == null) {
-				landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().
-        			getService("java:global/ROOT/LandmarkPersistenceUtils!net.gmsworld.server.utils.persistence.LandmarkPersistenceUtils");
+				landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().getService("java:comp/env/ bean/LandmarkPersistenceUtils");
 				newestLandmarks = landmarkPersistenceUtils.findNewestLandmarks(limit);
 				if (newestLandmarks != null && !newestLandmarks.isEmpty()) {
 					CacheUtil.putShort(key, newestLandmarks);
@@ -114,8 +113,7 @@ public class LandmarkProviderAction extends ActionSupport implements ParameterAw
 		int id = NumberUtils.getInt(getParameter("id"), -1);
 		String output = null;
 		try {
-			landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().
-        			getService("java:global/ROOT/LandmarkPersistenceUtils!net.gmsworld.server.utils.persistence.LandmarkPersistenceUtils");
+			landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().getService("java:comp/env/ bean/LandmarkPersistenceUtils");
 			Landmark l = landmarkPersistenceUtils.selectLandmarkById(id);
 			if (l != null) {
 				output = JSONUtil.serialize(l, null, null, true, true);
@@ -134,8 +132,7 @@ public class LandmarkProviderAction extends ActionSupport implements ParameterAw
 		String hash = getParameter("hash");
 		String output = null;
 		try {
-			landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().
-        			getService("java:global/ROOT/LandmarkPersistenceUtils!net.gmsworld.server.utils.persistence.LandmarkPersistenceUtils");
+			landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().getService("java:comp/env/ bean/LandmarkPersistenceUtils");
 			Landmark l = landmarkPersistenceUtils.selectLandmarkByHash(hash);	
 			if (l != null) {
 				output = JSONUtil.serialize(l, null, null, true, true);
@@ -160,8 +157,7 @@ public class LandmarkProviderAction extends ActionSupport implements ParameterAw
 		
 		try {
 			logger.log(Level.INFO, "Querying for {0}", query);
-			landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().
-        			getService("java:global/ROOT/LandmarkPersistenceUtils!net.gmsworld.server.utils.persistence.LandmarkPersistenceUtils");
+			landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().getService("java:comp/env/ bean/LandmarkPersistenceUtils");
 			landmarks = landmarkPersistenceUtils.searchLandmarks(query, limit);	
 			output = JSONUtil.serialize(landmarks, null, null, true, true);
 		} catch (Exception e) {
@@ -182,8 +178,7 @@ public class LandmarkProviderAction extends ActionSupport implements ParameterAw
 		String output = null;
 		List<Landmark> landmarks = null;
 		try {
-			landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().
-        			getService("java:global/ROOT/LandmarkPersistenceUtils!net.gmsworld.server.utils.persistence.LandmarkPersistenceUtils");
+			landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().getService("java:comp/env/ bean/LandmarkPersistenceUtils");
 			landmarks = landmarkPersistenceUtils.selectLandmarksByUserAndLayer(username, layer, first, limit);	
 			output = JSONUtil.serialize(landmarks, null, null, true, true);
 		} catch (Exception e) {
@@ -200,8 +195,7 @@ public class LandmarkProviderAction extends ActionSupport implements ParameterAw
 		String layer = getParameter("layer");
 		String output = null;
 		try {
-			landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().
-        			getService("java:global/ROOT/LandmarkPersistenceUtils!net.gmsworld.server.utils.persistence.LandmarkPersistenceUtils");
+			landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().getService("java:comp/env/ bean/LandmarkPersistenceUtils");
 			int count = landmarkPersistenceUtils.countLandmarksByUserAndLayer(username, layer);	
 			output = "{\"count\":" + count + "}"; 
 		} catch (Exception e) {
@@ -233,8 +227,7 @@ public class LandmarkProviderAction extends ActionSupport implements ParameterAw
 		String output = null;
 		List<Landmark> landmarks = null;
 		try {
-			landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().
-        			getService("java:global/ROOT/LandmarkPersistenceUtils!net.gmsworld.server.utils.persistence.LandmarkPersistenceUtils");
+			landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().getService("java:comp/env/ bean/LandmarkPersistenceUtils");
 			landmarks = landmarkPersistenceUtils.selectLandmarksByCoordsAndLayer(layer, latitude, longitude, radius * 1000, limit);	
 			output = JSONUtil.serialize(landmarks, null, null, true, true);
 		} catch (Exception e) {
@@ -264,8 +257,7 @@ public class LandmarkProviderAction extends ActionSupport implements ParameterAw
 		String layer = getParameter("layer");
 		String output = null;
 		try {
-			landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().
-        			getService("java:global/ROOT/LandmarkPersistenceUtils!net.gmsworld.server.utils.persistence.LandmarkPersistenceUtils");
+			landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().getService("java:comp/env/ bean/LandmarkPersistenceUtils");
 			int count = landmarkPersistenceUtils.countLandmarksByCoordsAndLayer(layer, latitude, longitude, radius * 1000);	
 			output = "{\"count\":" + count + "}"; 
 		} catch (Exception e) {
@@ -284,8 +276,7 @@ public class LandmarkProviderAction extends ActionSupport implements ParameterAw
 		String output = null;
 		List<Landmark> landmarks = null;
 		try {
-			landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().
-        			getService("java:global/ROOT/LandmarkPersistenceUtils!net.gmsworld.server.utils.persistence.LandmarkPersistenceUtils");
+			landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().getService("java:comp/env/ bean/LandmarkPersistenceUtils");
 			landmarks = landmarkPersistenceUtils.selectLandmarksByMonth(month, first, limit);
 			output = JSONUtil.serialize(landmarks, null, null, true, true);
 		} catch (Exception e) {
@@ -301,8 +292,7 @@ public class LandmarkProviderAction extends ActionSupport implements ParameterAw
 		String month = getParameter("month");
 		String output = null;
 		try {
-			landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().
-        			getService("java:global/ROOT/LandmarkPersistenceUtils!net.gmsworld.server.utils.persistence.LandmarkPersistenceUtils");
+			landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().getService("java:comp/env/ bean/LandmarkPersistenceUtils");
 			int count = landmarkPersistenceUtils.countLandmarksByMonth(month);
 			output = "{\"count\":" + count + "}"; 
 		} catch (Exception e) {
@@ -317,8 +307,7 @@ public class LandmarkProviderAction extends ActionSupport implements ParameterAw
 		int days = NumberUtils.getInt(getParameter("days"), 365);
 		String output = null;
 		try {
-			landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().
-        			getService("java:global/ROOT/LandmarkPersistenceUtils!net.gmsworld.server.utils.persistence.LandmarkPersistenceUtils");
+			landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().getService("java:comp/env/ bean/LandmarkPersistenceUtils");
 			Map<String, Integer> bucket = landmarkPersistenceUtils.getNativeHeatMap(days); //.getHeatMap(days);
 			output = JSONUtil.serialize(bucket, null, null, true, true);
 		} catch (Exception e) {
@@ -346,8 +335,7 @@ public class LandmarkProviderAction extends ActionSupport implements ParameterAw
 		int radius = NumberUtils.getRadius(getParameter("radius"), 3, 100);
 		String output = null;
 		try {
-			landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().
-        			getService("java:global/ROOT/LandmarkPersistenceUtils!net.gmsworld.server.utils.persistence.LandmarkPersistenceUtils");
+			landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().getService("java:comp/env/ bean/LandmarkPersistenceUtils");
 			List<Object[]> count = landmarkPersistenceUtils.countLandmarksByCoords(latitude, longitude, radius * 1000);	
 			output = JSONUtil.serialize(count, null, null, true, true);
 		} catch (Exception e) {

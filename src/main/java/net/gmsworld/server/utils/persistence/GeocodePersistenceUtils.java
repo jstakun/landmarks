@@ -3,14 +3,12 @@ package net.gmsworld.server.utils.persistence;
 import java.util.Date;
 import java.util.List;
 
-import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
 import net.gmsworld.server.persistence.Geocode;
 
-@Stateless
 public class GeocodePersistenceUtils {
 	@PersistenceContext
     private EntityManager entityManager;

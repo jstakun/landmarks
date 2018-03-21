@@ -10,10 +10,9 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
+import javax.persistence.Persistence;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
@@ -32,11 +31,9 @@ import net.gmsworld.server.persistence.Landmark;
 import net.gmsworld.server.utils.DateUtils;
 import net.gmsworld.server.utils.StringUtil;
 
-@Stateless
 public class LandmarkPersistenceUtils {
 
-	@PersistenceContext
-    private EntityManager entityManager;
+    private EntityManager entityManager  = Persistence.createEntityManagerFactory("landmarksdb").createEntityManager();
 	
 	private final Logger logger = Logger.getLogger(LandmarkPersistenceUtils.class.getName());
 	

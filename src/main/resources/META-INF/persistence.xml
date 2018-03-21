@@ -4,8 +4,8 @@
     xsi:schemaLocation="http://java.sun.com/xml/ns/persistence
         http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd" version="1.0">
 
-    <persistence-unit name="transactions-optional">
-        <jta-data-source>java:jboss/datasources/LandmarksDS</jta-data-source>
+    <persistence-unit name="landmarksdb">
+        <jta-data-source>jdbc/LandmarksDS</jta-data-source>
         <class>net.gmsworld.server.persistence.Checkin</class>
         <class>net.gmsworld.server.persistence.Comment</class>
         <class>net.gmsworld.server.persistence.Geocode</class>

@@ -1,18 +1,16 @@
 package net.gmsworld.server.utils.persistence;
 
+import java.security.MessageDigest;
+import java.util.Base64;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.jboss.security.auth.spi.Util;
-
 import net.gmsworld.server.persistence.User;
 
-@Stateless
 public class UserPersistenceUtils {
 	@PersistenceContext
     private EntityManager entityManager;
@@ -20,9 +18,13 @@ public class UserPersistenceUtils {
 	private final Logger logger = Logger.getLogger(UserPersistenceUtils.class.getName());
 	
 	public void save(User u) {
-		u.setPassword(getHash(u.getPassword()));
-		entityManager.persist(u);
-		entityManager.flush();
+		try {
+			u.setPassword(getHash(u.getPassword()));
+			entityManager.persist(u);
+			entityManager.flush();
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, e.getMessage(), e);
+		}
 	}
 	
 	private void update(User u) {
@@ -56,15 +58,21 @@ public class UserPersistenceUtils {
 		} 
 	}
 	
-	private static String getHash(String password) {
-		return Util.createPasswordHash("SHA-256", "BASE64", null, null, password);
+	private static String getHash(String password) throws Exception {
+		MessageDigest digester = MessageDigest.getInstance("SHA-256");
+	    digester.update(password.getBytes());
+	    return Base64.getEncoder().encodeToString(digester.digest());
 	}
 	
 	public boolean login(String login, String password) {
 		boolean auth = false;
 		User u = findById(login);
 		if (u != null) {
-			auth = (getHash(password).equals(u.getPassword()));
+			try {
+				auth = (getHash(password).equals(u.getPassword()));
+			} catch (Exception e) {
+				logger.log(Level.SEVERE, e.getMessage(), e);
+			}
 		} 
 		return auth;
 	}

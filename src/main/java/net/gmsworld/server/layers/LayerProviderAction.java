@@ -17,7 +17,7 @@ import net.gmsworld.server.persistence.Layer;
 import net.gmsworld.server.struts.JSonDataAction;
 import net.gmsworld.server.utils.BoundingBox;
 import net.gmsworld.server.utils.GeocodeUtils;
-import net.gmsworld.server.utils.JBossThreadProvider;
+import net.gmsworld.server.utils.TomcatThreadProvider;
 import net.gmsworld.server.utils.NumberUtils;
 import net.gmsworld.server.utils.ServiceLocator;
 import net.gmsworld.server.utils.StringUtil;
@@ -41,7 +41,7 @@ public class LayerProviderAction extends ActionSupport implements ParameterAware
 	public LayerProviderAction() {
 		super();
 		LayerHelperFactory.getInstance().setCacheProvider(new JBossCacheProvider());
-		LayerHelperFactory.getInstance().setThreadProvider(new JBossThreadProvider());
+		LayerHelperFactory.getInstance().setThreadProvider(new TomcatThreadProvider());
 	}
 	   
 	@Override

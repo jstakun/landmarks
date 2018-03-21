@@ -2,14 +2,12 @@ package net.gmsworld.server.utils.persistence;
 
 import java.util.List;
 
-import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
 import net.gmsworld.server.persistence.Comment;
 
-@Stateless
 public class CommentPersistenceUtils {
      
 	@PersistenceContext

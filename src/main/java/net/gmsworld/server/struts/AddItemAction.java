@@ -21,7 +21,7 @@ import net.gmsworld.server.persistence.Screenshot;
 import net.gmsworld.server.persistence.User;
 import net.gmsworld.server.utils.DateUtils;
 import net.gmsworld.server.utils.GeocodeUtils;
-import net.gmsworld.server.utils.JBossThreadProvider;
+import net.gmsworld.server.utils.TomcatThreadProvider;
 import net.gmsworld.server.utils.NumberUtils;
 import net.gmsworld.server.utils.ServiceLocator;
 import net.gmsworld.server.utils.StringUtil;
@@ -47,7 +47,7 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
 	private static final long serialVersionUID = 1L;
 	private Map<String, String[]> parameters;
 	private HttpServletRequest request;
-	private JBossThreadProvider threadProvider = new JBossThreadProvider();
+	private TomcatThreadProvider threadProvider = new TomcatThreadProvider();
 	
 	public AddItemAction() {
 		super();

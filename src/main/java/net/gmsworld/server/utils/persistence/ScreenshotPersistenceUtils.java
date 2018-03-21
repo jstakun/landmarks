@@ -2,14 +2,12 @@ package net.gmsworld.server.utils.persistence;
 
 import java.util.List;
 
-import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import net.gmsworld.server.persistence.Screenshot;
 
-@Stateless
 public class ScreenshotPersistenceUtils {
 
 	@PersistenceContext
