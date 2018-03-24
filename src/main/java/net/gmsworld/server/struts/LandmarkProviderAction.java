@@ -28,7 +28,7 @@ public class LandmarkProviderAction extends ActionSupport implements ParameterAw
 	private HttpServletRequest request;
 	
 	private LandmarkPersistenceUtils getLandmarkPersistenceUtils() throws Exception {
-		  return (LandmarkPersistenceUtils) ServiceLocator.getInstance().getService("java:comp/env/bean/LandmarkPersistenceUtils");
+		  return (LandmarkPersistenceUtils) ServiceLocator.getInstance().getService("bean/LandmarkPersistenceUtils");
 	}
 	
 	@Override

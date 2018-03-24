@@ -20,7 +20,7 @@ public class CacheUtil {
 		
 		if (cacheBean == null) {
 			try {
-				cacheBean = (CacheBean) ServiceLocator.getInstance().getService("java:comp/env/bean/CacheBean");
+				cacheBean = (CacheBean) ServiceLocator.getInstance().getService("bean/CacheBean");
 			} catch (Exception e) {
 				logger.log(Level.SEVERE, e.getMessage(), e);
 			}

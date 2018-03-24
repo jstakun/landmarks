@@ -40,7 +40,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
     private Integer oldPin;
     
     private DevicePersistenceUtils getDevicePersistenceUtils() throws Exception {
-    	return (DevicePersistenceUtils) ServiceLocator.getInstance().getService("java:comp/env/bean/DevicePersistenceUtils");	
+    	return (DevicePersistenceUtils) ServiceLocator.getInstance().getService("bean/DevicePersistenceUtils");	
     }
     
 	public String createDevice() {

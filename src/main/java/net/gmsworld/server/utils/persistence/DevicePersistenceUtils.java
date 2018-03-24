@@ -16,7 +16,7 @@ public class DevicePersistenceUtils {
 	private EntityManager entityManager  = Persistence.createEntityManagerFactory("landmarksdb").createEntityManager();
 	
 	private final Logger logger = Logger.getLogger(DevicePersistenceUtils.class.getName());
-			
+	
 	public void save(Device device) {
 		entityManager.persist(device);
 		entityManager.flush();
