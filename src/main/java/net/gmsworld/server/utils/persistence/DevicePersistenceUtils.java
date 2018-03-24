@@ -6,15 +6,14 @@ import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
+import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 
 import net.gmsworld.server.persistence.Device;
 
 public class DevicePersistenceUtils {
 
-	@PersistenceContext
-    private EntityManager entityManager;
+	private EntityManager entityManager  = Persistence.createEntityManagerFactory("landmarksdb").createEntityManager();
 	
 	private final Logger logger = Logger.getLogger(DevicePersistenceUtils.class.getName());
 			

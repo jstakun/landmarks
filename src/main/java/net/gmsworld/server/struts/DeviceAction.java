@@ -39,6 +39,10 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
     private Long ttl;
     private Integer oldPin;
     
+    private DevicePersistenceUtils getDevicePersistenceUtils() throws Exception {
+    	return (DevicePersistenceUtils) ServiceLocator.getInstance().getService("java:comp/env/bean/DevicePersistenceUtils");	
+    }
+    
 	public String createDevice() {
 		if (imei != null && pin != null) {
 			try {
@@ -46,9 +50,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 					name = name.replace(" ", "-");
 				}
 				Device device = new Device(imei, token, pin, username, name) ;
-				DevicePersistenceUtils devicePersistenceUtils = (DevicePersistenceUtils) ServiceLocator.getInstance().getService(
-						"java:global/ROOT/DevicePersistenceUtils!net.gmsworld.server.utils.persistence.DevicePersistenceUtils");			    
-				devicePersistenceUtils.save(device);
+				getDevicePersistenceUtils().save(device);
 				request.setAttribute(JSonDataAction.JSON_OUTPUT, device);
 				return "json";
 			} catch (Exception e) {
@@ -66,13 +68,11 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 	public String updateDevice() {
 		if (imei != null && pin != null) {
 			try {
-				DevicePersistenceUtils devicePersistenceUtils = (DevicePersistenceUtils) ServiceLocator.getInstance().getService(
-						"java:global/ROOT/DevicePersistenceUtils!net.gmsworld.server.utils.persistence.DevicePersistenceUtils");
 				Device device = null;
 				if (oldPin != null) {
-					device = devicePersistenceUtils.findDeviceByImeiAndPin(imei, oldPin);
+					device = getDevicePersistenceUtils().findDeviceByImeiAndPin(imei, oldPin);
 				} else {
-					device = devicePersistenceUtils.findDeviceByImeiAndPin(imei, pin);
+					device = getDevicePersistenceUtils().findDeviceByImeiAndPin(imei, pin);
 				}
 				if (token != null) {
 					device.setToken(token);
@@ -87,7 +87,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 					device.setName(name.replace(" ", "-"));
 				}
 				device.setCreationDate(new Date());
-				devicePersistenceUtils.update(device);
+				getDevicePersistenceUtils().update(device);
 				request.setAttribute(JSonDataAction.JSON_OUTPUT, device);
 				return "json";
 			} catch (Exception e) {
@@ -115,9 +115,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 	private String getDeviceByImei() {
 		if (imei != null && pin != null) {
 			try {
-				DevicePersistenceUtils devicePersistenceUtils = (DevicePersistenceUtils) ServiceLocator.getInstance().getService(
-						"java:global/ROOT/DevicePersistenceUtils!net.gmsworld.server.utils.persistence.DevicePersistenceUtils");			    
-				Device device = devicePersistenceUtils.findDeviceByImeiAndPin(imei, pin);
+				Device device = getDevicePersistenceUtils().findDeviceByImeiAndPin(imei, pin);
 				if (device  != null) {
 					request.setAttribute(JSonDataAction.JSON_OUTPUT, device);
 					return "json";
@@ -139,9 +137,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 	private String getDeviceByName() {
 		if (name != null && username != null && pin != null) {
 			try {
-				DevicePersistenceUtils devicePersistenceUtils = (DevicePersistenceUtils) ServiceLocator.getInstance().getService(
-						"java:global/ROOT/DevicePersistenceUtils!net.gmsworld.server.utils.persistence.DevicePersistenceUtils");			    
-				Device device = devicePersistenceUtils.findDeviceByNameAndUsername(name, username, pin);
+				Device device = getDevicePersistenceUtils().findDeviceByNameAndUsername(name, username, pin);
 				if (device  != null) {
 					request.setAttribute(JSonDataAction.JSON_OUTPUT, device);
 					return "json";
@@ -163,13 +159,11 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 	public String createOrUpdateDevice() {
 		if (imei != null && pin != null) {
 			try {
-				DevicePersistenceUtils devicePersistenceUtils = (DevicePersistenceUtils) ServiceLocator.getInstance().getService(
-						"java:global/ROOT/DevicePersistenceUtils!net.gmsworld.server.utils.persistence.DevicePersistenceUtils");			    
 				Device device = null;
 				if (oldPin != null) {
-					device = devicePersistenceUtils.findDeviceByImeiAndPin(imei, oldPin);
+					device = getDevicePersistenceUtils().findDeviceByImeiAndPin(imei, oldPin);
 				} else {
-					device = devicePersistenceUtils.findDeviceByImeiAndPin(imei, pin);
+					device = getDevicePersistenceUtils().findDeviceByImeiAndPin(imei, pin);
 				}
 				if (device  != null) {
 					if (token != null) {
@@ -185,13 +179,13 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 						device.setName(name.replace(" ", "-"));
 					}
 					device.setCreationDate(new Date());
-					devicePersistenceUtils.update(device);
+					getDevicePersistenceUtils().update(device);
 				} else {
 					if (name != null) {
 						name = name.replace(" ", "-");
 					}
 					device = new Device(imei, token, pin, username, name) ;
-					devicePersistenceUtils.save(device);
+					getDevicePersistenceUtils().save(device);
 				}
 				request.setAttribute(JSonDataAction.JSON_OUTPUT, device);
 				return "json";
@@ -209,13 +203,11 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 	public String commandDevice() {
 		if ((imei != null  || (name != null && username != null)) && pin != null && command != null) {
 			try {
-				DevicePersistenceUtils devicePersistenceUtils = (DevicePersistenceUtils) ServiceLocator.getInstance().getService(
-						"java:global/ROOT/DevicePersistenceUtils!net.gmsworld.server.utils.persistence.DevicePersistenceUtils");	
 				Device device = null;
 				if (imei != null) {
-					device = devicePersistenceUtils.findDeviceByImeiAndPin(imei, pin);
+					device = getDevicePersistenceUtils().findDeviceByImeiAndPin(imei, pin);
 				} else if (name != null && username != null) {
-					device = devicePersistenceUtils.findDeviceByNameAndUsername(name, username, pin);
+					device = getDevicePersistenceUtils().findDeviceByNameAndUsername(name, username, pin);
 				}
 				if (device  != null) {
 					String url = "https://fcm.googleapis.com/v1/projects/" + Commons.getProperty(Property.FCM_PROJECT) + "/messages:send";

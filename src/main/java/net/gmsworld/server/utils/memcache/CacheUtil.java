@@ -62,7 +62,10 @@ public class CacheUtil {
 	}
 	
 	public static <T> T getObject(Class<T> type, String key) {
-		Object o = getCache().getObject(key);
+		Object o = null;
+		if (getCache() != null) {
+			o = getCache().getObject(key);
+		}
 		if (o != null && type.isAssignableFrom(o.getClass())) {
 			return type.cast(o);
 	    } else {
@@ -72,7 +75,10 @@ public class CacheUtil {
 	
 	public static <T> List<T> getList(Class<T> type, String key) {
 		//return getObject(List.class, key);
-	    Collection<?> c = (Collection<?>) getCache().getObject(key);
+	    Collection<?> c = null; 
+	    if (getCache() != null) { 
+	    	c = (Collection<?>) getCache().getObject(key);
+	    }
 	    if (c != null) {
 	    	List<T> r = new ArrayList<T>(c.size());
 	    	for (Object o : c) {
