@@ -13,7 +13,7 @@ import net.gmsworld.server.persistence.Device;
 
 public class DevicePersistenceUtils {
 
-	private EntityManager entityManager = Persistence.createEntityManagerFactory("landmarksdb").createEntityManager();
+	private EntityManager entityManager = EMF.getEntityManager();
 	
 	private final Logger logger = Logger.getLogger(DevicePersistenceUtils.class.getName());
 	

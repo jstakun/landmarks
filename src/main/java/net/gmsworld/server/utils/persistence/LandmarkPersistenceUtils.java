@@ -33,7 +33,7 @@ import net.gmsworld.server.utils.StringUtil;
 
 public class LandmarkPersistenceUtils {
 
-    private EntityManager entityManager  = Persistence.createEntityManagerFactory("landmarksdb").createEntityManager();
+    private EntityManager entityManager  = EMF.getEntityManager();
 	
 	private final Logger logger = Logger.getLogger(LandmarkPersistenceUtils.class.getName());
 	
