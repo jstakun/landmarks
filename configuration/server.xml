@@ -45,9 +45,9 @@
               pathname="conf/tomcat-users.xml" />
        
        <Resource name="jdbc/LandmarksDB" global="jdbc/LandmarksDB"  auth="Container" type="javax.sql.DataSource"
-               maxTotal="100" maxIdle="30" maxWaitMillis="10000"
-               username="admin" password="manager1" driverClassName="org.postgresql.Driver"
-               url="jdbc:postgresql://landmarksdb:5432/landmarksdb"/>       
+               maxTotal="64" maxIdle="32" maxWaitMillis="10000"
+               username="${db.user}" password="${db.password}" driverClassName="org.postgresql.Driver"
+               url="${db.url}"/>       
               
   </GlobalNamingResources>
 

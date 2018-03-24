@@ -10,16 +10,15 @@
               auth="Container"
               type="javax.sql.DataSource" />      
                
-      <Resource name=" bean/DevicePersistenceUtils" 
-            global=" bean/DevicePersistenceUtils" auth="Container"
+      <Resource name="bean/DevicePersistenceUtils" auth="Container"
             type="net.gmsworld.server.utils.persistence.DevicePersistenceUtils"
             factory="org.apache.naming.factory.BeanFactory"/>     
             
-      <Resource name=" bean/LandmarkPersistenceUtils" auth="Container"
+      <Resource name="bean/LandmarkPersistenceUtils" auth="Container"
             type="net.gmsworld.server.utils.persistence.LandmarkPersistenceUtils"
             factory="org.apache.naming.factory.BeanFactory"/>                
                
-        <Resource name=" bean/CacheBean" auth="Container"
+        <Resource name="bean/CacheBean" auth="Container"
             type="net.gmsworld.server.utils.memcache.CacheBean"
             factory="org.apache.naming.factory.BeanFactory"/> 
                     
