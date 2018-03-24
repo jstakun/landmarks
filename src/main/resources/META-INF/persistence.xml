@@ -6,7 +6,7 @@
 
     <persistence-unit name="landmarksdb">
         <provider>org.hibernate.ejb.HibernatePersistence</provider>
-        <jta-data-source>jdbc/LandmarksDS</jta-data-source>
+        <jta-data-source>java:comp/env/jdbc/LandmarksDS</jta-data-source>
         <class>net.gmsworld.server.persistence.Checkin</class>
         <class>net.gmsworld.server.persistence.Comment</class>
         <class>net.gmsworld.server.persistence.Geocode</class>
