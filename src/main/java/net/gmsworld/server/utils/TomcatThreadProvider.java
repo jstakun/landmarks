@@ -6,6 +6,7 @@ public class TomcatThreadProvider implements ThreadFactory {
 
 	@Override
 	public Thread newThread(Runnable r) {
+		//TODO use tomcat thread pool
 		return new Thread(r);
 	}
 
