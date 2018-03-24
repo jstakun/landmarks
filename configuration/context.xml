@@ -2,14 +2,16 @@
 <Context>
      <!--Resource name="jdbc/LandmarksDB" auth="Container" type="javax.sql.DataSource"
                maxTotal="100" maxIdle="30" maxWaitMillis="10000"
-               username="admin" password="manager1" driverClassName="org.postgresql.xa.PGXADataSource"
+               username="admin" password="manager1" driverClassName="org.postgresql.Driver"
                url="jdbc:postgresql://landmarksdb:5432/landmarksdb"/-->
+               
       <ResourceLink name="jdbc/LandmarksDB"
               global="jdbc/LandmarksDB"
               auth="Container"
               type="javax.sql.DataSource" />      
                
-      <Resource name=" bean/DevicePersistenceUtils" auth="Container"
+      <Resource name=" bean/DevicePersistenceUtils" 
+            global=" bean/DevicePersistenceUtils" auth="Container"
             type="net.gmsworld.server.utils.persistence.DevicePersistenceUtils"
             factory="org.apache.naming.factory.BeanFactory"/>     
             
