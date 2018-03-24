@@ -25,13 +25,11 @@
             <property name="hibernate.connection.useUnicode" value="true" />
             <property name="hibernate.connection.characterEncoding" value="UTF-8" />
             <property name="hibernate.connection.charSet" value="UTF-8" />
-            <!-- TODO remove -->
-            <property name="hibernate.hbm2ddl.auto" value="create" />
-            <!--  -->
+            <!--property name="hibernate.hbm2ddl.auto" value="update" /-->
             <property name="hibernate.show_sql" value="false" />
             <property name="hibernate.jdbc.batch_size" value="25" />
             <property name="hibernate.temp.use_jdbc_metadata_defaults" value="false"/>
-            
+            <!-- TODO enable second level cache -->
             <property name="hibernate.cache.use_second_level_cache" value="false" />
     		<property name="hibernate.cache.use_query_cache" value="false" />       
     		<property name="hibernate.cache.infinispan.statistics" value="false"/>

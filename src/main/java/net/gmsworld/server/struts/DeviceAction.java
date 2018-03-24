@@ -41,7 +41,6 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
     
     private DevicePersistenceUtils getDevicePersistenceUtils() throws Exception {
     	return (DevicePersistenceUtils) ServiceLocator.getInstance().getService("bean/DevicePersistenceUtils");	
-        //return new DevicePersistenceUtils();
     }
     
 	public String createDevice() {

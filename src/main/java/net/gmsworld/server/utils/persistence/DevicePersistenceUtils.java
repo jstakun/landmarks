@@ -17,13 +17,15 @@ public class DevicePersistenceUtils {
 	private final Logger logger = Logger.getLogger(DevicePersistenceUtils.class.getName());
 	
 	public void save(Device device) {
+		entityManager.getTransaction().begin();
 		entityManager.persist(device);
-		entityManager.flush();
+		entityManager.getTransaction().commit();		
 	}
 	
 	public void update(Device device) {
+		entityManager.getTransaction().begin();
 		entityManager.merge(device);
-		entityManager.flush();
+		entityManager.getTransaction().commit();		
 	}
 	
 	public Device findDeviceByImeiAndPin(Long imei, Integer pin) {

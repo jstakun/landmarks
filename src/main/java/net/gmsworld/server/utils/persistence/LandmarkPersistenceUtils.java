@@ -37,13 +37,15 @@ public class LandmarkPersistenceUtils {
 	private final Logger logger = Logger.getLogger(LandmarkPersistenceUtils.class.getName());
 	
 	public void save(Landmark landmark) {
+		entityManager.getTransaction().begin();		
 		entityManager.persist(landmark);
-		entityManager.flush();
+		entityManager.getTransaction().commit();		
 	}
 	
 	public void update(Landmark landmark) {
+		entityManager.getTransaction().begin();		
 		entityManager.merge(landmark);
-		entityManager.flush();
+		entityManager.getTransaction().commit();		
 	}
 	
 	public List<Landmark> findNewestLandmarks(int limit) {
