@@ -13,21 +13,13 @@ import net.gmsworld.server.persistence.Device;
 
 public class DevicePersistenceUtils {
 
-	private EntityManager entityManager; //  = Persistence.createEntityManagerFactory("landmarksdb").createEntityManager();
+	private EntityManager entityManager = Persistence.createEntityManagerFactory("landmarksdb").createEntityManager();
 	
 	private final Logger logger = Logger.getLogger(DevicePersistenceUtils.class.getName());
 	
 	public void save(Device device) {
 		entityManager.persist(device);
 		entityManager.flush();
-	}
-	
-	public DevicePersistenceUtils () {
-		 try {
-			 entityManager = Persistence.createEntityManagerFactory("landmarksdb").createEntityManager();
-		 } catch (Exception e) {
-			 logger.log(Level.SEVERE, e.getMessage(), e);
-		 }
 	}
 	
 	public void update(Device device) {
