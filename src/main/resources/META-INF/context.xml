@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context path="/">
+     <Resource name="jdbc/LandmarksDB" auth="Container" type="javax.sql.DataSource"
+               maxTotal="100" maxIdle="30" maxWaitMillis="10000"
+               username="admin" password="manager1" driverClassName="org.postgresql.xa.PGXADataSource"
+               url="jdbc:postgresql://landmarksdb:5432/landmarksdb"/>
+               
+      <Resource name=" bean/DevicePersistenceUtils" auth="Container"
+            type="net.gmsworld.server.utils.persistence.DevicePersistenceUtils"
+            factory="org.apache.naming.factory.BeanFactory"/>     
+            
+      <Resource name=" bean/LandmarkPersistenceUtils" auth="Container"
+            type="net.gmsworld.server.utils.persistence.LandmarkPersistenceUtils"
+            factory="org.apache.naming.factory.BeanFactory"/>                
+               
+        <Resource name=" bean/CacheBean" auth="Container"
+            type="net.gmsworld.server.utils.memcache.CacheBean"
+            factory="org.apache.naming.factory.BeanFactory"/> 
+                    
+      <Resource name="mail/Session" auth="Container"
+               type="javax.mail.Session"
+               mail.smtp.host="james" mail.smtp.port="10025"/>  
+</Context>
