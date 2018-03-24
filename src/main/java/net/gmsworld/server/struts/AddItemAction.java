@@ -135,8 +135,7 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
             Landmark landmark = new Landmark(latitude, longitude, altitude, name, description, username, validityDate, layer, email, flex);
             
             try {
-            	LandmarkPersistenceUtils landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().getService(
-            			"java:global/ROOT/LandmarkPersistenceUtils!net.gmsworld.server.utils.persistence.LandmarkPersistenceUtils");
+            	LandmarkPersistenceUtils landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().getService("bean/LandmarkPersistenceUtils");
             	List<Landmark> newestLandmarks = landmarkPersistenceUtils.findNewestLandmarks(1);
             	int id = -1;
             	if (!newestLandmarks.isEmpty()) {
@@ -189,8 +188,7 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
 
             Geocode g = new Geocode(location, status, latitude, longitude);
             try {
-            	GeocodePersistenceUtils geocodePeristenceUtils = (GeocodePersistenceUtils) ServiceLocator.getInstance().getService(
-            			"java:global/ROOT/GeocodePersistenceUtils!net.gmsworld.server.utils.persistence.GeocodePersistenceUtils");
+            	GeocodePersistenceUtils geocodePeristenceUtils = (GeocodePersistenceUtils) ServiceLocator.getInstance().getService("bean/GeocodePersistenceUtils");
 				geocodePeristenceUtils.save(g);	
 				request.setAttribute("output", "{\"status\":\"ok\",\"id\":" + g.getId() + "}");
             } catch (NamingException e) {
@@ -213,16 +211,14 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
             String venueid = getParameterValue("venueId");
 
             try {
-            	LandmarkPersistenceUtils landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().getService(
-            			"java:global/ROOT/LandmarkPersistenceUtils!net.gmsworld.server.utils.persistence.LandmarkPersistenceUtils");
+            	LandmarkPersistenceUtils landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().getService("bean/LandmarkPersistenceUtils");
             	
             	Landmark l = null;
             	if (landmarkId > -1) {
             		l = landmarkPersistenceUtils.selectLandmarkById(landmarkId);
             	}
             	
-            	CheckinPersistenceUtils checkinPersistenceUtils = (CheckinPersistenceUtils) ServiceLocator.getInstance().getService(
-        				"java:global/ROOT/CheckinPersistenceUtils!net.gmsworld.server.utils.persistence.CheckinPersistenceUtils");
+            	CheckinPersistenceUtils checkinPersistenceUtils = (CheckinPersistenceUtils) ServiceLocator.getInstance().getService("bean/CheckinPersistenceUtils");
             	int count = 0;
             	if (type == 2) { //social checkin only: check if last checkin before 8 hours
             		Calendar cal = Calendar.getInstance();
@@ -255,13 +251,11 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
             String message = getParameterValue("message");
 
             try {
-            	LandmarkPersistenceUtils landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().getService(
-            			"java:global/ROOT/LandmarkPersistenceUtils!net.gmsworld.server.utils.persistence.LandmarkPersistenceUtils");
+            	LandmarkPersistenceUtils landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().getService("bean/LandmarkPersistenceUtils");
             	Landmark l = landmarkPersistenceUtils.selectLandmarkById(landmarkId);
             	if (l != null) {
             		Comment c = new Comment(username, l, message);
-            		CommentPersistenceUtils commentPeristenceUtils = (CommentPersistenceUtils) ServiceLocator.getInstance().getService(
-            				"java:global/ROOT/CommentPersistenceUtils!net.gmsworld.server.utils.persistence.CommentPersistenceUtils");
+            		CommentPersistenceUtils commentPeristenceUtils = (CommentPersistenceUtils) ServiceLocator.getInstance().getService("bean/CommentPersistenceUtils");
 					commentPeristenceUtils.save(c);	
 					request.setAttribute("output", "{\"status\":\"ok\",id:" + c.getId() + "}");
             	} else {
@@ -286,8 +280,7 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
 			String desc = request.getParameter("desc");
 			String formatted = request.getParameter("formatted");
 			try {
-				LayerPersistenceUtils layerPeristenceUtils = (LayerPersistenceUtils) ServiceLocator.getInstance().getService(
-	        			"java:global/ROOT/LayerPersistenceUtils!net.gmsworld.server.utils.persistence.LayerPersistenceUtils");
+				LayerPersistenceUtils layerPeristenceUtils = (LayerPersistenceUtils) ServiceLocator.getInstance().getService("bean/LayerPersistenceUtils");
 				Layer layer = new Layer(name, desc, true, false, true, formatted);
 				layerPeristenceUtils.save(layer);
 				request.setAttribute("output", "{\"status\":\"ok\",\"name\":\"" + name + "\"}");
@@ -310,8 +303,7 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
             String username = getParameterValue("username");
             int storageId = 1; //Google Cloud Storage
             try {
-				ScreenshotPersistenceUtils screenshotPeristenceUtils = (ScreenshotPersistenceUtils) ServiceLocator.getInstance().getService(
-	        			"java:global/ROOT/ScreenshotPersistenceUtils!net.gmsworld.server.utils.persistence.ScreenshotPersistenceUtils");
+				ScreenshotPersistenceUtils screenshotPeristenceUtils = (ScreenshotPersistenceUtils) ServiceLocator.getInstance().getService("bean/ScreenshotPersistenceUtils");
 				Screenshot s = new Screenshot(filename, latitude, longitude, username, storageId);
 				screenshotPeristenceUtils.save(s);
 				request.setAttribute("output", "{\"status\":\"ok\",\"id\":\"" + s.getId() + "\"}");
@@ -334,8 +326,7 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
 			String firstname = getParameterValue("firstname");
 			String lastname = getParameterValue("lastname");
 			try {
-				UserPersistenceUtils userPeristenceUtils = (UserPersistenceUtils) ServiceLocator.getInstance().getService(
-	        			"java:global/ROOT/UserPersistenceUtils!net.gmsworld.server.utils.persistence.UserPersistenceUtils");
+				UserPersistenceUtils userPeristenceUtils = (UserPersistenceUtils) ServiceLocator.getInstance().getService("bean/UserPersistenceUtils");
 				User u = userPeristenceUtils.findById(login);
 				if (u == null) {
 					u = new User(login, password,  email, firstname, lastname);
@@ -371,8 +362,7 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
 		public void run() {
 			try {
 				long start = System.currentTimeMillis();
-				LandmarkPersistenceUtils landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().getService(
-        			"java:global/ROOT/LandmarkPersistenceUtils!net.gmsworld.server.utils.persistence.LandmarkPersistenceUtils");
+				LandmarkPersistenceUtils landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().getService("bean/LandmarkPersistenceUtils");
         	    if (StringUtils.isNotEmpty(hash)) {
         	    	landmark.setHash(hash);
         	    }

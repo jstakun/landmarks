@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
@@ -32,30 +31,24 @@ import net.gmsworld.server.utils.StringUtil;
 
 public class LandmarkPersistenceUtils {
 
-    private EntityManager entityManager  = EMF.getEntityManager();
-	
-	private final Logger logger = Logger.getLogger(LandmarkPersistenceUtils.class.getName());
+    private final Logger logger = Logger.getLogger(LandmarkPersistenceUtils.class.getName());
 	
 	public void save(Landmark landmark) {
-		entityManager.getTransaction().begin();		
-		entityManager.persist(landmark);
-		entityManager.getTransaction().commit();		
+		EMF.save(landmark);		
 	}
 	
 	public void update(Landmark landmark) {
-		entityManager.getTransaction().begin();		
-		entityManager.merge(landmark);
-		entityManager.getTransaction().commit();		
+		EMF.update(landmark);		
 	}
 	
 	public List<Landmark> findNewestLandmarks(int limit) {
-        TypedQuery<Landmark> query = entityManager.createNamedQuery(Landmark.FIND_NEWEST, Landmark.class);
+        TypedQuery<Landmark> query = EMF.getEntityManager().createNamedQuery(Landmark.FIND_NEWEST, Landmark.class);
         query.setMaxResults(limit);
         return query.getResultList();
     }
 	
 	public Landmark selectLandmarkByHash(String hash) {
-		TypedQuery<Landmark> query = entityManager.createNamedQuery(Landmark.FIND_BY_HASH, Landmark.class);
+		TypedQuery<Landmark> query = EMF.getEntityManager().createNamedQuery(Landmark.FIND_BY_HASH, Landmark.class);
 		query.setParameter("hash", hash);
 		Landmark l = null;
 		try {
@@ -67,13 +60,13 @@ public class LandmarkPersistenceUtils {
 	}
 	
 	public Landmark selectLandmarkById(int id) {
-		return entityManager.find(Landmark.class, id);
+		return EMF.getEntityManager().find(Landmark.class, id);
 	}
 	
 	public List<Landmark> searchLandmarks(String queryStr, int limit) {
         String joinedTokens = buildQueryString(queryStr);
 		if (joinedTokens != null) {
-			Query query = entityManager.createNativeQuery("select * from landmark where to_tsvector(name || ' ' || description) @@ to_tsquery(:query) ORDER BY LANDMARK_ID DESC LIMIT :limit", Landmark.class).
+			Query query = EMF.getEntityManager().createNativeQuery("select * from landmark where to_tsvector(name || ' ' || description) @@ to_tsquery(:query) ORDER BY LANDMARK_ID DESC LIMIT :limit", Landmark.class).
 		    	setParameter("query", joinedTokens).
 		    	setParameter("limit", limit);
 			query.setHint("org.hibernate.cacheable", Boolean.TRUE);
@@ -87,13 +80,13 @@ public class LandmarkPersistenceUtils {
 		TypedQuery<Landmark> query = null; 
 		
 		if (layer != null && username == null) {
-			query = entityManager.createNamedQuery(Landmark.FIND_LAYER, Landmark.class);
+			query = EMF.getEntityManager().createNamedQuery(Landmark.FIND_LAYER, Landmark.class);
 			query.setParameter("layer", layer);
 		} else if (layer == null && username != null) {
-			query = entityManager.createNamedQuery(Landmark.FIND_USER, Landmark.class);
+			query = EMF.getEntityManager().createNamedQuery(Landmark.FIND_USER, Landmark.class);
 			query.setParameter("username", username);
 		} else if (layer != null && username != null) {
-			query = entityManager.createNamedQuery(Landmark.FIND_USER_LAYER, Landmark.class);
+			query = EMF.getEntityManager().createNamedQuery(Landmark.FIND_USER_LAYER, Landmark.class);
 			query.setParameter("username", username);
 			query.setParameter("layer", layer);
 		}
@@ -110,13 +103,13 @@ public class LandmarkPersistenceUtils {
 	public int countLandmarksByUserAndLayer(String username, String layer) {
 		TypedQuery<Long> query = null;
 		if (layer != null && username == null) {
-			query = entityManager.createNamedQuery(Landmark.COUNT_LAYER, Long.class);
+			query = EMF.getEntityManager().createNamedQuery(Landmark.COUNT_LAYER, Long.class);
 			query.setParameter("layer", layer);
 		} else if (layer == null && username != null) {
-			query = entityManager.createNamedQuery(Landmark.COUNT_USER, Long.class);
+			query = EMF.getEntityManager().createNamedQuery(Landmark.COUNT_USER, Long.class);
 			query.setParameter("username", username);
 		} else if (layer != null && username != null) {
-		    query = entityManager.createNamedQuery(Landmark.COUNT_USER_LAYER, Long.class);
+		    query = EMF.getEntityManager().createNamedQuery(Landmark.COUNT_USER_LAYER, Long.class);
 		    query.setParameter("username", username);
 			query.setParameter("layer", layer);
 		}
@@ -131,7 +124,7 @@ public class LandmarkPersistenceUtils {
     	logger.log(Level.INFO, "Searching for landmarks in " + latitude + "," + longitude + 
     			" with radius " + radius + " meters with limit " + limit + " records.");
     	//radius in meters
-    	Query query = entityManager.createNativeQuery("SELECT * FROM landmark WHERE VALIDITY_DATE > now() and layer = :layer and earth_box(ll_to_earth(:latitude, :longitude), :radius) @> ll_to_earth(latitude, longitude) order by creation_date desc limit :limit", Landmark.class).
+    	Query query = EMF.getEntityManager().createNativeQuery("SELECT * FROM landmark WHERE VALIDITY_DATE > now() and layer = :layer and earth_box(ll_to_earth(:latitude, :longitude), :radius) @> ll_to_earth(latitude, longitude) order by creation_date desc limit :limit", Landmark.class).
     			setParameter("layer", layer).
     			setParameter("latitude", latitude).
     			setParameter("longitude", longitude).
@@ -143,7 +136,7 @@ public class LandmarkPersistenceUtils {
 	
 	public int countLandmarksByCoordsAndLayer(String layer, double latitude, double longitude, int radius) {
     	//radius in meters
-		Query query = entityManager.createNativeQuery("SELECT count(*) FROM landmark WHERE WHERE VALIDITY_DATE > now() and layer = :layer and  earth_box(ll_to_earth(:latitude, :longitude), :radius) @> ll_to_earth(latitude, longitude)").
+		Query query = EMF.getEntityManager().createNativeQuery("SELECT count(*) FROM landmark WHERE WHERE VALIDITY_DATE > now() and layer = :layer and  earth_box(ll_to_earth(:latitude, :longitude), :radius) @> ll_to_earth(latitude, longitude)").
     			setParameter("layer", layer).
     			setParameter("latitude", latitude).
     			setParameter("longitude", longitude).
@@ -154,7 +147,7 @@ public class LandmarkPersistenceUtils {
 	
 	public List<Object[]> countLandmarksByCoords(double latitude, double longitude, int radius) {
     	//radius in meters
-		Query query = entityManager.createNativeQuery("SELECT count(*), layer FROM landmark WHERE earth_box(ll_to_earth(:latitude, :longitude), :radius) @> ll_to_earth(latitude, longitude) group by layer").
+		Query query = EMF.getEntityManager().createNativeQuery("SELECT count(*), layer FROM landmark WHERE earth_box(ll_to_earth(:latitude, :longitude), :radius) @> ll_to_earth(latitude, longitude) group by layer").
     			setParameter("latitude", latitude).
     			setParameter("longitude", longitude).
     			setParameter("radius", radius);
@@ -167,7 +160,7 @@ public class LandmarkPersistenceUtils {
 		
 		try {
 		   calendar.setTime(DateUtils.parseDate("MM-yyyy", month));
-		   TypedQuery<Landmark> query = entityManager.createNamedQuery(Landmark.FIND_YEAR_MONTH, Landmark.class);
+		   TypedQuery<Landmark> query = EMF.getEntityManager().createNamedQuery(Landmark.FIND_YEAR_MONTH, Landmark.class);
 		   query.setParameter("year", calendar.get(Calendar.YEAR));
 		   query.setParameter("month", calendar.get(Calendar.MONTH)+1);
 		   query.setFirstResult(first);
@@ -184,7 +177,7 @@ public class LandmarkPersistenceUtils {
 		
 		try {
 		   calendar.setTime(DateUtils.parseDate("MM-yyyy", month));
-		   TypedQuery<Long> query = entityManager.createNamedQuery(Landmark.COUNT_YEAR_MONTH, Long.class);
+		   TypedQuery<Long> query = EMF.getEntityManager().createNamedQuery(Landmark.COUNT_YEAR_MONTH, Long.class);
 		   query.setParameter("year", calendar.get(Calendar.YEAR));
 		   query.setParameter("month", calendar.get(Calendar.MONTH)+1);
 		   return query.getSingleResult().intValue();
@@ -202,7 +195,7 @@ public class LandmarkPersistenceUtils {
 		} else {
 			calendar.add(Calendar.DAY_OF_YEAR, -nDays);
 		}
-		TypedQuery<Landmark> query = entityManager.createNamedQuery(Landmark.FIND_NEWER, Landmark.class);
+		TypedQuery<Landmark> query = EMF.getEntityManager().createNamedQuery(Landmark.FIND_NEWER, Landmark.class);
 		query.setParameter("date", calendar.getTime());
 		
 		List<Landmark> newer = query.getResultList();
@@ -220,7 +213,7 @@ public class LandmarkPersistenceUtils {
             bucket.put(key, currentValue);
 		}
 		
-		entityManager.clear();
+		EMF.getEntityManager().clear();
 		
 		return bucket;
 	}
@@ -235,7 +228,7 @@ public class LandmarkPersistenceUtils {
 			calendar.add(Calendar.DAY_OF_YEAR, -nDays);
 		}
 		
-		StatelessSession session = ((Session) entityManager.getDelegate()).getSessionFactory().openStatelessSession();
+		StatelessSession session = ((Session) EMF.getEntityManager().getDelegate()).getSessionFactory().openStatelessSession();
 
 		org.hibernate.Query query =  session.createQuery("select l from Landmark l where l.creationDate > :date");
 		query.setParameter("date", calendar.getTime());

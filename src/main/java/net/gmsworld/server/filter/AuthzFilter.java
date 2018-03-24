@@ -27,14 +27,12 @@ public class AuthzFilter implements Filter {
      * Default constructor. 
      */
     public AuthzFilter() {
-        // TODO Auto-generated constructor stub
     }
 
 	/**
 	 * @see Filter#destroy()
 	 */
 	public void destroy() {
-		// TODO Auto-generated method stub
 	}
 
 	/**
@@ -48,8 +46,7 @@ public class AuthzFilter implements Filter {
     		String scope = httpRequest.getHeader(Commons.SCOPE_HEADER);
     		if (authHeader != null && scope != null) {
     			try {
-    				TokenPersistenceUtils tokenPersistenceUtils = (TokenPersistenceUtils) ServiceLocator.getInstance().getService(		
-    						"java:global/ROOT/TokenPersistenceUtils!net.gmsworld.server.utils.persistence.TokenPersistenceUtils");
+    				TokenPersistenceUtils tokenPersistenceUtils = (TokenPersistenceUtils) ServiceLocator.getInstance().getService("bean/TokenPersistenceUtils");
     				auth = tokenPersistenceUtils.isTokenValid(authHeader, scope);
     			} catch (Exception e) {
         			logger.log(Level.SEVERE, e.getMessage(), e);
@@ -73,7 +70,6 @@ public class AuthzFilter implements Filter {
 	 * @see Filter#init(FilterConfig)
 	 */
 	public void init(FilterConfig fConfig) throws ServletException {
-		// TODO Auto-generated method stub
 	}
 
 }

@@ -6,34 +6,27 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
 import net.gmsworld.server.persistence.User;
 
 public class UserPersistenceUtils {
-	@PersistenceContext
-    private EntityManager entityManager;
 	
 	private final Logger logger = Logger.getLogger(UserPersistenceUtils.class.getName());
 	
 	public void save(User u) {
 		try {
 			u.setPassword(getHash(u.getPassword()));
-			entityManager.persist(u);
-			entityManager.flush();
+			EMF.save(u);
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, e.getMessage(), e);
 		}
 	}
 	
 	private void update(User u) {
-		entityManager.merge(u);
-		entityManager.flush();
+		EMF.update(u);
 	}
 	
 	public User findById(String login) {
-		return entityManager.find(User.class, login);
+		return EMF.getEntityManager().find(User.class, login);
 	}
 	
 	public void setConfirmation(String login) {

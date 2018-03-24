@@ -101,8 +101,7 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
     	List<Geocode> newest = CacheUtil.getList(Geocode.class, key);
     	try {
     		if (newest == null) {
-    			GeocodePersistenceUtils geocodePeristenceUtils = (GeocodePersistenceUtils) ServiceLocator.getInstance().getService(
-    				"java:global/ROOT/GeocodePersistenceUtils!net.gmsworld.server.utils.persistence.GeocodePersistenceUtils");
+    			GeocodePersistenceUtils geocodePeristenceUtils = (GeocodePersistenceUtils) ServiceLocator.getInstance().getService("bean/GeocodePersistenceUtils");
     			newest = geocodePeristenceUtils.findNewest(limit);	
     		    if (newest != null && !newest.isEmpty()) {
     		    	CacheUtil.putShort(key, newest);
@@ -121,8 +120,7 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
 	private String findByIdGeocode(int id) {
 		String output = null;
     	try {
-    		GeocodePersistenceUtils geocodePeristenceUtils = (GeocodePersistenceUtils) ServiceLocator.getInstance().getService(
-					"java:global/ROOT/GeocodePersistenceUtils!net.gmsworld.server.utils.persistence.GeocodePersistenceUtils");
+    		GeocodePersistenceUtils geocodePeristenceUtils = (GeocodePersistenceUtils) ServiceLocator.getInstance().getService("bean/GeocodePersistenceUtils");
     		Geocode g = geocodePeristenceUtils.findById(id);
     		if (g != null) {
     			output = JSONUtil.serialize(g);
@@ -141,8 +139,7 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
 	private String findByAddressGeocode(String address) {
 		String output = null;
     	try {
-    		GeocodePersistenceUtils geocodePeristenceUtils = (GeocodePersistenceUtils) ServiceLocator.getInstance().getService(
-    				"java:global/ROOT/GeocodePersistenceUtils!net.gmsworld.server.utils.persistence.GeocodePersistenceUtils");
+    		GeocodePersistenceUtils geocodePeristenceUtils = (GeocodePersistenceUtils) ServiceLocator.getInstance().getService("bean/GeocodePersistenceUtils");
     		Geocode g = geocodePeristenceUtils.findAddress(address);
     		if (g != null) {
     			output = JSONUtil.serialize(g);
@@ -163,8 +160,7 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
 			int landmarkId = NumberUtils.getInt(getParameter("landmarkId"), -1);
 			String output = null;
 			try {
-            	CommentPersistenceUtils commentPeristenceUtils = (CommentPersistenceUtils) ServiceLocator.getInstance().getService(
-            			"java:global/ROOT/CommentPersistenceUtils!net.gmsworld.server.utils.persistence.CommentPersistenceUtils");
+            	CommentPersistenceUtils commentPeristenceUtils = (CommentPersistenceUtils) ServiceLocator.getInstance().getService("bean/CommentPersistenceUtils");
 				List<Comment> comments = commentPeristenceUtils.findByLandmark(landmarkId);
 				output = JSONUtil.serialize(comments);
 			} catch (Exception e) {
@@ -184,8 +180,7 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
 			int landmarkId = NumberUtils.getInt(getParameter("landmarkId"), -1);
 			String output = null;
 			try {
-            	CheckinPersistenceUtils checkinPeristenceUtils = (CheckinPersistenceUtils) ServiceLocator.getInstance().getService(
-            			"java:global/ROOT/CheckinPersistenceUtils!net.gmsworld.server.utils.persistence.CheckinPersistenceUtils");
+            	CheckinPersistenceUtils checkinPeristenceUtils = (CheckinPersistenceUtils) ServiceLocator.getInstance().getService("bean/CheckinPersistenceUtils");
 				List<Checkin> checkins = checkinPeristenceUtils.findByLandmark(landmarkId);
 				output = JSONUtil.serialize(checkins);
 			} catch (Exception e) {
@@ -203,8 +198,7 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
 	private String executeLayer() {
 		String output = null;
 		try {
-			LayerPersistenceUtils layerPeristenceUtils = (LayerPersistenceUtils) ServiceLocator.getInstance().getService(
-        			"java:global/ROOT/LayerPersistenceUtils!net.gmsworld.server.utils.persistence.LayerPersistenceUtils");
+			LayerPersistenceUtils layerPeristenceUtils = (LayerPersistenceUtils) ServiceLocator.getInstance().getService("bean/LayerPersistenceUtils");
 			List<Layer> layers = layerPeristenceUtils.findAll();
 			output = JSONUtil.serialize(layers);
 		} catch (Exception e) {
@@ -251,8 +245,7 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
 	private String findByIdScreenshot(int id) {
 		String output = null;
     	try {
-    		ScreenshotPersistenceUtils screenshotPeristenceUtils = (ScreenshotPersistenceUtils) ServiceLocator.getInstance().getService(
-					"java:global/ROOT/ScreenshotPersistenceUtils!net.gmsworld.server.utils.persistence.ScreenshotPersistenceUtils");
+    		ScreenshotPersistenceUtils screenshotPeristenceUtils = (ScreenshotPersistenceUtils) ServiceLocator.getInstance().getService("bean/ScreenshotPersistenceUtils");
     		Screenshot s = screenshotPeristenceUtils.findById(id);
     		if (s != null) {
     			output = JSONUtil.serialize(s);
@@ -271,8 +264,7 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
 	private String removeScreenshot(int id) {
 		String output = null;
     	try {
-    		ScreenshotPersistenceUtils screenshotPeristenceUtils = (ScreenshotPersistenceUtils) ServiceLocator.getInstance().getService(
-					"java:global/ROOT/ScreenshotPersistenceUtils!net.gmsworld.server.utils.persistence.ScreenshotPersistenceUtils");
+    		ScreenshotPersistenceUtils screenshotPeristenceUtils = (ScreenshotPersistenceUtils) ServiceLocator.getInstance().getService("bean/ScreenshotPersistenceUtils");
     		boolean deleted = screenshotPeristenceUtils.delete(id);
     		if (deleted) {
     			output = "{\"message\": \"screenshot deleted\"}";
@@ -292,8 +284,7 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
 	private String findOlder(int ndays) {
 		String output = null;
     	try {
-    		ScreenshotPersistenceUtils screenshotPeristenceUtils = (ScreenshotPersistenceUtils) ServiceLocator.getInstance().getService(
-					"java:global/ROOT/ScreenshotPersistenceUtils!net.gmsworld.server.utils.persistence.ScreenshotPersistenceUtils");
+    		ScreenshotPersistenceUtils screenshotPeristenceUtils = (ScreenshotPersistenceUtils) ServiceLocator.getInstance().getService("bean/ScreenshotPersistenceUtils");
     	    List<Screenshot> s = screenshotPeristenceUtils.findOlder(ndays, 100);
     	    if (s != null) {
     	    	output = JSONUtil.serialize(s, null, null, true, true);
@@ -313,8 +304,7 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
 	private String findByIdUser(String id, boolean confirm) {
 		String output = null;
     	try {
-    		UserPersistenceUtils userPeristenceUtils = (UserPersistenceUtils) ServiceLocator.getInstance().getService(
-					"java:global/ROOT/UserPersistenceUtils!net.gmsworld.server.utils.persistence.UserPersistenceUtils");
+    		UserPersistenceUtils userPeristenceUtils = (UserPersistenceUtils) ServiceLocator.getInstance().getService("bean/UserPersistenceUtils");
     		User u = userPeristenceUtils.findById(id);
     		if (u != null) {
     			userPeristenceUtils.setLastLogonDate(id);
@@ -337,8 +327,7 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
 	private String login(String login, String password) {
 		String output = null;
     	try {
-    		UserPersistenceUtils userPeristenceUtils = (UserPersistenceUtils) ServiceLocator.getInstance().getService(
-					"java:global/ROOT/UserPersistenceUtils!net.gmsworld.server.utils.persistence.UserPersistenceUtils");
+    		UserPersistenceUtils userPeristenceUtils = (UserPersistenceUtils) ServiceLocator.getInstance().getService("bean/UserPersistenceUtils");
     		boolean auth = userPeristenceUtils.login(login, password);
     		output = "{\"auth\": " + auth + "}";
     	} catch (Exception e) {

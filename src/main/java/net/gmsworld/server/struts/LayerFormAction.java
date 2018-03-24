@@ -130,8 +130,7 @@ public class LayerFormAction extends ActionSupport implements ServletRequestAwar
     			layers.put(layer, layer);
     		}
     		try {
-				LayerPersistenceUtils layerPeristenceUtils = (LayerPersistenceUtils) ServiceLocator.getInstance().getService(
-	        			"java:global/ROOT/LayerPersistenceUtils!net.gmsworld.server.utils.persistence.LayerPersistenceUtils");
+				LayerPersistenceUtils layerPeristenceUtils = (LayerPersistenceUtils) ServiceLocator.getInstance().getService("bean/LayerPersistenceUtils");
 				List<Layer> gmsLayers = layerPeristenceUtils.findAll();
 				for (Layer l : gmsLayers) {
 					layers.put(l.getName(), l.getFormatted());

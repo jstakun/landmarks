@@ -292,8 +292,7 @@ public class LayerProviderAction extends ActionSupport implements ParameterAware
 	private String executeLocalLayers(String layer, int limit) {
 		Layer gmsLayer = null; 
 		try {
-			LayerPersistenceUtils layerPeristenceUtils = (LayerPersistenceUtils) ServiceLocator.getInstance().getService(
-					"java:global/ROOT/LayerPersistenceUtils!net.gmsworld.server.utils.persistence.LayerPersistenceUtils");
+			LayerPersistenceUtils layerPeristenceUtils = (LayerPersistenceUtils) ServiceLocator.getInstance().getService("bean/LayerPersistenceUtils");
 			gmsLayer = layerPeristenceUtils.findByName(layer);
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, e.getMessage(), e);

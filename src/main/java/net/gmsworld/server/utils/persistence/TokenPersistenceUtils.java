@@ -3,30 +3,23 @@ package net.gmsworld.server.utils.persistence;
 import java.util.Calendar;
 import java.util.List;
 
-import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
 import net.gmsworld.server.persistence.Token;
 
 public class TokenPersistenceUtils {
 
-	@PersistenceContext
-    private EntityManager entityManager;
-	
 	public void save(Token t) {
-		entityManager.persist(t);
-		entityManager.flush();
+		EMF.save(t);
 	}
 	
 	public void update(Token t) {
-		entityManager.merge(t);
-		entityManager.flush();
+		EMF.update(t);
 	}
 	
 	public boolean isTokenValid(String key, String scope) {
-		TypedQuery<Token> query = entityManager.createNamedQuery(Token.GET_TOKEN, Token.class);
+		TypedQuery<Token> query = EMF.getEntityManager().createNamedQuery(Token.GET_TOKEN, Token.class);
 		query.setParameter("key", key);
 		query.setParameter("scope", scope);
 		try {
@@ -41,7 +34,7 @@ public class TokenPersistenceUtils {
 	}
 	
 	public List<Token> getTopTokens(int limit) {
-		TypedQuery<Token> query = entityManager.createNamedQuery(Token.GET_TOP_TOKENS, Token.class);
+		TypedQuery<Token> query = EMF.getEntityManager().createNamedQuery(Token.GET_TOP_TOKENS, Token.class);
 		query.setMaxResults(limit);
 		return query.getResultList();
 	}

@@ -12,24 +12,18 @@ import net.gmsworld.server.persistence.Device;
 
 public class DevicePersistenceUtils {
 
-	private EntityManager entityManager = EMF.getEntityManager();
-	
 	private final Logger logger = Logger.getLogger(DevicePersistenceUtils.class.getName());
 	
 	public void save(Device device) {
-		entityManager.getTransaction().begin();
-		entityManager.persist(device);
-		entityManager.getTransaction().commit();		
+		EMF.save(device);	
 	}
 	
 	public void update(Device device) {
-		entityManager.getTransaction().begin();
-		entityManager.merge(device);
-		entityManager.getTransaction().commit();		
+		EMF.update(device);
 	}
 	
 	public Device findDeviceByImeiAndPin(Long imei, Integer pin) {
-		TypedQuery<Device> query = entityManager.createNamedQuery(Device.FIND_BY_IMEI_AND_PIN, Device.class);
+		TypedQuery<Device> query = EMF.getEntityManager().createNamedQuery(Device.FIND_BY_IMEI_AND_PIN, Device.class);
 		query.setParameter("imei", imei);
 		query.setParameter("pin", pin);
 		Device d = null;
@@ -42,7 +36,7 @@ public class DevicePersistenceUtils {
 	}
 	
 	public Device findDeviceByNameAndUsername(String name, String username, Integer pin) {
-		TypedQuery<Device> query = entityManager.createNamedQuery(Device.FIND_BY_NAME_AND_USERNAME, Device.class);
+		TypedQuery<Device> query = EMF.getEntityManager().createNamedQuery(Device.FIND_BY_NAME_AND_USERNAME, Device.class);
 		query.setParameter("name", name);
 		query.setParameter("username", username);
 		query.setParameter("pin", pin);
@@ -57,17 +51,4 @@ public class DevicePersistenceUtils {
 		}					
 	    return d;
 	}
-	
-	
-	/*public Device findDeviceByImei(Long imei) {
-		TypedQuery<Device> query = entityManager.createNamedQuery(Device.FIND_BY_IMEI, Device.class);
-		query.setParameter("imei", imei);
-		Device d = null;
-		try {
-			d= query.getSingleResult();
-		} catch (NoResultException nre) {
-			logger.log(Level.WARNING, "No device found with imei {0}", imei);
-		}					
-	    return d;
-	}*/
 }

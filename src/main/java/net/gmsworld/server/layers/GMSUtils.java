@@ -71,8 +71,7 @@ public class GMSUtils extends LayerHelper {
             //}
             List<Landmark> landmarkList = null;
         	
-            LandmarkPersistenceUtils landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().
-        			getService("java:global/ROOT/LandmarkPersistenceUtils!net.gmsworld.server.utils.persistence.LandmarkPersistenceUtils");
+            LandmarkPersistenceUtils landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().getService("bean/LandmarkPersistenceUtils");
             
             if (StringUtils.isNotEmpty(query)) {
         		landmarkList = landmarkPersistenceUtils.searchLandmarks(query, limit);
@@ -104,8 +103,7 @@ public class GMSUtils extends LayerHelper {
             double longitude = (longitudeMin + longitudeMax) / 2;
             int radius = (int)(NumberUtils.distanceInKilometer(latitudeMin, latitudeMax, longitudeMin, longitudeMax) * 1000 / 2);
             
-            LandmarkPersistenceUtils landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().
-        			getService("java:global/ROOT/LandmarkPersistenceUtils!net.gmsworld.server.utils.persistence.LandmarkPersistenceUtils");
+            LandmarkPersistenceUtils landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().getService("bean/LandmarkPersistenceUtils");
 			
             List<Landmark> landmarkList = landmarkPersistenceUtils.selectLandmarksByCoordsAndLayer(layer, latitude, longitude, radius, limit);
         	
@@ -177,8 +175,7 @@ public class GMSUtils extends LayerHelper {
     	List<ExtendedLandmark> landmarks = new ArrayList<ExtendedLandmark>();
         List<Landmark> landmarkList = null;
         	
-        LandmarkPersistenceUtils landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().
-        			getService("java:global/ROOT/LandmarkPersistenceUtils!net.gmsworld.server.utils.persistence.LandmarkPersistenceUtils");
+        LandmarkPersistenceUtils landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().getService("bean/LandmarkPersistenceUtils");
 				
         if (StringUtils.isNotEmpty(query)) {
         		landmarkList = landmarkPersistenceUtils.searchLandmarks(query, limit);

@@ -10,22 +10,19 @@ import javax.persistence.TypedQuery;
 import net.gmsworld.server.persistence.Geocode;
 
 public class GeocodePersistenceUtils {
-	@PersistenceContext
-    private EntityManager entityManager;
 	
 	public void save(Geocode g) {
-		entityManager.persist(g);
-		entityManager.flush();
+		EMF.save(g);
 	}
 	
 	public List<Geocode> findNewest(int limit) {
-        TypedQuery<Geocode> query = entityManager.createNamedQuery(Geocode.FIND_NEWEST, Geocode.class);
+        TypedQuery<Geocode> query = EMF.getEntityManager().createNamedQuery(Geocode.FIND_NEWEST, Geocode.class);
         query.setMaxResults(limit);
         return query.getResultList();
     }
 	
 	public Geocode findAddress(String address){
-		TypedQuery<Geocode> query = entityManager.createNamedQuery(Geocode.FIND_ADDRESS, Geocode.class);
+		TypedQuery<Geocode> query = EMF.getEntityManager().createNamedQuery(Geocode.FIND_ADDRESS, Geocode.class);
 		query.setParameter("address", address);
 		Geocode g = null;
 		/*try {
@@ -47,6 +44,6 @@ public class GeocodePersistenceUtils {
 	}
 	
 	public Geocode findById(int id) {
-		return entityManager.find(Geocode.class, id);
+		return EMF.getEntityManager().find(Geocode.class, id);
 	}
 }

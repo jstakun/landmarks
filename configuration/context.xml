@@ -4,15 +4,43 @@
               global="jdbc/LandmarksDB"
               auth="Container"
               type="javax.sql.DataSource" />      
+                          
+        <Resource name="bean/CheckinPersistenceUtils" auth="Container"
+            type="net.gmsworld.server.utils.persistence.CheckinPersistenceUtils"
+            factory="org.apache.naming.factory.BeanFactory"/>  
+            
+        <Resource name="bean/CommentPersistenceUtils" auth="Container"
+            type="net.gmsworld.server.utils.persistence.CommentPersistenceUtils"
+            factory="org.apache.naming.factory.BeanFactory"/>                         
                
-      <Resource name="bean/DevicePersistenceUtils" auth="Container"
+        <Resource name="bean/DevicePersistenceUtils" auth="Container"
             type="net.gmsworld.server.utils.persistence.DevicePersistenceUtils"
             factory="org.apache.naming.factory.BeanFactory"/>     
-            
-      <Resource name="bean/LandmarkPersistenceUtils" auth="Container"
+      
+        <Resource name="bean/GeocodePersistenceUtils" auth="Container"
+            type="net.gmsworld.server.utils.persistence.GeocodePersistenceUtils"
+            factory="org.apache.naming.factory.BeanFactory"/>     
+        
+        <Resource name="bean/LandmarkPersistenceUtils" auth="Container"
             type="net.gmsworld.server.utils.persistence.LandmarkPersistenceUtils"
-            factory="org.apache.naming.factory.BeanFactory"/>                
-               
+            factory="org.apache.naming.factory.BeanFactory"/>
+       
+       <Resource name="bean/LayerPersistenceUtils" auth="Container"
+            type="net.gmsworld.server.utils.persistence.LayerPersistenceUtils"
+            factory="org.apache.naming.factory.BeanFactory"/>
+       
+       <Resource name="bean/ScreenshotPersistenceUtils" auth="Container"
+            type="net.gmsworld.server.utils.persistence.ScreenshotPersistenceUtils"
+            factory="org.apache.naming.factory.BeanFactory"/>
+       
+       <Resource name="bean/TokenPersistenceUtils" auth="Container"
+            type="net.gmsworld.server.utils.persistence.TokenPersistenceUtils"
+            factory="org.apache.naming.factory.BeanFactory"/>
+       
+       <Resource name="bean/UserPersistenceUtils" auth="Container"
+            type="net.gmsworld.server.utils.persistence.UserPersistenceUtils"
+            factory="org.apache.naming.factory.BeanFactory"/>
+        
         <Resource name="bean/CacheBean" auth="Container"
             type="net.gmsworld.server.utils.memcache.CacheBean"
             factory="org.apache.naming.factory.BeanFactory"/> 

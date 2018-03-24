@@ -25,6 +25,10 @@ public class TokenAction extends ActionSupport implements ServletRequestAware {
     private String scope, user, key;
     private Integer limit;
     
+    private TokenPersistenceUtils getTokenPersistenceUtils() throws Exception { 
+    	return (TokenPersistenceUtils) ServiceLocator.getInstance().getService("bean/TokenPersistenceUtils");
+    }
+    
     @Override
 	public void setServletRequest(HttpServletRequest arg0) {
 		this.request = arg0;
@@ -36,9 +40,7 @@ public class TokenAction extends ActionSupport implements ServletRequestAware {
 				Date validityDate = DateUtils.afterOneHundredYearsFromNow();
 				String key = TokenUtils.generateToken();
 				Token token = new Token(key, validityDate, scope, user);
-				TokenPersistenceUtils tokenPersistenceUtils = (TokenPersistenceUtils) ServiceLocator.getInstance().getService(
-						"java:global/ROOT/TokenPersistenceUtils!net.gmsworld.server.utils.persistence.TokenPersistenceUtils");
-			    tokenPersistenceUtils.save(token);
+				getTokenPersistenceUtils().save(token);
 				request.setAttribute(JSonDataAction.JSON_OUTPUT, token);
 				return "json";
 			} catch (Exception e) {
@@ -56,9 +58,7 @@ public class TokenAction extends ActionSupport implements ServletRequestAware {
 		if (key != null && scope != null) {
 			boolean isValid = false;
 			try {
-				TokenPersistenceUtils tokenPersistenceUtils = (TokenPersistenceUtils) ServiceLocator.getInstance().getService(		
-					"java:global/ROOT/TokenPersistenceUtils!net.gmsworld.server.utils.persistence.TokenPersistenceUtils");
-				isValid = tokenPersistenceUtils.isTokenValid(key, scope);
+				isValid = getTokenPersistenceUtils().isTokenValid(key, scope);
 				request.setAttribute(JSonDataAction.JSON_OUTPUT, isValid);
 		 		return "json";
 			} catch (Exception e) {
@@ -77,9 +77,7 @@ public class TokenAction extends ActionSupport implements ServletRequestAware {
 			if (limit == null) {
 				limit = 10;
 			}
-			TokenPersistenceUtils tokenPersistenceUtils = (TokenPersistenceUtils) ServiceLocator.getInstance().getService(		
-				"java:global/ROOT/TokenPersistenceUtils!net.gmsworld.server.utils.persistence.TokenPersistenceUtils");
-			List<Token> tokens = tokenPersistenceUtils.getTopTokens(limit);
+			List<Token> tokens = getTokenPersistenceUtils().getTopTokens(limit);
 			request.setAttribute(JSonDataAction.JSON_OUTPUT, tokens);
 	 		return "json";
 		} catch (Exception e) {
