@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns="urn:org:jgroups"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="urn:org:jgroups http://www.jgroups.org/schema/JGroups-3.2.xsd"
+>
+    <TCP bind_port="7800"
+         bind_addr="localhost"
+         enable_diagnostics="false"
+    />
+
+    <TCPPING timeout="3000"
+             initial_hosts="localhost:7800"
+             port_range="0"
+             num_initial_members="1" />
+
+    <MERGE2 />
+    <FD />
+    <VERIFY_SUSPECT />
+    <BARRIER />
+    <pbcast.NAKACK />
+    <UNICAST2 />
+    <pbcast.STABLE />
+    <pbcast.GMS />
+    <UFC />
+    <MFC />
+    <FRAG2 />
+</config>
