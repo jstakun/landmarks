@@ -12,7 +12,7 @@
     <freebase.version>v1-rev68-1.20.0</freebase.version>
     <youtube.version>v3-rev178-1.22.0</youtube.version>
     <struts.version>2.3.34</struts.version>
-    <version.org.infinispan>6.4.1.Final-redhat-1</version.org.infinispan>
+    <version.org.infinispan>8.2.9.Final-redhat-1</version.org.infinispan>
   </properties>
   
   <dependencyManagement>
@@ -31,7 +31,7 @@
     <!-- jboss -->
     <dependency>
     	<groupId>org.hibernate.javax.persistence</groupId>
-    	<artifactId>hibernate-jpa-2.0-api</artifactId>
+    	<artifactId>hibernate-jpa-2.1-api</artifactId>
     </dependency>
      <dependency>
          <groupId>org.jboss.spec.javax.servlet</groupId>
@@ -50,6 +50,7 @@
     <dependency>
             <groupId>org.infinispan</groupId>
             <artifactId>infinispan-embedded</artifactId>
+            <version>8.3.0.Final-redhat-1</version>
     </dependency>
     <dependency>
     <groupId>org.hibernate</groupId>
@@ -85,6 +86,7 @@
     <dependency>
     	<groupId>org.json</groupId>
     	<artifactId>json</artifactId>
+    	<version>20180130</version>
     </dependency>
     <dependency>
     	<groupId>org.ocpsoft.prettytime</groupId>
