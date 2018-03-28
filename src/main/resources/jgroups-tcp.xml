@@ -9,7 +9,7 @@
     />
 
     <TCPPING timeout="3000"
-             initial_hosts="localhost:7800"
+             initial_hosts="localhost[7800]"
              port_range="0"
              num_initial_members="1" />
 
