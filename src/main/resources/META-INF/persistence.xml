@@ -34,6 +34,7 @@
     		<property name="hibernate.cache.use_query_cache" value="true" />       
     		<property name="hibernate.cache.infinispan.statistics" value="true"/>
     		<property name="hibernate.cache.region.factory_class" value="org.hibernate.cache.infinispan.InfinispanRegionFactory"/>
+            <property name="hibernate.cache.infinispan.jgroups_cfg" value="jgroups-tcp.xml" />
         </properties>
     </persistence-unit>    
 </persistence>
