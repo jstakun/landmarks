@@ -2,7 +2,7 @@
 	xmlns="urn:infinispan:config:8.2"
 	xsi:schemaLocation="urn:infinispan:config:8.2 http://www.infinispan.org/schemas/infinispan-config-8.2.xsd">
 	<jgroups>
-		<stack-file name="hibernate-jgroups" path="jgroups-tcp.xml}" />
+		<stack-file name="hibernate-jgroups" path="jgroups-tcp.xml" />
 	</jgroups>
 	<cache-container name="SampleCacheManager" statistics="false"
 		default-cache="the-default-cache" shutdown-hook="DEFAULT">
