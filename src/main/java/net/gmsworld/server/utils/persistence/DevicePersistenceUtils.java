@@ -61,7 +61,7 @@ public class DevicePersistenceUtils {
 	}
 	
 	
-	/*public Device findDeviceByImei(Long imei) {
+	public Device findDeviceByImei(Long imei) {
 		TypedQuery<Device> query = entityManager.createNamedQuery(Device.FIND_BY_IMEI, Device.class);
 		query.setParameter("imei", imei);
 		Device d = null;
@@ -71,5 +71,5 @@ public class DevicePersistenceUtils {
 			logger.log(Level.WARNING, "No device found with imei {0}", imei);
 		}					
 	    return d;
-	}*/
+	}
 }

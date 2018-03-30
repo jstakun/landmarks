@@ -161,7 +161,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 	}
 	
 	public String createOrUpdateDevice() {
-		if (imei != null && pin != null) {
+		if (imei != null && pin != null && pin >= 1000 && !StringUtils.equalsIgnoreCase(token, "BLACKLISTED")) {
 			try {
 				DevicePersistenceUtils devicePersistenceUtils = (DevicePersistenceUtils) ServiceLocator.getInstance().getService(
 						"java:global/ROOT/DevicePersistenceUtils!net.gmsworld.server.utils.persistence.DevicePersistenceUtils");			    
@@ -172,6 +172,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 					device = devicePersistenceUtils.findDeviceByImeiAndPin(imei, pin);
 				}
 				if (device  != null) {
+					//update existing device
 					if (token != null) {
 						device.setToken(token);
 					}
@@ -187,11 +188,30 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 					device.setCreationDate(new Date());
 					devicePersistenceUtils.update(device);
 				} else {
-					if (name != null) {
-						name = name.replace(" ", "-");
+					device = devicePersistenceUtils.findDeviceByImei(imei);
+					if (device != null && token != null) {
+						//update existing device which has not been used for some time
+						device.setToken(token);
+						device.setPin(pin);
+						if (username != null) {
+							device.setUsername(username);
+						}
+						if (name != null) {
+							device.setName(name.replace(" ", "-"));
+						}
+						device.setCreationDate(new Date());
+						devicePersistenceUtils.update(device);
+					} else if (device != null) {
+						addActionError("Invalid device " + imei + " update!");
+				    	return ERROR;
+					} else {
+						//create new device
+						if (name != null) {
+							name = name.replace(" ", "-");
+						}
+						device = new Device(imei, token, pin, username, name) ;
+						devicePersistenceUtils.save(device);
 					}
-					device = new Device(imei, token, pin, username, name) ;
-					devicePersistenceUtils.save(device);
 				}
 				request.setAttribute(JSonDataAction.JSON_OUTPUT, device);
 				return "json";
@@ -201,7 +221,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 		    	return ERROR;
 			}
 		} else {
-			addActionError("Missing required parameter!");
+			addActionError("Missing or invalid required parameter!");
 	    	return ERROR;
 		}
 	}
