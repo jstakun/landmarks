@@ -38,7 +38,7 @@ public class DevicePersistenceUtils {
 		try {
 			d= query.getSingleResult();
 		} catch (NoResultException nre) {
-			logger.log(Level.WARNING, "No device found with imei {0}", imei);
+			logger.log(Level.WARNING, "No device found with imei {0} and provided pin", imei);
 		}					
 	    return d;
 	}
