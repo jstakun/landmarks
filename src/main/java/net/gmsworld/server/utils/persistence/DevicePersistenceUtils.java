@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 
@@ -48,6 +47,18 @@ public class DevicePersistenceUtils {
 			}
 		} catch (NoResultException nre) {
 			logger.log(Level.WARNING, "No device found with name {0}", name);
+		}					
+	    return d;
+	}
+	
+	public Device findDeviceByImei(Long imei) {
+		TypedQuery<Device> query =EMF.getEntityManager().createNamedQuery(Device.FIND_BY_IMEI, Device.class);
+		query.setParameter("imei", imei);
+		Device d = null;
+		try {
+			d= query.getSingleResult();
+		} catch (NoResultException nre) {
+			logger.log(Level.WARNING, "No device found with imei {0}", imei);
 		}					
 	    return d;
 	}
