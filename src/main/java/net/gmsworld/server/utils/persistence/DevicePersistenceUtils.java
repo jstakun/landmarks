@@ -30,7 +30,7 @@ public class DevicePersistenceUtils {
 		entityManager.flush();
 	}
 	
-	public Device findDeviceByImeiAndPin(Long imei, Integer pin) {
+	public Device findDeviceByImeiAndPin(String imei, Integer pin) {
 		TypedQuery<Device> query = entityManager.createNamedQuery(Device.FIND_BY_IMEI_AND_PIN, Device.class);
 		query.setParameter("imei", imei);
 		query.setParameter("pin", pin);
@@ -61,7 +61,7 @@ public class DevicePersistenceUtils {
 	}
 	
 	
-	public Device findDeviceByImei(Long imei) {
+	public Device findDeviceByImei(String imei) {
 		TypedQuery<Device> query = entityManager.createNamedQuery(Device.FIND_BY_IMEI, Device.class);
 		query.setParameter("imei", imei);
 		Device d = null;

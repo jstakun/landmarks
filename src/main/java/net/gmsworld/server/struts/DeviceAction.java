@@ -29,7 +29,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 	private static final Logger logger = Logger.getLogger(DeviceAction.class.getName());
 	private static final long serialVersionUID = 1L;
 	
-	private Long imei;
+	private String imei;
     private Integer pin;
     private String token;
     private String username;
@@ -176,7 +176,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 					if (token != null) {
 						device.setToken(token);
 					}
-					if (oldPin != null && oldPin == device.getPin()) {
+					if (oldPin != null && oldPin.equals(device.getPin())) {
 						device.setPin(pin);
 					}
 					if (username != null) {
@@ -301,11 +301,11 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 		this.request = arg0;
 	}
 
-	public Long getImei() {
+	public String getImei() {
 		return imei;
 	}
 
-	public void setImei(Long imei) {
+	public void setImei(String imei) {
 		this.imei = imei;
 	}
 

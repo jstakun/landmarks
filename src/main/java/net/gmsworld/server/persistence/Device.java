@@ -28,7 +28,7 @@ public class Device implements Serializable {
 	
 	 @Id
 	 @Column(name = "IMEI")
-	private Long imei;
+	private String imei;
 	 @Column(name = "TOKEN")
 	private String token;
 	 @Column(name = "PIN")
@@ -42,7 +42,7 @@ public class Device implements Serializable {
 	
 	 private static final long serialVersionUID = 1L;
 
-	public Device(Long imei, String token, Integer pin, String username, String name) {
+	public Device(String imei, String token, Integer pin, String username, String name) {
 		this();
 		this.imei = imei;
 		this.token = token;
@@ -54,11 +54,11 @@ public class Device implements Serializable {
 	public Device() {
 		 this.creationDate = new Date(System.currentTimeMillis());
 	}   
-	public Long getImei() {
+	public String getImei() {
 		return this.imei;
 	}
 
-	public void setImei(Long imei) {
+	public void setImei(String imei) {
 		this.imei = imei;
 	}   
 	public String getToken() {
