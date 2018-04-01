@@ -159,8 +159,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 	public String createOrUpdateDevice() {
 		if (imei != null && pin != null && pin >= 1000 && !StringUtils.equalsIgnoreCase(token, "BLACKLISTED")) {
 			try {
-				DevicePersistenceUtils devicePersistenceUtils = (DevicePersistenceUtils) ServiceLocator.getInstance().getService(
-						"java:global/ROOT/DevicePersistenceUtils!net.gmsworld.server.utils.persistence.DevicePersistenceUtils");			    
+				DevicePersistenceUtils devicePersistenceUtils =  getDevicePersistenceUtils();			    
 				Device device = null;
 				if (oldPin != null) {
 					device = devicePersistenceUtils.findDeviceByImeiAndPin(imei, oldPin);
