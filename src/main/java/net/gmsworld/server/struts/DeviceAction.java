@@ -171,12 +171,9 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 					if (token != null) {
 						device.setToken(token);
 					}
-					logger.log(Level.INFO, oldPin + " " + pin + " " + device.getPin());
 					if (oldPin != null && oldPin.equals(device.getPin())) {
-						logger.log(Level.INFO, "setting new pin");
 						device.setPin(pin);
 					}
-					logger.log(Level.INFO, device.getPin() + " ");
 					if (username != null) {
 						device.setUsername(username);
 					}
