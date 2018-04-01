@@ -189,7 +189,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 					devicePersistenceUtils.update(device);
 				} else {
 					device = devicePersistenceUtils.findDeviceByImei(imei);
-					if (device != null && token != null) {
+					if (device != null && token != null && oldPin == null) {
 						//update existing device which has not been used for some time
 						device.setToken(token);
 						device.setPin(pin);
