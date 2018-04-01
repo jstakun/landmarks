@@ -167,7 +167,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 					device = devicePersistenceUtils.findDeviceByImeiAndPin(imei, pin);
 				}
 				if (device  != null) {
-					//update existing device
+				    logger.log(Level.INFO, "Updating existing device " + device.getImei());
 					if (token != null) {
 						device.setToken(token);
 					}
@@ -185,7 +185,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 				} else {
 					device = devicePersistenceUtils.findDeviceByImei(imei);
 					if (device != null && token != null) {
-						//update existing device which has not been used for some time
+						logger.log(Level.INFO, "Updating existing device " + device.getImei() + " which has not been used for some time");
 						device.setToken(token);
 						device.setPin(pin);
 						if (username != null) {
