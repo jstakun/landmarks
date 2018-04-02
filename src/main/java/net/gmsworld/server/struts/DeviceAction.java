@@ -173,7 +173,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 				}
 				if (device  != null) {
 					//update existing device
-					if (token != null) {
+					if (StringUtils.isNotBlank(token)) {
 						device.setToken(token);
 					}
 					if (oldPin != null && oldPin.equals(device.getPin())) {
@@ -189,7 +189,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 					devicePersistenceUtils.update(device);
 				} else {
 					device = devicePersistenceUtils.findDeviceByImei(imei);
-					if (device != null && token != null && oldPin == null) {
+					if (device != null && StringUtils.isNotBlank(token) && oldPin == null) {
 						//update existing device which has not been used for some time
 						device.setToken(token);
 						device.setPin(pin);
