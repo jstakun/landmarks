@@ -91,9 +91,9 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    			   session.setDebug(false);
 	    		   }
 	    		   
-	    		   Transport t = session.getTransport("smtp"); //smtps
+	    		   Transport t = session.getTransport("smtp"); 
 	    		   
-	    		   t.connect(from, password);
+	    		   t.connect(host, port, from, password);
 	    		   
 	    		   logger.log(Level.INFO, "Mail client connected to " + t.getURLName().getHost() + ":" + t.getURLName().getPort());
 	    		   
