@@ -5,6 +5,7 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.Session;
 import javax.mail.Transport;
@@ -60,6 +61,7 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    	       properties.put("mail.smtp.host", host);
 	    	       String sslport = System.getenv("SMTP_SSL_PORT");
 	    	       if (StringUtils.isNotEmpty(sslport)) {
+	    	    	   logger.info("Using ssl port!");
 	    	    	   try {
 	    	    		   MailSSLSocketFactory socketFactory = new MailSSLSocketFactory();
 	    	    		   socketFactory.setTrustAllHosts(true);
@@ -94,7 +96,7 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    		   
 	    		   Transport t = session.getTransport("smtp");
 	    		   
-	    		   logger.log(Level.INFO, "Mail agent will connect to " + t.getURLName().toString());
+	    		   logger.log(Level.INFO, "Mail agent will connect to " + t.getURLName().getHost() + ":" + t.getURLName().getPort());
 	    		   
 	    		   t.connect(host, from, password);
 	    		   
@@ -102,10 +104,13 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	          
 	    		   message.setFrom(new InternetAddress(from, fromNick));
 	          
+	    		   Address[] recipents = null;
+	    		   
 	    		   if (StringUtils.isNotEmpty(to) && StringUtils.isNotEmpty(toNick)) {
-	    			   message.setRecipient(Message.RecipientType.TO, new InternetAddress(to, toNick));
+	    			   recipents = new InternetAddress[1];
+	    			   recipents[0] = new InternetAddress(to, toNick);
 	    		   } else {
-	    			   message.setRecipients(Message.RecipientType.TO,  InternetAddress.parse(to)); 
+	    			   recipents = InternetAddress.parse(to); 
 	    		   }
 	          
 	    		   if (StringUtils.isNotEmpty(cc) && StringUtils.isNotEmpty(ccNick)) {
@@ -126,12 +131,14 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	          
 	    		   message.setSentDate(new Date());
 	         
-	    		   //t.sendMessage(message, arg1);
-	    		   Transport.send(message);
+	    		   t.sendMessage(message, recipents);
+	    		   //Transport.send(message);
 	    		   
 	    		   String output = "{\"status\":\"Message " + message.getMessageID() + " sent to " + to + "\"}";
 	    		   logger.log(Level.INFO, "Message " + message.getMessageID() + " sent to " + to);
 	    		   request.setAttribute("output", output);
+	    		   
+	    		   t.close();
 	    		   
 	    		   return SUCCESS;
 	    	   }
