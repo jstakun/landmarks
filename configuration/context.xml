@@ -4,13 +4,7 @@
               auth="Container"
               type="javax.sql.DataSource" />      
       
-      <Resource name="mail/Session" auth="Container" type="javax.mail.Session"
-            mail.smtp.host="${smtp.host}" mail.smtp.port="${smtp.port}" 
-            mail.smtp.ssl.enable="true"
-            mail.smtp.ssl.trust="${smtp.host}"
-            mail.smtp.ssl.socketFactory.class="javax.net.ssl.SSLSocketFactory" />                
-                          
-        <Resource name="bean/CheckinPersistenceUtils" auth="Container"
+       <Resource name="bean/CheckinPersistenceUtils" auth="Container"
             type="net.gmsworld.server.utils.persistence.CheckinPersistenceUtils"
             factory="org.apache.naming.factory.BeanFactory"/>  
             

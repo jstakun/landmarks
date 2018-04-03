@@ -5,7 +5,6 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.Session;
 import javax.mail.Transport;
@@ -17,9 +16,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.interceptor.ServletRequestAware;
 
 import com.opensymphony.xwork2.ActionSupport;
-import com.sun.mail.util.MailSSLSocketFactory;
-
-import net.gmsworld.server.utils.ServiceLocator;
 
 public class MailAction extends ActionSupport implements ServletRequestAware {
 
@@ -50,33 +46,33 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	       if (StringUtils.isNotEmpty(from) && StringUtils.isNotEmpty(to) && (StringUtils.isNotEmpty(body) || StringUtils.isNotEmpty(subject))) {	    	
 	    	   try
 	    	   {
-	    		   /*Properties properties = new Properties();
+	    		   Properties properties = new Properties();
 	    	
 	    		   String host = System.getenv("SMTP_HOST");
 	    	       if (StringUtils.isEmpty(host)) {
 	    	    	   host = "localhost";
 	    	       }
 	    	       int port = 25; 
-	    	       if (StringUtils.isNotEmpty(System.getenv("SMTP_PORT"))) {
-	    	    	   port = Integer.valueOf(System.getenv("SMTP_PORT"));
+	    	       String portStr = System.getenv("SMTP_PORT");
+	    	       if (StringUtils.isNotEmpty(portStr)) {
+	    	    	   try {
+	    	    		   port = Integer.valueOf(portStr);
+	    	    	   } catch (Exception e) {}
 	    	       }
-	    	       properties.put("mail.smtp.host", host);
+	    	       
 	    	       String sslport = System.getenv("SMTP_SSL_PORT");
 	    	       if (StringUtils.isNotEmpty(sslport)) {
-	    	    	   logger.info("Using SSL");
-	    	    	   port = Integer.valueOf(sslport);
-	    	    	   properties.put("mail.smtp.ssl.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-    	    		   properties.put("mail.smtp.ssl.trust", host); //,"*");
-	    	           properties.put("mail.smtp.ssl.enable", "true");
-	    	       } else {
-	    	    	   properties.put("mail.smtp.port", port);
-	    	       }
-	    	       properties.put("mail.smtp.auth", "true"); 
-	    		   
-	    		   Session session = Session.getInstance(properties);*/
+	    	    	   try {
+	    	    		   logger.info("Using SSL");
+	    	    		   port = Integer.valueOf(sslport);
+	    	    		   properties.put("mail.smtp.ssl.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+	    	    		   properties.put("mail.smtp.ssl.trust", host); //,"*");
+	    	    		   properties.put("mail.smtp.ssl.enable", "true");
+	    	    	   } catch (Exception e) {}
+	    	       } 
+	    	       
+	    		   Session session = Session.getInstance(properties);
 	    		 
-	    		   Session session = (Session) ServiceLocator.getInstance().getService("mail/Session");
-	    		   
 	    		   String debug = System.getenv("SMTP_DEBUG");
 	    		   if (StringUtils.equalsIgnoreCase(debug, "true")) {
 	    			   session.setDebug(true);
@@ -86,7 +82,7 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    		   
 	    		   Transport t = session.getTransport("smtp"); 
 	    		   
-	    		   t.connect(from, password); //host, port, from, password);
+	    		   t.connect(host, port, from, password);
 	    		   
 	    		   logger.log(Level.INFO, "Mail client connected to " + t.getURLName().getHost() + ":" + t.getURLName().getPort());
 	    		   
