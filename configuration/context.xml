@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Context>               
       <ResourceLink name="jdbc/LandmarksDB"
-              global="jdbc/LandmarksDB"
               auth="Container"
               type="javax.sql.DataSource" />      
+      
+      <ResourceLink name="mail/Session"
+              auth="Container"
+              type="javax.mail.Session" />          
                           
         <Resource name="bean/CheckinPersistenceUtils" auth="Container"
             type="net.gmsworld.server.utils.persistence.CheckinPersistenceUtils"
