@@ -47,7 +47,8 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	       if (StringUtils.isEmpty(port)) {
 	    	   port = "25";
 	       }
-	       properties.put("mail.smtp.host", host);
+	       properties.put("mail.transport.protocol", "smtps");
+		   properties.put("mail.smtps.host", host);
 	       String sslport = System.getenv("SMTP_SSL_PORT");
 	       if (StringUtils.isNotEmpty(sslport)) {
 	    	   Logger.getLogger("MailAction").log(Level.INFO, "Mail agent will connect to " + host + ":" + sslport);
@@ -61,19 +62,18 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    		   properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
 	    		   properties.put("mail.smtp.ssl.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
 		       }*/
-	    	   properties.put("mail.transport.protocol", "smtps");
-		       properties.put("mail.smtp.ssl.trust", "*"); //host);
+	    	   properties.put("mail.smtps.ssl.trust", "*"); //host);
 	    	   //properties.put("mail.smtp.socketFactory.port", sslport);
 	    	   //properties.put("mail.smtp.ssl.socketFactory.port", sslport);
-	    	   properties.put("mail.smtp.port", sslport);
-	           properties.put("mail.smtp.ssl.port", sslport);
+	    	   properties.put("mail.smtps.port", sslport);
+	           properties.put("mail.smtps.ssl.port", sslport);
 	           properties.put("mail.smtp.ssl.enable", true);
 	           properties.put("mail.smtps.ssl.enable", true);
 	       } else {
 	    	   Logger.getLogger("MailAction").log(Level.INFO, "Mail agent will connect to " + host + ":" + port);
 	    	   properties.put("mail.smtp.port", port);
 	       }
-	       properties.put("mail.smtp.auth", "true");      
+	       properties.put("mail.smtps.auth", "true");      
 	    }
 	    
 	    @Override
