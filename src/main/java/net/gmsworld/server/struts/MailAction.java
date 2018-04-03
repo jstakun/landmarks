@@ -68,18 +68,17 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    	    		   properties.put("mail.smtps.socketFactory", socketFactory);
 	    	    		   properties.put("mail.smtps.ssl.socketFactory", socketFactory);
 	    	    	   } catch (Exception e) {
-	    	    		   logger.severe(e.getMessage());
+	    	    		   properties.put("mail.smtps.socketFactory.class", "com.sun.mail.util.MailSSLSocketFactory");
+		        		   properties.put("mail.smtps.ssl.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+	    	    	       logger.severe(e.getMessage());
 	    	    	   }
-	    			   properties.put("mail.smtps.socketFactory.class", "com.sun.mail.util.MailSSLSocketFactory");
-	        		   properties.put("mail.smtps.ssl.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-    	    	   
 	    	    	   properties.put("mail.smtps.ssl.trust", "*"); //host);
-	    	    	   properties.put("mail.smtps.socketFactory.port", sslport);
-	    	    	   properties.put("mail.smtps.ssl.socketFactory.port", sslport);
-	    	    	   properties.put("mail.smtps.port", sslport);
-	    	           properties.put("mail.smtps.ssl.port", sslport);
-	    	    	   properties.put("mail.smtps.ssl.checkserveridentity", "true");
-	    	           properties.put("mail.smtps.ssl.enable", "true");
+	    	    	   //properties.put("mail.smtps.socketFactory.port", sslport);
+	    	    	   //properties.put("mail.smtps.ssl.socketFactory.port", sslport);
+	    	    	   //properties.put("mail.smtps.port", sslport);
+	    	           //properties.put("mail.smtps.ssl.port", sslport);
+	    	    	   properties.put("mail.smtp.ssl.checkserveridentity", "true");
+	    	           properties.put("mail.smtp.ssl.enable", "true");
 	    	       } else {
 	    	    	   properties.put("mail.smtp.port", port);
 	    	       }
