@@ -44,12 +44,12 @@
               factory="org.apache.catalina.users.MemoryUserDatabaseFactory"
               pathname="conf/tomcat-users.xml" />
        
-       <Resource name="jdbc/LandmarksDB" global="jdbc/LandmarksDB"  auth="Container" type="javax.sql.DataSource"
+       <Resource name="jdbc/LandmarksDB" auth="Container" type="javax.sql.DataSource"
                maxTotal="64" maxIdle="32" maxWaitMillis="10000"
                username="${db.user}" password="${db.password}" driverClassName="org.postgresql.Driver"
                url="${db.url}"/>       
                
-        <Resource name="mail/Session" global="mail/Session" auth="Container" type="javax.mail.Session"
+        <Resource name="mail/Session" auth="Container" type="javax.mail.Session"
             mail.smtp.host="james" mail.smtp.port="10465" 
             mail.smtp.ssl.enable="true"
             mail.smtp.ssl.trust="james"
