@@ -65,14 +65,14 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    	    	   try {
 	    	    		   MailSSLSocketFactory socketFactory = new MailSSLSocketFactory();
 	    	    		   socketFactory.setTrustAllHosts(true);
-	    	    		   //properties.put("mail.smtp.socketFactory", socketFactory);
+	    	    		   properties.put("mail.smtp.socketFactory", socketFactory);
 	    	    		   properties.put("mail.smtp.ssl.socketFactory", socketFactory);
 	    	    	   } catch (Exception e) {
 	    	    		   logger.severe(e.getMessage());
-	    	    		   properties.put("mail.smtp.ssl.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+	    	    		   properties.put("mail.smtp.socketFactory.class", "com.sun.mail.util.MailSSLSocketFactory");
+		        		   properties.put("mail.smtp.ssl.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
 	    	    	   }
-	    	    	   properties.put("mail.smtp.socketFactory.class", "com.sun.mail.util.MailSSLSocketFactory");
-	        		   
+	    	    	   
 	    	    	   //properties.put("mail.smtp.ssl.trust", "*"); //host);
 	    	    	   //properties.put("mail.smtp.socketFactory.port", sslport);
 	    	    	   //properties.put("mail.smtp.ssl.socketFactory.port", sslport);
