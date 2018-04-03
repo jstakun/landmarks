@@ -50,7 +50,7 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	       if (StringUtils.isNotEmpty(from) && StringUtils.isNotEmpty(to) && (StringUtils.isNotEmpty(body) || StringUtils.isNotEmpty(subject))) {	    	
 	    	   try
 	    	   {
-	    		   /*Properties properties = new Properties();
+	    		   Properties properties = new Properties();
 	    	
 	    		   String host = System.getenv("SMTP_HOST");
 	    	       if (StringUtils.isEmpty(host)) {
@@ -80,9 +80,9 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    	       }
 	    	       properties.put("mail.smtp.auth", "true"); 
 	    		   
-	    		   Session session = Session.getInstance(properties);*/
+	    		   Session session = Session.getInstance(properties);
 	    		 
-	    		   Session session = (Session) ServiceLocator.getInstance().getService("mail/Session");
+	    		   //Session session = (Session) ServiceLocator.getInstance().getService("mail/Session");
 	    		   
 	    		   String debug = System.getenv("SMTP_DEBUG");
 	    		   if (StringUtils.equalsIgnoreCase(debug, "true")) {

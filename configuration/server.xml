@@ -48,13 +48,7 @@
                maxTotal="64" maxIdle="32" maxWaitMillis="10000"
                username="${db.user}" password="${db.password}" driverClassName="org.postgresql.Driver"
                url="${db.url}"/>       
-               
-        <Resource name="mail/Session" auth="Container" type="javax.mail.Session"
-            mail.smtp.host="james" mail.smtp.port="10465" 
-            mail.smtp.ssl.enable="true"
-            mail.smtp.ssl.trust="james"
-            mail.smtp.ssl.socketFactory.class="javax.net.ssl.SSLSocketFactory1" />       
-              
+                     
   </GlobalNamingResources>
 
   <!-- A "Service" is a collection of one or more "Connectors" that share
