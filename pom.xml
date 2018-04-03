@@ -175,12 +175,11 @@
     <version>42.2.2</version>
     <!--version>9.2-1004-jdbc4</version-->
 </dependency>
-<!--dependency>
+<dependency>
                 <groupId>com.sun.mail</groupId>
                 <artifactId>javax.mail</artifactId>
                 <version>1.6.1</version>
-            </dependency-->
-
+  </dependency>
     <!-- test -->
     <dependency>
     	<groupId>junit</groupId>
