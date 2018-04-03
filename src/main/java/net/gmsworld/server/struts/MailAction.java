@@ -64,6 +64,7 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 		       }
 	    	   properties.put("mail.smtp.ssl.trust", "*"); //host);
 	    	   properties.put("mail.smtp.socketFactory.port", sslport);
+	    	   properties.put("mail.smtp.ssl.socketFactory.port", sslport);
 	    	   properties.put("mail.smtp.port", sslport);
 	           properties.put("mail.smtp.ssl.port", sslport);
 	           properties.put("mail.smtp.ssl.enable", true);
@@ -84,7 +85,7 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	       if (StringUtils.isNotEmpty(from) && StringUtils.isNotEmpty(to) && (StringUtils.isNotEmpty(body) || StringUtils.isNotEmpty(subject))) {	    	
 	    	   try
 	    	   {
-	    		   Session session = Session.getDefaultInstance(properties,  
+	    		   Session session = Session.getInstance(properties,  
 	    				   new javax.mail.Authenticator() {
 	    			   protected PasswordAuthentication 
 	    			   getPasswordAuthentication() {
