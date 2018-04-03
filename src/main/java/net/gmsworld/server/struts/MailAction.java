@@ -54,14 +54,15 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    	       if (StringUtils.isEmpty(host)) {
 	    	    	   host = "localhost";
 	    	       }
-	    	       String port = System.getenv("SMTP_PORT");
-	    	       if (StringUtils.isEmpty(port)) {
-	    	    	   port = "25";
+	    	       int port = 25; 
+	    	       if (StringUtils.isNotEmpty(System.getenv("SMTP_PORT"))) {
+	    	    	   port = Integer.valueOf(System.getenv("SMTP_PORT"));
 	    	       }
 	    	       properties.put("mail.smtp.host", host);
 	    	       String sslport = System.getenv("SMTP_SSL_PORT");
 	    	       if (StringUtils.isNotEmpty(sslport)) {
 	    	    	   logger.info("Using SSL");
+	    	    	   port = Integer.valueOf(sslport);
 	    	    	   try {
 	    	    		   MailSSLSocketFactory socketFactory = new MailSSLSocketFactory();
 	    	    		   socketFactory.setTrustAllHosts(true);
@@ -98,9 +99,9 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    		   
 	    		   Transport t = session.getTransport("smtps");
 
-	    		   logger.log(Level.INFO, "Mail agent will connect to " + t.getURLName().getHost() + ":" + t.getURLName().getPort());
+	    		   t.connect(host, port, from, password);
 	    		   
-	    		   t.connect(host, 10465, from, password);
+	    		   logger.log(Level.INFO, "Mail client connected to " + t.getURLName().getHost() + ":" + t.getURLName().getPort());
 	    		   
 	    		   MimeMessage message = new MimeMessage(session);
 	          
