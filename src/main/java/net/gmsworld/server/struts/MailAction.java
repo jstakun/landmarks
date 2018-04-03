@@ -17,7 +17,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.interceptor.ServletRequestAware;
 
 import com.opensymphony.xwork2.ActionSupport;
-import com.sun.mail.util.MailSSLSocketFactory;
 
 public class MailAction extends ActionSupport implements ServletRequestAware {
 
@@ -65,7 +64,7 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    	   properties.put("mail.smtp.ssl.trust", "*"); //host);
 	    	   //properties.put("mail.smtp.socketFactory.port", sslport);
 	    	   //properties.put("mail.smtp.ssl.socketFactory.port", sslport);
-	    	   //properties.put("mail.smtp.port", sslport);
+	    	   properties.put("mail.smtp.port", sslport);
 	           properties.put("mail.smtp.ssl.port", sslport);
 	           properties.put("mail.smtp.ssl.enable", true);
 	       } else {
