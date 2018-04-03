@@ -45,7 +45,8 @@
             type="net.gmsworld.server.utils.memcache.CacheBean"
             factory="org.apache.naming.factory.BeanFactory"/> 
                     
-       <Resource name="mail/Session" auth="Container"
+       <!--Resource name="mail/Session" auth="Container"
                type="javax.mail.Session"
-               mail.smtp.host="james" mail.smtp.port="10025"/>  
+               mail.smtp.host="james" 
+               mail.smtp.port="10025"/-->  
 </Context>
