@@ -71,10 +71,11 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    	    		   properties.put("mail.smtp.socketFactory", socketFactory);
 	    	    		   properties.put("mail.smtp.ssl.socketFactory", socketFactory);
 	    	    	   } catch (Exception e) {
-	    	    		   //properties.put("mail.smtps.socketFactory.class", "com.sun.mail.util.MailSSLSocketFactory");
-		        		   //properties.put("mail.smtps.ssl.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-	    	    	       logger.severe(e.getMessage());
+	    	    		   logger.severe(e.getMessage());
 	    	    	   }
+	    	    	   properties.put("mail.smtps.socketFactory.class", "com.sun.mail.util.MailSSLSocketFactory1");
+	        		   properties.put("mail.smtps.ssl.socketFactory.class", "javax.net.ssl.SSLSocketFactory1");
+    	    	       
 	    	    	   properties.put("mail.smtp.ssl.trust", "*"); //host);
 	    	    	   properties.put("mail.smtps.ssl.trust", "*"); //host);
 	    	    	   //properties.put("mail.smtps.socketFactory.port", sslport);
@@ -98,7 +99,7 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    		   }
 	    		   
 	    		   Transport t = session.getTransport("smtps");
-
+	    		   
 	    		   t.connect(host, port, from, password);
 	    		   
 	    		   logger.log(Level.INFO, "Mail client connected to " + t.getURLName().getHost() + ":" + t.getURLName().getPort());
