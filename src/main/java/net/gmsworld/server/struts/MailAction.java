@@ -61,17 +61,17 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    	       properties.put("mail.smtp.host", host);
 	    	       String sslport = System.getenv("SMTP_SSL_PORT");
 	    	       if (StringUtils.isNotEmpty(sslport)) {
-	    	    	   logger.info("Using ssl port!");
+	    	    	   logger.info("Using SSL");
 	    	    	   try {
 	    	    		   MailSSLSocketFactory socketFactory = new MailSSLSocketFactory();
 	    	    		   socketFactory.setTrustAllHosts(true);
 	    	    		   //properties.put("mail.smtp.socketFactory", socketFactory);
 	    	    		   properties.put("mail.smtp.ssl.socketFactory", socketFactory);
 	    	    	   } catch (Exception e) {
-	    	    		   Logger.getLogger("MailAction").log(Level.SEVERE, e.getMessage(), e);
+	    	    		   logger.severe(e.getMessage());
 	    	    		   properties.put("mail.smtp.ssl.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-	    		       }
-	    	    	   //properties.put("mail.smtp.socketFactory.class", "com.sun.mail.util.MailSSLSocketFactory");
+	    	    	   }
+	    	    	   properties.put("mail.smtp.socketFactory.class", "com.sun.mail.util.MailSSLSocketFactory");
 	        		   
 	    	    	   //properties.put("mail.smtp.ssl.trust", "*"); //host);
 	    	    	   //properties.put("mail.smtp.socketFactory.port", sslport);
@@ -85,7 +85,7 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    	       }
 	    	       //properties.put("mail.smtp.auth", "true");      
 	    		   
-	    		   Session session = Session.getInstance(properties,  null);
+	    		   Session session = Session.getInstance(properties);
 	    		 
 	    		   String debug = System.getenv("SMTP_DEBUG");
 	    		   if (StringUtils.equalsIgnoreCase(debug, "true")) {
@@ -95,10 +95,10 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    		   }
 	    		   
 	    		   Transport t = session.getTransport("smtp");
-	    		   
+
 	    		   logger.log(Level.INFO, "Mail agent will connect to " + t.getURLName().getHost() + ":" + t.getURLName().getPort());
 	    		   
-	    		   t.connect(host, from, password);
+	    		   t.connect(host, 10465, from, password);
 	    		   
 	    		   MimeMessage message = new MimeMessage(session);
 	          
