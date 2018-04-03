@@ -34,7 +34,6 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    private String contentType;
 	    private String cc;
 	    private String ccNick;
-	    
 	       	    
 	    @Override
 		public void setServletRequest(HttpServletRequest request) {
@@ -52,6 +51,7 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    	       if (StringUtils.isEmpty(host)) {
 	    	    	   host = "localhost";
 	    	       }
+	    	       
 	    	       int port = 25; 
 	    	       String portStr = System.getenv("SMTP_PORT");
 	    	       if (StringUtils.isNotEmpty(portStr)) {
