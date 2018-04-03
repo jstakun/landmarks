@@ -94,7 +94,7 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    			   session.setDebug(false);
 	    		   }
 	    		   
-	    		   Transport t = session.getTransport("smtp");
+	    		   Transport t = session.getTransport("smtps");
 
 	    		   logger.log(Level.INFO, "Mail agent will connect to " + t.getURLName().getHost() + ":" + t.getURLName().getPort());
 	    		   
@@ -104,13 +104,10 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	          
 	    		   message.setFrom(new InternetAddress(from, fromNick));
 	          
-	    		   Address[] recipents = null;
-	    		   
 	    		   if (StringUtils.isNotEmpty(to) && StringUtils.isNotEmpty(toNick)) {
-	    			   recipents = new InternetAddress[1];
-	    			   recipents[0] = new InternetAddress(to, toNick);
+	    			   message.setRecipient(Message.RecipientType.TO, new InternetAddress(to, toNick));
 	    		   } else {
-	    			   recipents = InternetAddress.parse(to); 
+	    			   message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to)); 
 	    		   }
 	          
 	    		   if (StringUtils.isNotEmpty(cc) && StringUtils.isNotEmpty(ccNick)) {
@@ -131,7 +128,7 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	          
 	    		   message.setSentDate(new Date());
 	         
-	    		   t.sendMessage(message, recipents);
+	    		   t.sendMessage(message, message.getAllRecipients());
 	    		   //Transport.send(message);
 	    		   
 	    		   String output = "{\"status\":\"Message " + message.getMessageID() + " sent to " + to + "\"}";
