@@ -17,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.interceptor.ServletRequestAware;
 
 import com.opensymphony.xwork2.ActionSupport;
+import com.sun.mail.util.MailSSLSocketFactory;
 
 public class MailAction extends ActionSupport implements ServletRequestAware {
 
@@ -51,11 +52,18 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	       String sslport = System.getenv("SMTP_SSL_PORT");
 	       if (StringUtils.isNotEmpty(sslport)) {
 	    	   Logger.getLogger("MailAction").log(Level.INFO, "Mail agent will connect to " + host + ":" + sslport);
+	    	   try {
+	    		   MailSSLSocketFactory socketFactory = new MailSSLSocketFactory();
+	    		   socketFactory.setTrustAllHosts(true);
+	    		   properties.put("mail.smtp.socketFactory", socketFactory);
+	    	   } catch (Exception e) {
+	    		   Logger.getLogger("MailAction").log(Level.SEVERE, e.getMessage(), e);
+	    		   properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+	    		   properties.put("mail.smtp.ssl.trust", host);
+	    	   }
 	    	   properties.put("mail.smtp.socketFactory.port", sslport);
-	           properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-	           properties.put("mail.smtp.port", sslport);
+	    	   properties.put("mail.smtp.port", sslport);
 	           properties.put("mail.smtp.ssl.enable", "true");
-	           properties.put("mail.smtp.ssl.trust", host);
 	       } else {
 	    	   Logger.getLogger("MailAction").log(Level.INFO, "Mail agent will connect to " + host + ":" + port);
 	    	   properties.put("mail.smtp.port", port);

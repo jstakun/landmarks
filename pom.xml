@@ -175,6 +175,12 @@
     <version>42.2.2</version>
     <!--version>9.2-1004-jdbc4</version-->
 </dependency>
+<dependency>
+    <groupId>com.sun.mail</groupId>
+    <artifactId>javax.mail</artifactId>
+    <version>1.5.6.redhat-1</version>
+</dependency>
+
     <!-- test -->
     <dependency>
     	<groupId>junit</groupId>
