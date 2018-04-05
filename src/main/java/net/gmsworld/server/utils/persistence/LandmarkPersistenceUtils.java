@@ -41,7 +41,7 @@ public class LandmarkPersistenceUtils {
 		EMF.update(landmark);		
 	}
 	
-	public List<Landmark> findNewestLandmarks(int limit) {
+	public synchronized List<Landmark> findNewestLandmarks(int limit) {
         TypedQuery<Landmark> query = EMF.getEntityManager().createNamedQuery(Landmark.FIND_NEWEST, Landmark.class);
         query.setMaxResults(limit);
         return query.getResultList();
