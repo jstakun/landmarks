@@ -47,7 +47,7 @@
        <Resource name="jdbc/LandmarksDB" auth="Container" type="javax.sql.DataSource"
                maxTotal="64" maxIdle="32" maxWaitMillis="10000"
                username="${db.user}" password="${db.password}" driverClassName="org.postgresql.Driver"
-               url="${db.url}"/>       
+               url="${db.url}" validationQuery="SELECT 1"/>       
                      
   </GlobalNamingResources>
 

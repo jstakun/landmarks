@@ -3,8 +3,6 @@ package net.gmsworld.server.utils.persistence;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
 import net.gmsworld.server.persistence.Geocode;
@@ -15,7 +13,7 @@ public class GeocodePersistenceUtils {
 		EMF.save(g);
 	}
 	
-	public List<Geocode> findNewest(int limit) {
+	public synchronized List<Geocode> findNewest(int limit) {
         TypedQuery<Geocode> query = EMF.getEntityManager().createNamedQuery(Geocode.FIND_NEWEST, Geocode.class);
         query.setMaxResults(limit);
         return query.getResultList();
