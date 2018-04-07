@@ -25,21 +25,19 @@ public class TokenPersistenceUtils {
 	public boolean isTokenValid(String key, String scope) {
 		TypedQuery<Token> query = EMF.getEntityManager().createNamedQuery(Token.GET_TOKEN, Token.class);
 		boolean isValid = false;
-		synchronized (query) {
-			query.setParameter("key", key);
-			query.setParameter("scope", scope);
-			try {
-				Token t = query.getSingleResult();
-				isValid = true;
-				synchronized (t) {
-					t.setCount(t.getCount()+1);
-					t.setLastUsageDate(Calendar.getInstance().getTime());
-					update(t);
-				}
-			} catch (NoResultException nre) {
-			} catch (Exception e) {
-				logger.log(Level.SEVERE, e.getMessage(), e);
+		query.setParameter("key", key);
+		query.setParameter("scope", scope);
+		try {
+			Token t = query.getSingleResult();
+			isValid = true;
+			synchronized (t) {
+				t.setCount(t.getCount()+1);
+				t.setLastUsageDate(Calendar.getInstance().getTime());
+				update(t);
 			}
+		} catch (NoResultException nre) {
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, e.getMessage(), e);
 		}
 		return isValid;
 	}
