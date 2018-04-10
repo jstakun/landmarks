@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 
 import net.gmsworld.server.config.Commons;
@@ -22,6 +23,7 @@ import net.gmsworld.server.utils.NumberUtils;
 import net.gmsworld.server.utils.ServiceLocator;
 import net.gmsworld.server.utils.StringUtil;
 import net.gmsworld.server.utils.memcache.JBossCacheProvider;
+import net.gmsworld.server.utils.persistence.EMF;
 import net.gmsworld.server.utils.persistence.LayerPersistenceUtils;
 
 import org.apache.commons.lang3.StringUtils;
@@ -291,11 +293,16 @@ public class LayerProviderAction extends ActionSupport implements ParameterAware
 
 	private String executeLocalLayers(String layer, int limit) {
 		Layer gmsLayer = null; 
+		EntityManager em = EMF.getEntityManager();
 		try {
 			LayerPersistenceUtils layerPeristenceUtils = (LayerPersistenceUtils) ServiceLocator.getInstance().getService("bean/LayerPersistenceUtils");
-			gmsLayer = layerPeristenceUtils.findByName(layer);
+			gmsLayer = layerPeristenceUtils.findByName(layer, em);
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, e.getMessage(), e);
+		} finally {
+			if (em != null) {
+				em.close();
+			}
 		}
 		if (gmsLayer != null) {
 			return executeLayer(Commons.LM_SERVER_LAYER, limit, layer, null, 1000);

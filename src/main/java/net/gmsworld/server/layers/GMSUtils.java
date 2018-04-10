@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import javax.naming.NamingException;
+import javax.persistence.EntityManager;
 
 import net.gmsworld.server.config.Commons;
 import net.gmsworld.server.persistence.Landmark;
@@ -27,6 +28,7 @@ import net.gmsworld.server.utils.NumberUtils;
 import net.gmsworld.server.utils.ServiceLocator;
 import net.gmsworld.server.utils.UrlUtils;
 import net.gmsworld.server.utils.memcache.CacheUtil;
+import net.gmsworld.server.utils.persistence.EMF;
 import net.gmsworld.server.utils.persistence.LandmarkPersistenceUtils;
 import net.gmsworld.server.utils.xml.XMLUtils;
 
@@ -64,21 +66,17 @@ public class GMSUtils extends LayerHelper {
         JSONObject json = null;
         String output = CacheUtil.getString(key);
         if (output == null) {
-            //List<Landmark> landmarkList = LandmarkPersistenceUtils.selectLandmarksByCoordsAndLayer(latitude, longitude, layer, limit, radius);
-            
-            //if (!landmarkList.isEmpty()) {
-            //	results.addAll(Collections2.filter(landmarkList, new QueryPredicate(query)));
-            //}
-            List<Landmark> landmarkList = null;
-        	
+            List<Landmark> landmarkList = null;    	
             LandmarkPersistenceUtils landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().getService("bean/LandmarkPersistenceUtils");
+            EntityManager em = EMF.getEntityManager();
             
             if (StringUtils.isNotEmpty(query)) {
-        		landmarkList = landmarkPersistenceUtils.searchLandmarks(query, limit);
+        		landmarkList = landmarkPersistenceUtils.searchLandmarks(query, limit, em);
         	} else {
-        		landmarkList = landmarkPersistenceUtils.selectLandmarksByCoordsAndLayer(layer, latitude, longitude, radius, limit);
+        		landmarkList = landmarkPersistenceUtils.selectLandmarksByCoordsAndLayer(layer, latitude, longitude, radius, limit, em);
         	}
-        	
+            
+        	em.close();
             json = createCustomJSonLandmarkList(landmarkList, version, stringLimit);
             if (!landmarkList.isEmpty()) {
                 CacheUtil.put(key, json.toString());
@@ -101,12 +99,11 @@ public class GMSUtils extends LayerHelper {
         	
         	double latitude = (latitudeMin + latitudeMax) / 2;
             double longitude = (longitudeMin + longitudeMax) / 2;
-            int radius = (int)(NumberUtils.distanceInKilometer(latitudeMin, latitudeMax, longitudeMin, longitudeMax) * 1000 / 2);
-            
+            int radius = (int)(NumberUtils.distanceInKilometer(latitudeMin, latitudeMax, longitudeMin, longitudeMax) * 1000 / 2);            
             LandmarkPersistenceUtils landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().getService("bean/LandmarkPersistenceUtils");
-			
-            List<Landmark> landmarkList = landmarkPersistenceUtils.selectLandmarksByCoordsAndLayer(layer, latitude, longitude, radius, limit);
-        	
+            EntityManager em = EMF.getEntityManager();
+            List<Landmark> landmarkList = landmarkPersistenceUtils.selectLandmarksByCoordsAndLayer(layer, latitude, longitude, radius, limit, em);
+            em.close();        	
             if (format.equals("kml")) {
                 output = XMLUtils.createKmlLandmarkList(landmarkList, landingPage);
             } else if (format.equals("json")) {
@@ -173,16 +170,18 @@ public class GMSUtils extends LayerHelper {
     protected List<ExtendedLandmark> loadLandmarks(double latitude, double longitude, String query, int radius, int version, int limit, int stringLimit, String layer, String flexString2, Locale locale, boolean useCache) throws Exception {
     	this.layer = layer;
     	List<ExtendedLandmark> landmarks = new ArrayList<ExtendedLandmark>();
-        List<Landmark> landmarkList = null;
-        	
+        List<Landmark> landmarkList = null;	
         LandmarkPersistenceUtils landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().getService("bean/LandmarkPersistenceUtils");
-				
+        EntityManager em = EMF.getEntityManager();
+        		
         if (StringUtils.isNotEmpty(query)) {
-        		landmarkList = landmarkPersistenceUtils.searchLandmarks(query, limit);
+        		landmarkList = landmarkPersistenceUtils.searchLandmarks(query, limit, em);
         } else {
-        		landmarkList = landmarkPersistenceUtils.selectLandmarksByCoordsAndLayer(layer, latitude, longitude, radius, limit);
+        		landmarkList = landmarkPersistenceUtils.selectLandmarksByCoordsAndLayer(layer, latitude, longitude, radius, limit, em);
         }
-        	
+      
+        em.close();
+        
         if (!landmarkList.isEmpty()) {
             	//Collection<Landmark> results = Collections2.filter(landmarkList, new QueryPredicate(query));      
             	landmarks.addAll(Collections2.transform(landmarkList, new LandmarkTransformFunction(layer, locale)));

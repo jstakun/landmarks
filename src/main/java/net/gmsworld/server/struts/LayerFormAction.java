@@ -6,12 +6,14 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 
 import net.gmsworld.server.config.Commons;
 import net.gmsworld.server.layers.LayerHelperFactory;
 import net.gmsworld.server.persistence.Layer;
 import net.gmsworld.server.utils.ServiceLocator;
+import net.gmsworld.server.utils.persistence.EMF;
 import net.gmsworld.server.utils.persistence.LayerPersistenceUtils;
 
 import org.apache.commons.beanutils.BeanUtils;
@@ -129,14 +131,16 @@ public class LayerFormAction extends ActionSupport implements ServletRequestAwar
     		for (String layer : LayerHelperFactory.getInstance().getEnabledLayers()) {
     			layers.put(layer, layer);
     		}
+    		EntityManager em = EMF.getEntityManager();
     		try {
 				LayerPersistenceUtils layerPeristenceUtils = (LayerPersistenceUtils) ServiceLocator.getInstance().getService("bean/LayerPersistenceUtils");
-				List<Layer> gmsLayers = layerPeristenceUtils.findAll();
+				List<Layer> gmsLayers = layerPeristenceUtils.findAll(em);
 				for (Layer l : gmsLayers) {
 					layers.put(l.getName(), l.getFormatted());
 				}
 			} catch (Exception e) {
-				
+			} finally {
+				em.close();
 			}
 		}		
 	}

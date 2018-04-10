@@ -8,6 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.naming.NamingException;
+import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 
 import net.gmsworld.server.config.ConfigurationManager;
@@ -29,6 +30,7 @@ import net.gmsworld.server.utils.UrlUtils;
 import net.gmsworld.server.utils.memcache.JBossCacheProvider;
 import net.gmsworld.server.utils.persistence.CheckinPersistenceUtils;
 import net.gmsworld.server.utils.persistence.CommentPersistenceUtils;
+import net.gmsworld.server.utils.persistence.EMF;
 import net.gmsworld.server.utils.persistence.GeocodePersistenceUtils;
 import net.gmsworld.server.utils.persistence.LandmarkPersistenceUtils;
 import net.gmsworld.server.utils.persistence.LayerPersistenceUtils;
@@ -133,10 +135,10 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
             String flex = getParameterValue("flex");
             
             Landmark landmark = new Landmark(latitude, longitude, altitude, name, description, username, validityDate, layer, email, flex);
-            
+            EntityManager em = EMF.getEntityManager();
             try {
             	LandmarkPersistenceUtils landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().getService("bean/LandmarkPersistenceUtils");
-            	List<Landmark> newestLandmarks = landmarkPersistenceUtils.findNewestLandmarks(1);
+            	List<Landmark> newestLandmarks = landmarkPersistenceUtils.findNewestLandmarks(1, em);
             	int id = -1;
             	if (!newestLandmarks.isEmpty()) {
             		Landmark newest = newestLandmarks.get(0);
@@ -153,7 +155,7 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
             		logger.log(Level.INFO, "Landmark exists.");
             	} else {
             		logger.log(Level.INFO, "New landmark will be created...");
-            		landmarkPersistenceUtils.save(landmark);	
+            		landmarkPersistenceUtils.save(landmark, em);	
 				
             		//add bitly hash
             		String hash = UrlUtils.getHash(ConfigurationManager.SERVER_URL + "showLandmark/" + landmark.getId());
@@ -170,7 +172,9 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
             } catch (NamingException e) {
             	request.setAttribute("output", "{\"error\":\"" + e.getMessage() + "\"}");
 				logger.log(Level.SEVERE, e.getMessage(), e);
-			}		          
+			}	finally {
+				em.close();
+			}
             
             return SUCCESS;
 		}    
@@ -187,13 +191,16 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
             String location = getParameterValue("address");
 
             Geocode g = new Geocode(location, status, latitude, longitude);
+            EntityManager em = EMF.getEntityManager();
             try {
             	GeocodePersistenceUtils geocodePeristenceUtils = (GeocodePersistenceUtils) ServiceLocator.getInstance().getService("bean/GeocodePersistenceUtils");
-				geocodePeristenceUtils.save(g);	
+				geocodePeristenceUtils.save(g, em);	
 				request.setAttribute("output", "{\"status\":\"ok\",\"id\":" + g.getId() + "}");
             } catch (NamingException e) {
             	request.setAttribute("output", "{\"error\":\"" + e.getMessage() + "\"}");
 				logger.log(Level.SEVERE, e.getMessage(), e);
+			} finally {
+				em.close();
 			}
 			
 			return SUCCESS;
@@ -210,12 +217,13 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
             String username = getParameterValue("username");
             String venueid = getParameterValue("venueId");
 
+            EntityManager em = EMF.getEntityManager();
             try {
             	LandmarkPersistenceUtils landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().getService("bean/LandmarkPersistenceUtils");
             	
             	Landmark l = null;
             	if (landmarkId > -1) {
-            		l = landmarkPersistenceUtils.selectLandmarkById(landmarkId);
+            		l = landmarkPersistenceUtils.selectLandmarkById(landmarkId, em);
             	}
             	
             	CheckinPersistenceUtils checkinPersistenceUtils = (CheckinPersistenceUtils) ServiceLocator.getInstance().getService("bean/CheckinPersistenceUtils");
@@ -223,11 +231,11 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
             	if (type == 2) { //social checkin only: check if last checkin before 8 hours
             		Calendar cal = Calendar.getInstance();
             		cal.add(Calendar.HOUR_OF_DAY, -8);
-            		count = checkinPersistenceUtils.countNewer(cal.getTime(), username, venueid);
+            		count = checkinPersistenceUtils.countNewer(cal.getTime(), username, venueid, em);
             	}
             	if (count == 0) {
             		Checkin c = new Checkin(username, l, venueid, type);
-            		checkinPersistenceUtils.save(c);	
+            		checkinPersistenceUtils.save(c, em);	
             		request.setAttribute("output", "{\"status\":\"ok\",\"id\":" + c.getId() + "}");
             	} else {
             		request.setAttribute("output", "{\"error\":\"last checkin in less than 8 hours\"}");
@@ -235,6 +243,8 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
             } catch (NamingException e) {
             	request.setAttribute("output", "{\"error\":\"" + e.getMessage() + "\"}");
 				logger.log(Level.SEVERE, e.getMessage(), e);
+			} finally {
+				em.close();
 			}
 			
 			return SUCCESS;
@@ -250,13 +260,14 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
             String username = getParameterValue("username");
             String message = getParameterValue("message");
 
+            EntityManager em = EMF.getEntityManager();
             try {
             	LandmarkPersistenceUtils landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().getService("bean/LandmarkPersistenceUtils");
-            	Landmark l = landmarkPersistenceUtils.selectLandmarkById(landmarkId);
+            	Landmark l = landmarkPersistenceUtils.selectLandmarkById(landmarkId, em);
             	if (l != null) {
             		Comment c = new Comment(username, l, message);
             		CommentPersistenceUtils commentPeristenceUtils = (CommentPersistenceUtils) ServiceLocator.getInstance().getService("bean/CommentPersistenceUtils");
-					commentPeristenceUtils.save(c);	
+					commentPeristenceUtils.save(c, em);	
 					request.setAttribute("output", "{\"status\":\"ok\",id:" + c.getId() + "}");
             	} else {
             		addActionError("Csn't find landmark " + landmarkId + "!");
@@ -265,6 +276,8 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
             } catch (NamingException e) {
             	request.setAttribute("output", "{\"error\":\"" + e.getMessage() + "\"}");
 				logger.log(Level.SEVERE, e.getMessage(), e);
+			} finally {
+				em.close();
 			}
 			
 			return SUCCESS;
@@ -279,14 +292,17 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
 			String name = request.getParameter("name");
 			String desc = request.getParameter("desc");
 			String formatted = request.getParameter("formatted");
-			try {
+			EntityManager em = EMF.getEntityManager();
+            try {
 				LayerPersistenceUtils layerPeristenceUtils = (LayerPersistenceUtils) ServiceLocator.getInstance().getService("bean/LayerPersistenceUtils");
 				Layer layer = new Layer(name, desc, true, false, true, formatted);
-				layerPeristenceUtils.save(layer);
+				layerPeristenceUtils.save(layer, em);
 				request.setAttribute("output", "{\"status\":\"ok\",\"name\":\"" + name + "\"}");
 			} catch (Exception e) {
 				request.setAttribute("output", "{\"error\":\"" + e.getMessage() + "\"}");
 				logger.log(Level.SEVERE, e.getMessage(), e);
+			} finally {
+				em.close();
 			}
 			return SUCCESS;
 		}
@@ -302,14 +318,17 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
             double longitude = GeocodeUtils.getLongitude(getParameterValue("longitude"));
             String username = getParameterValue("username");
             int storageId = 1; //Google Cloud Storage
+            EntityManager em = EMF.getEntityManager();
             try {
 				ScreenshotPersistenceUtils screenshotPeristenceUtils = (ScreenshotPersistenceUtils) ServiceLocator.getInstance().getService("bean/ScreenshotPersistenceUtils");
 				Screenshot s = new Screenshot(filename, latitude, longitude, username, storageId);
-				screenshotPeristenceUtils.save(s);
+				screenshotPeristenceUtils.save(s, em);
 				request.setAttribute("output", "{\"status\":\"ok\",\"id\":\"" + s.getId() + "\"}");
             } catch (Exception e) {
 				request.setAttribute("output", "{\"error\":\"" + e.getMessage() + "\"}");
 				logger.log(Level.SEVERE, e.getMessage(), e);
+			} finally {
+				em.close();
 			}
             return SUCCESS;
 		}
@@ -325,12 +344,13 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
 			String email = getParameterValue("email");
 			String firstname = getParameterValue("firstname");
 			String lastname = getParameterValue("lastname");
-			try {
+			EntityManager em = EMF.getEntityManager();
+            try {
 				UserPersistenceUtils userPeristenceUtils = (UserPersistenceUtils) ServiceLocator.getInstance().getService("bean/UserPersistenceUtils");
-				User u = userPeristenceUtils.findById(login);
+				User u = userPeristenceUtils.findById(login, em);
 				if (u == null) {
 					u = new User(login, password,  email, firstname, lastname);
-					userPeristenceUtils.save(u);
+					userPeristenceUtils.save(u, em);
 					request.setAttribute("output", "{\"status\":\"ok\",\"login\":\"" + login + "\"}");
 				} else {
 					request.setAttribute("output", "{\"error\":\"User exists!\"}");    	
@@ -338,6 +358,8 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
             } catch (Exception e) {
 				request.setAttribute("output", "{\"error\":\"" + e.getMessage() + "\"}");
 				logger.log(Level.SEVERE, e.getMessage(), e);
+			} finally {
+				em.close();
 			}
             return SUCCESS;
 		}
@@ -360,7 +382,8 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
 		
 		@Override
 		public void run() {
-			try {
+			EntityManager em = EMF.getEntityManager();
+            try {
 				long start = System.currentTimeMillis();
 				LandmarkPersistenceUtils landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().getService("bean/LandmarkPersistenceUtils");
         	    if (StringUtils.isNotEmpty(hash)) {
@@ -370,10 +393,12 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
         	    if (StringUtils.isEmpty(landmark.getDescription())) {
         	    	landmark.setDecription(desc);
         	    }
-    			landmarkPersistenceUtils.update(landmark);	
+    			landmarkPersistenceUtils.update(landmark, em);	
     			logger.log(Level.INFO, "Landmark " + landmark.getId() + " has been updated in " + (System.currentTimeMillis()-start) + " millis.");
 			} catch (Exception e) {
             	logger.log(Level.SEVERE, e.getMessage(), e);
+			} finally {
+				em.close();
 			}
 		}
 	}

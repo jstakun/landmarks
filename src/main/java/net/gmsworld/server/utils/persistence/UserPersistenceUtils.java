@@ -6,46 +6,48 @@ import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.persistence.EntityManager;
+
 import net.gmsworld.server.persistence.User;
 
 public class UserPersistenceUtils {
 	
 	private final Logger logger = Logger.getLogger(UserPersistenceUtils.class.getName());
 	
-	public void save(User u) {
+	public void save(User u, EntityManager entityManager) {
 		try {
 			u.setPassword(getHash(u.getPassword()));
-			EMF.save(u);
+			EMF.save(u, entityManager);
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, e.getMessage(), e);
 		}
 	}
 	
-	private void update(User u) {
-		EMF.update(u);
+	private void update(User u, EntityManager entityManager) {
+		EMF.update(u, entityManager);
 	}
 	
-	public User findById(String login) {
-		return EMF.getEntityManager().find(User.class, login);
+	public User findById(String login, EntityManager entityManager) {
+		return entityManager.find(User.class, login);
 	}
 	
-	public void setConfirmation(String login) {
+	public void setConfirmation(String login, EntityManager entityManager) {
 		//
-		User u = findById(login);
+		User u = findById(login, entityManager);
 		if (u != null) {
 			u.setConfirmDate(new Date(System.currentTimeMillis()));
 			u.setConfirmed(true);
-			update(u);
+			update(u, entityManager);
 		} else {
 			logger.log(Level.SEVERE, "User " + login + " doesn't exists!");
 		}
 	}
 	
-	public void setLastLogonDate(String login) {
-		User u = findById(login);
+	public void setLastLogonDate(String login, EntityManager entityManager) {
+		User u = findById(login, entityManager);
 		if (u != null) {
 		    u.setLastLogonDate(new Date(System.currentTimeMillis()));	
-			update(u);
+			update(u, entityManager);
 		} else {
 			logger.log(Level.SEVERE, "User " + login + " doesn't exists!");
 		} 
@@ -57,9 +59,9 @@ public class UserPersistenceUtils {
 	    return Base64.getEncoder().encodeToString(digester.digest());
 	}
 	
-	public boolean login(String login, String password) {
+	public boolean login(String login, String password, EntityManager entityManager) {
 		boolean auth = false;
-		User u = findById(login);
+		User u = findById(login, entityManager);
 		if (u != null) {
 			try {
 				auth = (getHash(password).equals(u.getPassword()));
@@ -69,5 +71,4 @@ public class UserPersistenceUtils {
 		} 
 		return auth;
 	}
-	
 }

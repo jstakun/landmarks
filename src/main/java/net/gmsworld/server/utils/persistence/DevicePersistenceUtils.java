@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 
@@ -13,16 +14,16 @@ public class DevicePersistenceUtils {
 
 	private final Logger logger = Logger.getLogger(DevicePersistenceUtils.class.getName());
 	
-	public void save(Device device) {
-		EMF.save(device);	
+	public void save(Device device, EntityManager entityManager) {
+		EMF.save(device, entityManager);	
 	}
 	
-	public void update(Device device) {
-		EMF.update(device);
+	public void update(Device device, EntityManager entityManager) {
+		EMF.update(device, entityManager);
 	}
 	
-	public Device findDeviceByImeiAndPin(String imei, Integer pin) {
-		TypedQuery<Device> query = EMF.getEntityManager().createNamedQuery(Device.FIND_BY_IMEI_AND_PIN, Device.class);
+	public Device findDeviceByImeiAndPin(String imei, Integer pin, EntityManager entityManager) {
+		TypedQuery<Device> query = entityManager.createNamedQuery(Device.FIND_BY_IMEI_AND_PIN, Device.class);
 		query.setParameter("imei", imei);
 		query.setParameter("pin", pin);
 		Device d = null;
@@ -34,8 +35,8 @@ public class DevicePersistenceUtils {
 	    return d;
 	}
 	
-	public Device findDeviceByNameAndUsername(String name, String username, Integer pin) {
-		TypedQuery<Device> query = EMF.getEntityManager().createNamedQuery(Device.FIND_BY_NAME_AND_USERNAME, Device.class);
+	public Device findDeviceByNameAndUsername(String name, String username, Integer pin, EntityManager entityManager) {
+		TypedQuery<Device> query = entityManager.createNamedQuery(Device.FIND_BY_NAME_AND_USERNAME, Device.class);
 		query.setParameter("name", name);
 		query.setParameter("username", username);
 		query.setParameter("pin", pin);
@@ -51,8 +52,8 @@ public class DevicePersistenceUtils {
 	    return d;
 	}
 	
-	public Device findDeviceByImei(String imei) {
-		TypedQuery<Device> query =EMF.getEntityManager().createNamedQuery(Device.FIND_BY_IMEI, Device.class);
+	public Device findDeviceByImei(String imei, EntityManager entityManager) {
+		TypedQuery<Device> query = entityManager.createNamedQuery(Device.FIND_BY_IMEI, Device.class);
 		query.setParameter("imei", imei);
 		Device d = null;
 		try {

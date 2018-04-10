@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.persistence.EntityManager;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -15,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.gmsworld.server.config.Commons;
 import net.gmsworld.server.utils.ServiceLocator;
+import net.gmsworld.server.utils.persistence.EMF;
 import net.gmsworld.server.utils.persistence.TokenPersistenceUtils;
 
 /**
@@ -45,11 +47,16 @@ public class AuthzFilter implements Filter {
 			String authHeader = httpRequest.getHeader(Commons.TOKEN_HEADER);
     		String scope = httpRequest.getHeader(Commons.SCOPE_HEADER);
     		if (authHeader != null && scope != null) {
+    			EntityManager em = EMF.getEntityManager();
     			try {
     				TokenPersistenceUtils tokenPersistenceUtils = (TokenPersistenceUtils) ServiceLocator.getInstance().getService("bean/TokenPersistenceUtils");
-    				auth = tokenPersistenceUtils.isTokenValid(authHeader, scope);
+    				auth = tokenPersistenceUtils.isTokenValid(authHeader, scope, em);
     			} catch (Exception e) {
         			logger.log(Level.SEVERE, e.getMessage(), e);
+        		} finally {
+        			if (em != null) {
+        				em.close();
+        			}
         		}
     		} else {
     			logger.log(Level.WARNING, "Missing token or scope header");

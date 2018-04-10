@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.struts2.interceptor.ServletRequestAware;
@@ -15,6 +16,7 @@ import net.gmsworld.server.persistence.Token;
 import net.gmsworld.server.utils.DateUtils;
 import net.gmsworld.server.utils.ServiceLocator;
 import net.gmsworld.server.utils.TokenUtils;
+import net.gmsworld.server.utils.persistence.EMF;
 import net.gmsworld.server.utils.persistence.TokenPersistenceUtils;
 
 public class TokenAction extends ActionSupport implements ServletRequestAware {
@@ -35,56 +37,69 @@ public class TokenAction extends ActionSupport implements ServletRequestAware {
 	}
 	
 	public String createToken() {
+		String result;
 		if (scope != null) {
+			EntityManager em = EMF.getEntityManager();
 			try {
 				Date validityDate = DateUtils.afterOneHundredYearsFromNow();
 				String key = TokenUtils.generateToken();
 				Token token = new Token(key, validityDate, scope, user);
-				getTokenPersistenceUtils().save(token);
+				getTokenPersistenceUtils().save(token, em);
 				request.setAttribute(JSonDataAction.JSON_OUTPUT, token);
-				return "json";
+				result = "json";
 			} catch (Exception e) {
 				logger.log(Level.SEVERE, e.getMessage(), e);
 				addActionError(e.getMessage());
-		    	return ERROR;
+		    	result = ERROR;
+			} finally {
+				em.close();
 			}
 		} else {
 			addActionError("Missing required parameter!");
-	    	return ERROR;
+	    	result = ERROR;
 		}
+		return result;
 	}
 	
 	public String isValidToken() {
+		String result;
 		if (key != null && scope != null) {
 			boolean isValid = false;
+			EntityManager em = EMF.getEntityManager();
 			try {
-				isValid = getTokenPersistenceUtils().isTokenValid(key, scope);
+				isValid = getTokenPersistenceUtils().isTokenValid(key, scope, em);
 				request.setAttribute(JSonDataAction.JSON_OUTPUT, isValid);
-		 		return "json";
+		 		result = "json";
 			} catch (Exception e) {
 				logger.log(Level.SEVERE, e.getMessage(), e);
 				addActionError(e.getMessage());
-		    	return ERROR;
+		    	result = ERROR;
 			}			
 		} else {
 			addActionError("Missing required parameter!");
-	    	return ERROR;
+	    	result = ERROR;
 		}
+		return result;
 	}
 	
 	public String getTopTokens() {
+		EntityManager em = EMF.getEntityManager();
+		String result;
 		try {
 			if (limit == null) {
 				limit = 10;
 			}
-			List<Token> tokens = getTokenPersistenceUtils().getTopTokens(limit);
+			List<Token> tokens = getTokenPersistenceUtils().getTopTokens(limit, em);
 			request.setAttribute(JSonDataAction.JSON_OUTPUT, tokens);
-	 		return "json";
+	 		result = "json";
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, e.getMessage(), e);
 			addActionError(e.getMessage());
-	    	return ERROR;
+	    	result = ERROR;
+		} finally {
+			em.close();
 		}
+		return result;
 	}
 
 	public String getScope() {

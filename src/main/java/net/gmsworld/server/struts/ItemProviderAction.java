@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 
 import net.gmsworld.server.persistence.Checkin;
@@ -18,6 +19,7 @@ import net.gmsworld.server.utils.ServiceLocator;
 import net.gmsworld.server.utils.memcache.CacheUtil;
 import net.gmsworld.server.utils.persistence.CheckinPersistenceUtils;
 import net.gmsworld.server.utils.persistence.CommentPersistenceUtils;
+import net.gmsworld.server.utils.persistence.EMF;
 import net.gmsworld.server.utils.persistence.GeocodePersistenceUtils;
 import net.gmsworld.server.utils.persistence.LayerPersistenceUtils;
 import net.gmsworld.server.utils.persistence.ScreenshotPersistenceUtils;
@@ -99,10 +101,12 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
 		String output = null;
 		long startTime = System.currentTimeMillis();
     	List<Geocode> newest = CacheUtil.getList(Geocode.class, key);
+    	EntityManager em = null;
     	try {
     		if (newest == null) {
-    			GeocodePersistenceUtils geocodePeristenceUtils = (GeocodePersistenceUtils) ServiceLocator.getInstance().getService("bean/GeocodePersistenceUtils");
-    			newest = geocodePeristenceUtils.findNewest(limit);	
+    			em = EMF.getEntityManager();
+    	        GeocodePersistenceUtils geocodePeristenceUtils = (GeocodePersistenceUtils) ServiceLocator.getInstance().getService("bean/GeocodePersistenceUtils");
+    			newest = geocodePeristenceUtils.findNewest(limit, em);	
     		    if (newest != null && !newest.isEmpty()) {
     		    	CacheUtil.putShort(key, newest);
     		    }
@@ -111,6 +115,10 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
         } catch (Exception e) {
         	output = "{\"error\":\"" + e.getMessage() + "\"}";
 			logger.log(Level.SEVERE, e.getMessage(), e);
+		} finally {
+			if (em!= null) {
+				em.close();
+			}
 		}
     	logger.log(Level.INFO, "Found " + (newest == null ? 0 : newest.size()) + " geocodes in " + (System.currentTimeMillis() - startTime) + " millis");
 		request.setAttribute("output", output);
@@ -119,9 +127,10 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
 	
 	private String findByIdGeocode(int id) {
 		String output = null;
+		EntityManager em = EMF.getEntityManager();
     	try {
     		GeocodePersistenceUtils geocodePeristenceUtils = (GeocodePersistenceUtils) ServiceLocator.getInstance().getService("bean/GeocodePersistenceUtils");
-    		Geocode g = geocodePeristenceUtils.findById(id);
+    		Geocode g = geocodePeristenceUtils.findById(id, em);
     		if (g != null) {
     			output = JSONUtil.serialize(g);
     		} else {   	
@@ -131,6 +140,8 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
     	} catch (Exception e) {
         	output = "{\"error\":\"" + e.getMessage() + "\"}";
 			logger.log(Level.SEVERE, e.getMessage(), e);
+		} finally {
+			em.close();
 		}
     	request.setAttribute("output", output);
     	return SUCCESS;
@@ -138,9 +149,10 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
 	
 	private String findByAddressGeocode(String address) {
 		String output = null;
+		EntityManager em = EMF.getEntityManager();
     	try {
     		GeocodePersistenceUtils geocodePeristenceUtils = (GeocodePersistenceUtils) ServiceLocator.getInstance().getService("bean/GeocodePersistenceUtils");
-    		Geocode g = geocodePeristenceUtils.findAddress(address);
+    		Geocode g = geocodePeristenceUtils.findAddress(address, em);
     		if (g != null) {
     			output = JSONUtil.serialize(g);
     		} else {
@@ -150,6 +162,8 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
     	} catch (Exception e) {
         	output = "{\"error\":\"" + e.getMessage() + "\"}";
 			logger.log(Level.SEVERE, e.getMessage(), e);
+		} finally {
+			em.close();
 		}
     	request.setAttribute("output", output);
     	return SUCCESS;
@@ -158,14 +172,17 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
 	private String executeComment() {
 		if (getParameter("landmarkId") != null) {
 			int landmarkId = NumberUtils.getInt(getParameter("landmarkId"), -1);
+			EntityManager em = EMF.getEntityManager();
 			String output = null;
 			try {
             	CommentPersistenceUtils commentPeristenceUtils = (CommentPersistenceUtils) ServiceLocator.getInstance().getService("bean/CommentPersistenceUtils");
-				List<Comment> comments = commentPeristenceUtils.findByLandmark(landmarkId);
+				List<Comment> comments = commentPeristenceUtils.findByLandmark(landmarkId, em);
 				output = JSONUtil.serialize(comments);
 			} catch (Exception e) {
             	output = "{\"error\":\"" + e.getMessage() + "\"}";
 				logger.log(Level.SEVERE, e.getMessage(), e);
+			} finally {
+				em.close();
 			}
             request.setAttribute("output", output);
             return SUCCESS;
@@ -178,14 +195,17 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
 	private String executeCheckin() {
 		if (getParameter("landmarkId") != null) {
 			int landmarkId = NumberUtils.getInt(getParameter("landmarkId"), -1);
+			EntityManager em = EMF.getEntityManager();
 			String output = null;
 			try {
             	CheckinPersistenceUtils checkinPeristenceUtils = (CheckinPersistenceUtils) ServiceLocator.getInstance().getService("bean/CheckinPersistenceUtils");
-				List<Checkin> checkins = checkinPeristenceUtils.findByLandmark(landmarkId);
+				List<Checkin> checkins = checkinPeristenceUtils.findByLandmark(landmarkId, em);
 				output = JSONUtil.serialize(checkins);
 			} catch (Exception e) {
             	output = "{\"error\":\"" + e.getMessage() + "\"}";
 				logger.log(Level.SEVERE, e.getMessage(), e);
+			} finally {
+				em.close();
 			}
             request.setAttribute("output", output);
             return SUCCESS;
@@ -197,13 +217,16 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
 	
 	private String executeLayer() {
 		String output = null;
+		EntityManager em = EMF.getEntityManager();
 		try {
 			LayerPersistenceUtils layerPeristenceUtils = (LayerPersistenceUtils) ServiceLocator.getInstance().getService("bean/LayerPersistenceUtils");
-			List<Layer> layers = layerPeristenceUtils.findAll();
+			List<Layer> layers = layerPeristenceUtils.findAll(em);
 			output = JSONUtil.serialize(layers);
 		} catch (Exception e) {
         	output = "{\"error\":\"" + e.getMessage() + "\"}";
 			logger.log(Level.SEVERE, e.getMessage(), e);
+		} finally {
+			em.close();
 		}
         request.setAttribute("output", output);
         return SUCCESS;		
@@ -244,9 +267,10 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
 	
 	private String findByIdScreenshot(int id) {
 		String output = null;
-    	try {
+		EntityManager em = EMF.getEntityManager();
+		try {
     		ScreenshotPersistenceUtils screenshotPeristenceUtils = (ScreenshotPersistenceUtils) ServiceLocator.getInstance().getService("bean/ScreenshotPersistenceUtils");
-    		Screenshot s = screenshotPeristenceUtils.findById(id);
+    		Screenshot s = screenshotPeristenceUtils.findById(id, em);
     		if (s != null) {
     			output = JSONUtil.serialize(s);
     		} else {   	
@@ -256,6 +280,8 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
     	} catch (Exception e) {
         	output = "{\"error\":\"" + e.getMessage() + "\"}";
 			logger.log(Level.SEVERE, e.getMessage(), e);
+		} finally {
+			em.close();
 		}
     	request.setAttribute("output", output);
     	return SUCCESS;
@@ -263,9 +289,10 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
 	
 	private String removeScreenshot(int id) {
 		String output = null;
-    	try {
+		EntityManager em = EMF.getEntityManager();
+		try {
     		ScreenshotPersistenceUtils screenshotPeristenceUtils = (ScreenshotPersistenceUtils) ServiceLocator.getInstance().getService("bean/ScreenshotPersistenceUtils");
-    		boolean deleted = screenshotPeristenceUtils.delete(id);
+    		boolean deleted = screenshotPeristenceUtils.delete(id, em);
     		if (deleted) {
     			output = "{\"message\": \"screenshot deleted\"}";
     		} else {   	
@@ -276,6 +303,8 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
     	} catch (Exception e) {
         	output = "{\"error\":\"" + e.getMessage() + "\"}";
 			logger.log(Level.SEVERE, e.getMessage(), e);
+		} finally {
+			em.close();
 		}
     	request.setAttribute("output", output);
     	return SUCCESS;
@@ -283,9 +312,10 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
 	
 	private String findOlder(int ndays) {
 		String output = null;
+		EntityManager em = EMF.getEntityManager();
     	try {
     		ScreenshotPersistenceUtils screenshotPeristenceUtils = (ScreenshotPersistenceUtils) ServiceLocator.getInstance().getService("bean/ScreenshotPersistenceUtils");
-    	    List<Screenshot> s = screenshotPeristenceUtils.findOlder(ndays, 100);
+    	    List<Screenshot> s = screenshotPeristenceUtils.findOlder(ndays, 100, em);
     	    if (s != null) {
     	    	output = JSONUtil.serialize(s, null, null, true, true);
     	    	logger.log(Level.INFO, "Found " + s.size() + " screenshots older than " + ndays + " days");
@@ -296,6 +326,8 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
     	} catch (Exception e) {
         	output = "{\"error\":\"" + e.getMessage() + "\"}";
 			logger.log(Level.SEVERE, e.getMessage(), e);
+		} finally {
+			em.close();
 		}
     	request.setAttribute("output", output);
     	return SUCCESS;	
@@ -303,13 +335,14 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
 	
 	private String findByIdUser(String id, boolean confirm) {
 		String output = null;
+		EntityManager em = EMF.getEntityManager();
     	try {
     		UserPersistenceUtils userPeristenceUtils = (UserPersistenceUtils) ServiceLocator.getInstance().getService("bean/UserPersistenceUtils");
-    		User u = userPeristenceUtils.findById(id);
+    		User u = userPeristenceUtils.findById(id, em);
     		if (u != null) {
-    			userPeristenceUtils.setLastLogonDate(id);
+    			userPeristenceUtils.setLastLogonDate(id, em);
     			if (confirm) {
-    				userPeristenceUtils.setConfirmation(id);
+    				userPeristenceUtils.setConfirmation(id, em);
     			}
     			output = JSONUtil.serialize(u);
     		} else {   	
@@ -319,6 +352,8 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
     	} catch (Exception e) {
         	output = "{\"error\":\"" + e.getMessage() + "\"}";
 			logger.log(Level.SEVERE, e.getMessage(), e);
+		} finally {
+			em.close();
 		}
     	request.setAttribute("output", output);
     	return SUCCESS;
@@ -326,13 +361,16 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
 	
 	private String login(String login, String password) {
 		String output = null;
+		EntityManager em = EMF.getEntityManager();
     	try {
     		UserPersistenceUtils userPeristenceUtils = (UserPersistenceUtils) ServiceLocator.getInstance().getService("bean/UserPersistenceUtils");
-    		boolean auth = userPeristenceUtils.login(login, password);
+    		boolean auth = userPeristenceUtils.login(login, password, em);
     		output = "{\"auth\": " + auth + "}";
     	} catch (Exception e) {
         	output = "{\"error\":\"" + e.getMessage() + "\"}";
 			logger.log(Level.SEVERE, e.getMessage(), e);
+		} finally {
+			em.close();
 		}
     	request.setAttribute("output", output);
     	return SUCCESS;

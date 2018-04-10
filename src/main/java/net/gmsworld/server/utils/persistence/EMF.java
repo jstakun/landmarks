@@ -1,31 +1,36 @@
 package net.gmsworld.server.utils.persistence;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 public class EMF {
 
-	private static EntityManager entityManager = Persistence.createEntityManagerFactory("landmarksdb").createEntityManager();
+	private static EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("landmarksdb");
 	
 	public static EntityManager getEntityManager() {
-		return entityManager;
+		return entityManagerFactory.createEntityManager();
 	}
 	
-	public static void save(Object entity) {
+	protected static void save(Object entity, EntityManager entityManager) {
 		entityManager.getTransaction().begin();
 		entityManager.persist(entity);
 		entityManager.getTransaction().commit();
 	} 
 	
-	public static void update(Object entity) {
+	protected static void update(Object entity, EntityManager entityManager) {
 		entityManager.getTransaction().begin();
 		entityManager.merge(entity);
 		entityManager.getTransaction().commit();		
 	}
 	
-	public static void remove(Object entity) {
+	protected static void remove(Object entity, EntityManager entityManager) {
 		entityManager.getTransaction().begin();
 		entityManager.remove(entity);
 		entityManager.getTransaction().commit();		
+	}
+	
+	public static void close(EntityManager entityManager) {
+		entityManager.close();
 	}
 }

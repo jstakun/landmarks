@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 
 import net.gmsworld.server.persistence.Landmark;
@@ -12,6 +13,7 @@ import net.gmsworld.server.utils.GeocodeUtils;
 import net.gmsworld.server.utils.NumberUtils;
 import net.gmsworld.server.utils.ServiceLocator;
 import net.gmsworld.server.utils.memcache.CacheUtil;
+import net.gmsworld.server.utils.persistence.EMF;
 import net.gmsworld.server.utils.persistence.LandmarkPersistenceUtils;
 
 import org.apache.struts2.interceptor.ParameterAware;
@@ -94,9 +96,10 @@ public class LandmarkProviderAction extends ActionSupport implements ParameterAw
 		int limit = NumberUtils.getInt(getParameter("limit"), 10);
 		String output = null;
 		List<Landmark> newestLandmarks = CacheUtil.getList(Landmark.class, key);
+		EntityManager em = EMF.getEntityManager();
 		try {
 			if (newestLandmarks == null) {
-				newestLandmarks = getLandmarkPersistenceUtils().findNewestLandmarks(limit);
+				newestLandmarks = getLandmarkPersistenceUtils().findNewestLandmarks(limit, em);
 				if (newestLandmarks != null && !newestLandmarks.isEmpty()) {
 					CacheUtil.putShort(key, newestLandmarks);
 				}
@@ -105,6 +108,8 @@ public class LandmarkProviderAction extends ActionSupport implements ParameterAw
 		} catch (Exception e) {
 			output = "{\"error\":\"" + e.getMessage() + "\"}";
 			logger.log(Level.SEVERE, e.getMessage(), e);
+		} finally {
+			em.close();
 		}
 		logger.log(Level.INFO, "findNewestLandmarks(): found " + (newestLandmarks == null ? 0 : newestLandmarks.size()) + " landmarks in " + (System.currentTimeMillis() - start)  + " millis!");
 		request.setAttribute("output", output);
@@ -114,8 +119,9 @@ public class LandmarkProviderAction extends ActionSupport implements ParameterAw
 	private String findById() {
 		int id = NumberUtils.getInt(getParameter("id"), -1);
 		String output = null;
+		EntityManager em = EMF.getEntityManager();
 		try {
-			Landmark l = getLandmarkPersistenceUtils().selectLandmarkById(id);
+			Landmark l = getLandmarkPersistenceUtils().selectLandmarkById(id, em);
 			if (l != null) {
 				output = JSONUtil.serialize(l, null, null, true, true);
 			} else {
@@ -124,6 +130,8 @@ public class LandmarkProviderAction extends ActionSupport implements ParameterAw
 		} catch (Exception e) {
 			output = "{\"error\":\"" + e.getMessage() + "\"}";
 			logger.log(Level.SEVERE, e.getMessage(), e);
+		} finally {
+			em.close();
 		}
 		request.setAttribute("output", output);
 		return SUCCESS;
@@ -132,8 +140,9 @@ public class LandmarkProviderAction extends ActionSupport implements ParameterAw
 	private String findByHash() {
 		String hash = getParameter("hash");
 		String output = null;
+		EntityManager em = EMF.getEntityManager();
 		try {
-			Landmark l = getLandmarkPersistenceUtils().selectLandmarkByHash(hash);	
+			Landmark l = getLandmarkPersistenceUtils().selectLandmarkByHash(hash, em);	
 			if (l != null) {
 				output = JSONUtil.serialize(l, null, null, true, true);
 			} else {
@@ -142,6 +151,8 @@ public class LandmarkProviderAction extends ActionSupport implements ParameterAw
 		} catch (Exception e) {
 			output = "{\"error\":\"" + e.getMessage() + "\"}";
 			logger.log(Level.SEVERE, e.getMessage(), e);
+		} finally {
+			em.close();
 		}
 		request.setAttribute("output", output);
 		return SUCCESS;
@@ -153,15 +164,17 @@ public class LandmarkProviderAction extends ActionSupport implements ParameterAw
 		String output = null;
 		List<Landmark> landmarks = null;
 		int limit = NumberUtils.getInt(getParameter("limit"), 10);
-		
+		EntityManager em = EMF.getEntityManager();
 		
 		try {
 			logger.log(Level.INFO, "Querying for {0}", query);
-			landmarks = getLandmarkPersistenceUtils().searchLandmarks(query, limit);	
+			landmarks = getLandmarkPersistenceUtils().searchLandmarks(query, limit, em);	
 			output = JSONUtil.serialize(landmarks, null, null, true, true);
 		} catch (Exception e) {
 			output = "{\"error\":\"" + e.getMessage() + "\"}";
 			logger.log(Level.SEVERE, e.getMessage(), e);
+		} finally {
+			em.close();
 		}
 		logger.log(Level.INFO, "searchLandmarks(): found " + (landmarks == null ? 0 : landmarks.size()) + " landmarks in " + (System.currentTimeMillis() - start)  + " millis!");
 		request.setAttribute("output", output);
@@ -176,12 +189,15 @@ public class LandmarkProviderAction extends ActionSupport implements ParameterAw
 		int first = NumberUtils.getInt(getParameter("first"), 0);
 		String output = null;
 		List<Landmark> landmarks = null;
+		EntityManager em = EMF.getEntityManager();
 		try {
-			landmarks = getLandmarkPersistenceUtils().selectLandmarksByUserAndLayer(username, layer, first, limit);	
+			landmarks = getLandmarkPersistenceUtils().selectLandmarksByUserAndLayer(username, layer, first, limit, em);	
 			output = JSONUtil.serialize(landmarks, null, null, true, true);
 		} catch (Exception e) {
 			output = "{\"error\":\"" + e.getMessage() + "\"}";
 			logger.log(Level.SEVERE, e.getMessage(), e);
+		} finally {
+			em.close();
 		}
 		logger.log(Level.INFO, "selectLandmarksByUserAndLayer(): found " + (landmarks == null ? 0 : landmarks.size()) + " landmarks in " + (System.currentTimeMillis() - start)  + " millis!");
 		request.setAttribute("output", output);
@@ -192,12 +208,15 @@ public class LandmarkProviderAction extends ActionSupport implements ParameterAw
 		String username = getParameter("username");
 		String layer = getParameter("layer");
 		String output = null;
+		EntityManager em = EMF.getEntityManager();
 		try {
-			int count = getLandmarkPersistenceUtils().countLandmarksByUserAndLayer(username, layer);	
+			int count = getLandmarkPersistenceUtils().countLandmarksByUserAndLayer(username, layer, em);	
 			output = "{\"count\":" + count + "}"; 
 		} catch (Exception e) {
 			output = "{\"error\":\"" + e.getMessage() + "\"}";
 			logger.log(Level.SEVERE, e.getMessage(), e);
+		} finally {
+			em.close();
 		}
 		request.setAttribute("output", output);
 		return SUCCESS;
@@ -223,12 +242,15 @@ public class LandmarkProviderAction extends ActionSupport implements ParameterAw
         String layer = getParameter("layer");
 		String output = null;
 		List<Landmark> landmarks = null;
+		EntityManager em = EMF.getEntityManager();
 		try {
-			landmarks = getLandmarkPersistenceUtils().selectLandmarksByCoordsAndLayer(layer, latitude, longitude, radius * 1000, limit);	
+			landmarks = getLandmarkPersistenceUtils().selectLandmarksByCoordsAndLayer(layer, latitude, longitude, radius * 1000, limit, em);	
 			output = JSONUtil.serialize(landmarks, null, null, true, true);
 		} catch (Exception e) {
 			output = "{\"error\":\"" + e.getMessage() + "\"}";
 			logger.log(Level.SEVERE, e.getMessage(), e);
+		} finally {
+			em.close();
 		}
 		logger.log(Level.INFO, "selectLandmarksByCoordsAndLayer(): found " + (landmarks == null ? 0 : landmarks.size()) + " landmarks in " + (System.currentTimeMillis() - start)  + " millis!");
 		request.setAttribute("output", output);
@@ -252,12 +274,15 @@ public class LandmarkProviderAction extends ActionSupport implements ParameterAw
 		int radius = NumberUtils.getRadius(getParameter("radius"), 3, 100);
 		String layer = getParameter("layer");
 		String output = null;
+		EntityManager em = EMF.getEntityManager();
 		try {
-			int count = getLandmarkPersistenceUtils().countLandmarksByCoordsAndLayer(layer, latitude, longitude, radius * 1000);	
+			int count = getLandmarkPersistenceUtils().countLandmarksByCoordsAndLayer(layer, latitude, longitude, radius * 1000, em);	
 			output = "{\"count\":" + count + "}"; 
 		} catch (Exception e) {
 			output = "{\"error\":\"" + e.getMessage() + "\"}";
 			logger.log(Level.SEVERE, e.getMessage(), e);
+		} finally {
+			em.close();
 		}
 		request.setAttribute("output", output);
 		return SUCCESS;
@@ -270,12 +295,15 @@ public class LandmarkProviderAction extends ActionSupport implements ParameterAw
 		int first = NumberUtils.getInt(getParameter("first"), 0);
 		String output = null;
 		List<Landmark> landmarks = null;
+		EntityManager em = EMF.getEntityManager();
 		try {
-			landmarks = getLandmarkPersistenceUtils().selectLandmarksByMonth(month, first, limit);
+			landmarks = getLandmarkPersistenceUtils().selectLandmarksByMonth(month, first, limit, em);
 			output = JSONUtil.serialize(landmarks, null, null, true, true);
 		} catch (Exception e) {
 			output = "{\"error\":\"" + e.getMessage() + "\"}";
 			logger.log(Level.SEVERE, e.getMessage(), e);
+		} finally {
+			em.close();
 		}
 		logger.log(Level.INFO, "selectLandmarksByMonth(): found " + (landmarks == null ? 0 : landmarks.size()) + " landmarks in " + (System.currentTimeMillis() - start)  + " millis!");
 		request.setAttribute("output", output);
@@ -285,12 +313,15 @@ public class LandmarkProviderAction extends ActionSupport implements ParameterAw
 	private String countLandmarksByMonth() {
 		String month = getParameter("month");
 		String output = null;
+		EntityManager em = EMF.getEntityManager();
 		try {
-			int count = getLandmarkPersistenceUtils().countLandmarksByMonth(month);
+			int count = getLandmarkPersistenceUtils().countLandmarksByMonth(month, em);
 			output = "{\"count\":" + count + "}"; 
 		} catch (Exception e) {
 			output = "{\"error\":\"" + e.getMessage() + "\"}";
 			logger.log(Level.SEVERE, e.getMessage(), e);
+		} finally {
+			em.close();
 		}
 		request.setAttribute("output", output);
 		return SUCCESS;
@@ -299,12 +330,15 @@ public class LandmarkProviderAction extends ActionSupport implements ParameterAw
 	private String getHeatMap() {
 		int days = NumberUtils.getInt(getParameter("days"), 365);
 		String output = null;
+		EntityManager em = EMF.getEntityManager();
 		try {
-			Map<String, Integer> bucket = getLandmarkPersistenceUtils().getNativeHeatMap(days); //.getHeatMap(days);
+			Map<String, Integer> bucket = getLandmarkPersistenceUtils().getNativeHeatMap(days, em); //.getHeatMap(days, em);
 			output = JSONUtil.serialize(bucket, null, null, true, true);
 		} catch (Exception e) {
 			output = "{\"error\":\"" + e.getMessage() + "\"}";
 			logger.log(Level.SEVERE, e.getMessage(), e);
+		} finally {
+			em.close();
 		}
 		request.setAttribute("output", output);
 		return SUCCESS;
@@ -326,12 +360,15 @@ public class LandmarkProviderAction extends ActionSupport implements ParameterAw
         }
 		int radius = NumberUtils.getRadius(getParameter("radius"), 3, 100);
 		String output = null;
+		EntityManager em = EMF.getEntityManager();
 		try {
-			List<Object[]> count = getLandmarkPersistenceUtils().countLandmarksByCoords(latitude, longitude, radius * 1000);	
+			List<Object[]> count = getLandmarkPersistenceUtils().countLandmarksByCoords(latitude, longitude, radius * 1000, em);	
 			output = JSONUtil.serialize(count, null, null, true, true);
 		} catch (Exception e) {
 			output = "{\"error\":\"" + e.getMessage() + "\"}";
 			logger.log(Level.SEVERE, e.getMessage(), e);
+		} finally {
+			em.close();
 		}
 		request.setAttribute("output", output);
 		return SUCCESS;
