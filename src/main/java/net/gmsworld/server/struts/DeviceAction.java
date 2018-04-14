@@ -180,7 +180,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 	
 	public String createOrUpdateDevice() {
 		String result = null;
-		if (imei != null && pin != null && pin >= 1000 && !StringUtils.equalsIgnoreCase(token, "BLACKLISTED")) {
+		if (imei != null && pin != null && pin >= 1000 && !StringUtils.equalsIgnoreCase(token, "BLACKLISTED") && (oldPin == null || oldPin > 1000)) {
 			EntityManager em = EMF.getEntityManager();
 			try {
 				DevicePersistenceUtils devicePersistenceUtils =  getDevicePersistenceUtils();			    
