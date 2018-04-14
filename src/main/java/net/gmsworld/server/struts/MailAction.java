@@ -98,7 +98,7 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	          
 	    		   if (StringUtils.isNotEmpty(to) && StringUtils.isNotEmpty(toNick)) {
 	    			   message.addRecipient(Message.RecipientType.TO, new InternetAddress(to, toNick));
-	    		   } else {
+	    		   } else if (StringUtils.isNotEmpty(to)) {
 	    			   message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(to)); 
 	    		   }
 	          

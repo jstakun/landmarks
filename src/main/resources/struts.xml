@@ -5,6 +5,14 @@
 <struts>
 	<package name="net.gmsworld.server.struts" namespace="/" extends="struts-default">
 	   
+	     <global-results>
+    		<result name="error">/error.jsp</result>
+	     </global-results>
+
+	    <global-exception-mappings>
+    		<exception-mapping exception="java.lang.Exception" result="error" />
+	    </global-exception-mappings>
+	   
 	    <action name="landmarksProvider" class="net.gmsworld.server.struts.LandmarkProviderAction">
 			<result name="success">/json.jsp</result>
 			<result name="error">/error.jsp</result>
