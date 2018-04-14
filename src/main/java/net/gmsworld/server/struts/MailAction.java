@@ -34,6 +34,8 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    private String contentType;
 	    private String cc;
 	    private String ccNick;
+	    private String recipients;
+	    
 	       	    
 	    @Override
 		public void setServletRequest(HttpServletRequest request) {
@@ -42,7 +44,7 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 
 	    public String execute() 
 	    {
-	       if (StringUtils.isNotEmpty(from) && StringUtils.isNotEmpty(to) && (StringUtils.isNotEmpty(body) || StringUtils.isNotEmpty(subject))) {	    	
+	       if (StringUtils.isNotEmpty(from) && (StringUtils.isNotEmpty(to) || StringUtils.isNotEmpty(recipients)) && (StringUtils.isNotEmpty(body) || StringUtils.isNotEmpty(subject))) {	    	
 	    	   try
 	    	   {
 	    		   Properties properties = new Properties();
@@ -88,18 +90,38 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    		   
 	    		   MimeMessage message = new MimeMessage(session);
 	          
-	    		   message.setFrom(new InternetAddress(from, fromNick));
+	    		   if (StringUtils.isNotEmpty(fromNick)) {
+	    			   message.setFrom(new InternetAddress(from, fromNick));
+	    		   } else {
+	    			   message.setFrom(new InternetAddress(from));
+	    		   }
 	          
 	    		   if (StringUtils.isNotEmpty(to) && StringUtils.isNotEmpty(toNick)) {
-	    			   message.setRecipient(Message.RecipientType.TO, new InternetAddress(to, toNick));
+	    			   message.addRecipient(Message.RecipientType.TO, new InternetAddress(to, toNick));
 	    		   } else {
-	    			   message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to)); 
+	    			   message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(to)); 
 	    		   }
 	          
 	    		   if (StringUtils.isNotEmpty(cc) && StringUtils.isNotEmpty(ccNick)) {
-	    			   message.setRecipient(Message.RecipientType.CC, new InternetAddress(cc, ccNick));
+	    			   message.addRecipient(Message.RecipientType.CC, new InternetAddress(cc, ccNick));
 	    		   } else if (StringUtils.isNotEmpty(cc)) {
-	    			   message.setRecipients(Message.RecipientType.CC, InternetAddress.parse(cc));  
+	    			   message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(cc));  
+	    		   }
+	    		   
+	    		   if (StringUtils.isNotEmpty(recipients)) {
+	    			   String[] allrecipients = StringUtils.split(recipients, "|");
+	    			   for (int i = 0; i<allrecipients.length; i++) {
+	    				   String[] r = StringUtils.split(allrecipients[i], ":");
+	    				   if (r.length == 2) {
+	    					    if (StringUtils.equalsIgnoreCase(r[0], "to")) {
+	    					    	message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(r[1]));
+	    					    } else if (StringUtils.equalsIgnoreCase(r[0], "cc")) {
+	    					    	message.addRecipients(Message.RecipientType.CC, InternetAddress.parse(r[1]));
+	    					    } else if (StringUtils.equalsIgnoreCase(r[0], "bcc")) {
+	    					    	message.addRecipients(Message.RecipientType.BCC, InternetAddress.parse(r[1]));
+	    					    } 
+	    				   }
+	    			   }
 	    		   }
 	          
 	    		   if (StringUtils.isNotEmpty(subject)) {
@@ -214,5 +236,13 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 
 		public void setCcNick(String ccNick) {
 			this.ccNick = ccNick;
+		}
+
+		public String getRecipients() {
+			return recipients;
+		}
+
+		public void setRecipients(String recipients) {
+			this.recipients = recipients;
 		}
 	}
