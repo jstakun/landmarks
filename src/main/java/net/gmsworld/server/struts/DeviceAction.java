@@ -179,7 +179,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 	}
 	
 	public String createOrUpdateDevice() {
-		String result;
+		String result = null;
 		if (imei != null && pin != null && pin >= 1000 && !StringUtils.equalsIgnoreCase(token, "BLACKLISTED")) {
 			EntityManager em = EMF.getEntityManager();
 			try {
@@ -232,8 +232,10 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 						devicePersistenceUtils.save(device, em);
 					}
 				}
-				request.setAttribute(JSonDataAction.JSON_OUTPUT, device);
-				result = "json";
+				if (result == null) {
+					request.setAttribute(JSonDataAction.JSON_OUTPUT, device);
+					result = "json";
+				} 
 			} catch (Exception e) {
 				logger.log(Level.SEVERE, e.getMessage(), e);
 				addActionError(e.getMessage());
