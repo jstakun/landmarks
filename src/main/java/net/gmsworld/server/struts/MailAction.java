@@ -138,8 +138,13 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	         
 	    		   t.sendMessage(message, message.getAllRecipients());
 	    		   
-	    		   String output = "{\"status\":\"Message " + message.getMessageID() + " sent to " + to + "\"}";
-	    		   logger.log(Level.INFO, "Message " + message.getMessageID() + " sent to " + to);
+	    		   String output = null;
+	    		   if (to != null) {
+	    			   output = "{\"status\":\"Message " + message.getMessageID() + " sent to " + to + "\"}";
+	    		   } else {
+	    			   output = "{\"status\":\"Message " + message.getMessageID() + " sent to " + recipients + "\"}"; 
+	    		   }
+	    		   logger.log(Level.INFO, output);
 	    		   request.setAttribute("output", output);
 	    		   
 	    		   t.close();
