@@ -5,6 +5,17 @@
 <struts>
 	<package name="net.gmsworld.server.struts" namespace="/" extends="struts-default">
 	   
+	     <interceptors>
+    		<interceptor-stack name="appDefaultStack">
+        		<interceptor-ref name="defaultStack">
+            		<param name="exception.logEnabled">true</param>
+            		<param name="exception.logLevel">ERROR</param>
+        		</interceptor-ref>
+    		</interceptor-stack>
+		</interceptors>
+
+		 <default-interceptor-ref name="appDefaultStack" />
+
 	     <global-results>
     		<result name="error">/error.jsp</result>
 	     </global-results>
