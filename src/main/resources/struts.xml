@@ -17,7 +17,7 @@
 		 <default-interceptor-ref name="appDefaultStack" />
 
 	     <global-results>
-    		<result name="error">/genericerror.jsp</result>
+    		<result name="error">/error.jsp</result>
 	     </global-results>
 
 	    <global-exception-mappings>

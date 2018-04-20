@@ -13,5 +13,11 @@
 			<s:actionerror />
 		</div>
 	</s:if>
+	<s:else>
+	    <div class="errors">
+	 	     Exception Name: <s:property value="exception"/><br/>
+	  		 Exception Details: <s:property value="exceptionStack"/>
+	  	</div>	 
+     </s:else>
 </body>
 </html>
