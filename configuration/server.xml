@@ -142,9 +142,11 @@
              Documentation at: /docs/config/valve.html
              Note: The pattern used is equivalent to using pattern="common"
              CLOUD-57: This valve was created to send messages to stdout -->
-        <Valve className="org.jboss.openshift.valves.StdoutAccessLogValve"
-               pattern="%h %l %u %t &quot;%r&quot; %s %b" />
-
+        <!-- Valve className="org.jboss.openshift.valves.StdoutAccessLogValve"
+               pattern="%h %l %u %t &quot;%r&quot; %s %b" /-->        
+       
+        <Valve className="org.apache.catalina.valves.RemoteIpValve" remoteIpHeader="X-Forwarded-For" protocolHeader="X-Forwarded-Proto" />
+       
         <Valve className="org.apache.catalina.valves.ErrorReportValve" showReport="false"
                showServerInfo="false" />
 
