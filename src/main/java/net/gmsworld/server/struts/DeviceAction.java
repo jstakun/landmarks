@@ -40,6 +40,8 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
     private String args;
     private Long ttl;
     private Integer oldPin;
+    private String correlationId;
+    
     
     private DevicePersistenceUtils getDevicePersistenceUtils() throws Exception {
     	return (DevicePersistenceUtils) ServiceLocator.getInstance().getService("bean/DevicePersistenceUtils");	
@@ -267,6 +269,9 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 					if (StringUtils.isNotEmpty(args)) {
 						data .put("args", args);
 					}
+					if (StringUtils.isNotEmpty(correlationId)) {
+						data.put("correlationId", correlationId);
+					}
 					if (ttl == null || ttl < 0) {
 						ttl = 300L; //defaults to 300 seconds
 					}
@@ -398,5 +403,13 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 
 	public void setOldPin(Integer oldPin) {
 		this.oldPin = oldPin;
+	}
+
+	public String getCorrelationId() {
+		return correlationId;
+	}
+
+	public void setCorrelationId(String correlationId) {
+		this.correlationId = correlationId;
 	}
 }
