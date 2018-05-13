@@ -281,13 +281,20 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 					JSONObject content = new JSONObject().put("message", new JSONObject().put("token", device.getToken()).put("data", data).put("android", android).put("webpush", webpush).put("apns", apns));
 					
 					String auth  = "Bearer " + getAccessToken();
+					String body = content.toString();
 					
-					logger.log(Level.INFO, "Sending: " + content.toString());
-					logger.log(Level.INFO, "To: " + url);
-					logger.log(Level.INFO, "Auth: " + auth);
+					if (System.getenv("FCM_DEBUG") != null) {
+						logger.log(Level.INFO, "Sending: " + body);
+						logger.log(Level.INFO, "To: " + url);
+						logger.log(Level.INFO, "Auth: " + auth);
+					}
 					
-					String response = HttpUtils.processFileRequestWithOtherAuthn(new URL(url), "POST", "application/json", content.toString(), "application/json", auth);
-					logger.log(Level.INFO, "Received following response: " + response);
+					String response = HttpUtils.processFileRequestWithOtherAuthn(new URL(url), "POST", "application/json", body, "application/json", auth);
+					
+					if (System.getenv("FCM_DEBUG") != null) {
+						logger.log(Level.INFO, "Received following response: " + response);
+					}
+					
 					if (StringUtils.startsWith(response, "{")) {
 						request.setAttribute("output", response);
 						result = SUCCESS;
