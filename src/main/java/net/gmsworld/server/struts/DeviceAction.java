@@ -267,7 +267,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 					String url = "https://fcm.googleapis.com/v1/projects/" + Commons.getProperty(Property.FCM_PROJECT) + "/messages:send";
 					JSONObject data = new JSONObject().put("command", command).put("pin",  Integer.toString(pin));
 					if (StringUtils.isNotEmpty(args)) {
-						data .put("args", args);
+						data.put("args", args);
 					}
 					if (StringUtils.isNotEmpty(correlationId)) {
 						data.put("correlationId", correlationId);
@@ -280,9 +280,13 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 					JSONObject apns = new JSONObject().put("headers", new JSONObject().put("apns-expiration", Long.toString((((System.currentTimeMillis() + (ttl*1000L))/1000)))).put("apns-priority","10"));
 					JSONObject content = new JSONObject().put("message", new JSONObject().put("token", device.getToken()).put("data", data).put("android", android).put("webpush", webpush).put("apns", apns));
 					
-					//logger.log(Level.INFO, "Sending: " + content.toString());
-					//logger.log(Level.INFO, "To: " + url);
-				    String response = HttpUtils.processFileRequestWithOtherAuthn(new URL(url), "POST", "application/json", content.toString(), "application/json", "Bearer " + getAccessToken());
+					String auth  = "Bearer " + getAccessToken();
+					
+					logger.log(Level.INFO, "Sending: " + content.toString());
+					logger.log(Level.INFO, "To: " + url);
+					logger.log(Level.INFO, "Auth: " + auth);
+					
+					String response = HttpUtils.processFileRequestWithOtherAuthn(new URL(url), "POST", "application/json", content.toString(), "application/json", auth);
 					logger.log(Level.INFO, "Received following response: " + response);
 					if (StringUtils.startsWith(response, "{")) {
 						request.setAttribute("output", response);
