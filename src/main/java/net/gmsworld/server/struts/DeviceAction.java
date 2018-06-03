@@ -265,7 +265,13 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 				}
 				if (device  != null) {
 					String url = "https://fcm.googleapis.com/v1/projects/" + Commons.getProperty(Property.FCM_PROJECT) + "/messages:send";
-					JSONObject data = new JSONObject().put("command", command).put("pin",  Integer.toString(pin));
+					String pinString;
+					if (pin < 1000) {
+						pinString = String.format ("%04d", pin);
+					} else {
+						pinString = Integer.toString(pin);
+					}
+					JSONObject data = new JSONObject().put("command", command).put("pin",  pinString);
 					if (StringUtils.isNotEmpty(args)) {
 						data.put("args", args);
 					}
