@@ -22,24 +22,10 @@ public class DevicePersistenceUtils {
 		EMF.update(device, entityManager);
 	}
 	
-	public Device findDeviceByImeiAndPin(String imei, Integer pin, EntityManager entityManager) {
-		TypedQuery<Device> query = entityManager.createNamedQuery(Device.FIND_BY_IMEI_AND_PIN, Device.class);
-		query.setParameter("imei", imei);
-		query.setParameter("pin", pin);
-		Device d = null;
-		try {
-			d= query.getSingleResult();
-		} catch (NoResultException nre) {
-			logger.log(Level.WARNING, "No device found with imei {0} and provided pin", imei);
-		}					
-	    return d;
-	}
-	
-	public Device findDeviceByNameAndUsername(String name, String username, Integer pin, EntityManager entityManager) {
+	public Device findDeviceByNameAndUsername(String name, String username, EntityManager entityManager) {
 		TypedQuery<Device> query = entityManager.createNamedQuery(Device.FIND_BY_NAME_AND_USERNAME, Device.class);
 		query.setParameter("name", name);
 		query.setParameter("username", username);
-		query.setParameter("pin", pin);
 		Device d = null;
 		try {
 			List<Device> dl = query.getResultList();

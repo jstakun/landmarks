@@ -39,9 +39,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
     private String name;
     private String args;
     private Long ttl;
-    private Integer oldPin;
     private String correlationId;
-    
     
     private DevicePersistenceUtils getDevicePersistenceUtils() throws Exception {
     	return (DevicePersistenceUtils) ServiceLocator.getInstance().getService("bean/DevicePersistenceUtils");	
@@ -49,13 +47,13 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
     
 	public String createDevice() {
 		String result;
-		if (imei != null && pin != null) {
+		if (imei != null) {
 			EntityManager em = EMF.getEntityManager();
 			try {
 				if (name != null) {
 					name = name.replace(" ", "-");
 				}
-				Device device = new Device(imei, token, pin, username, name) ;
+				Device device = new Device(imei, token, username, name) ;
 				getDevicePersistenceUtils().save(device, em);
 				request.setAttribute(JSonDataAction.JSON_OUTPUT, device);
 				result = "json";
@@ -76,20 +74,12 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 	//can update only pin, token, name and username
 	public String updateDevice() {
 		String result;
-		if (imei != null && pin != null) {
+		if (imei != null) {
 			EntityManager em = EMF.getEntityManager();
 			try {
-				Device device = null;
-				if (oldPin != null) {
-					device = getDevicePersistenceUtils().findDeviceByImeiAndPin(imei, oldPin, em);
-				} else {
-					device = getDevicePersistenceUtils().findDeviceByImeiAndPin(imei, pin, em);
-				}
+				Device device = getDevicePersistenceUtils().findDeviceByImei(imei, em);
 				if (token != null) {
 					device.setToken(token);
-				}
-				if (oldPin != null && oldPin == device.getPin()) {
-					device.setPin(pin);
 				}
 				if (username != null) {
 					device.setUsername(username);
@@ -116,9 +106,9 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 	}
 	
 	public String getDevice() {
-		if (imei != null && pin != null) {
+		if (imei != null) {
 			return getDeviceByImei();
-		} else if (name != null && username != null  && pin != null) {
+		} else if (name != null && username != null) {
 			return getDeviceByName();
 		} else {
 			addActionError("Missing required parameter!");
@@ -128,10 +118,10 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 	
 	private String getDeviceByImei() {
 		String result;
-		if (imei != null && pin != null) {
+		if (imei != null) {
 			EntityManager em = EMF.getEntityManager();
 			try {
-				Device device = getDevicePersistenceUtils().findDeviceByImeiAndPin(imei, pin, em);
+				Device device = getDevicePersistenceUtils().findDeviceByImei(imei, em);
 				if (device  != null) {
 					request.setAttribute(JSonDataAction.JSON_OUTPUT, device);
 					result = "json";
@@ -155,10 +145,10 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 	
 	private String getDeviceByName() {
 		String result;
-		if (name != null && username != null && pin != null) {
+		if (name != null && username != null) {
 			EntityManager em = EMF.getEntityManager();
 			try {
-				Device device = getDevicePersistenceUtils().findDeviceByNameAndUsername(name, username, pin, em);
+				Device device = getDevicePersistenceUtils().findDeviceByNameAndUsername(name, username, em);
 				if (device  != null) {
 					request.setAttribute(JSonDataAction.JSON_OUTPUT, device);
 					result = "json";
@@ -182,23 +172,15 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 	
 	public String createOrUpdateDevice() {
 		String result = null;
-		if (imei != null && pin != null && pin >= 0 && !StringUtils.equalsIgnoreCase(token, "BLACKLISTED") && (oldPin == null || oldPin >= 0)) {
+		if (imei != null && !StringUtils.equalsIgnoreCase(token, "BLACKLISTED")) {
 			EntityManager em = EMF.getEntityManager();
 			try {
 				DevicePersistenceUtils devicePersistenceUtils =  getDevicePersistenceUtils();			    
-				Device device = null;
-				if (oldPin != null) {
-					device = devicePersistenceUtils.findDeviceByImeiAndPin(imei, oldPin, em);
-				} else {
-					device = devicePersistenceUtils.findDeviceByImeiAndPin(imei, pin, em);
-				}
+				Device device = devicePersistenceUtils.findDeviceByImei(imei, em);
 				if (device  != null) {
 				    logger.log(Level.INFO, "Updating existing device " + device.getImei());
 					if (StringUtils.isNotBlank(token)) {
 						device.setToken(token);
-					}
-					if (oldPin != null && oldPin.equals(device.getPin())) {
-						device.setPin(pin);
 					}
 					if (username != null) {
 						device.setUsername(username);
@@ -210,10 +192,9 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 					devicePersistenceUtils.update(device, em);
 				} else {
 					device = devicePersistenceUtils.findDeviceByImei(imei, em);
-					if (device != null && StringUtils.isNotBlank(token) && oldPin == null) {
+					if (device != null && StringUtils.isNotBlank(token) ) {
 						logger.log(Level.INFO, "Updating existing device " + device.getImei() + " which has not been used for some time");
 						device.setToken(token);
-						device.setPin(pin);
 						if (username != null) {
 							device.setUsername(username);
 						}
@@ -230,7 +211,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 						if (name != null) {
 							name = name.replace(" ", "-");
 						}
-						device = new Device(imei, token, pin, username, name) ;
+						device = new Device(imei, token, username, name) ;
 						devicePersistenceUtils.save(device, em);
 					}
 				}
@@ -259,9 +240,9 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 			try {
 				Device device = null;
 				if (imei != null) {
-					device = getDevicePersistenceUtils().findDeviceByImeiAndPin(imei, pin, em);
+					device = getDevicePersistenceUtils().findDeviceByImei(imei, em);
 				} else if (name != null && username != null) {
-					device = getDevicePersistenceUtils().findDeviceByNameAndUsername(name, username, pin, em);
+					device = getDevicePersistenceUtils().findDeviceByNameAndUsername(name, username, em);
 				}
 				if (device  != null) {
 					String url = "https://fcm.googleapis.com/v1/projects/" + Commons.getProperty(Property.FCM_PROJECT) + "/messages:send";
@@ -412,14 +393,6 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 
 	public void setTtl(Long ttl) {
 		this.ttl = ttl;
-	}
-
-	public Integer getOldPin() {
-		return oldPin;
-	}
-
-	public void setOldPin(Integer oldPin) {
-		this.oldPin = oldPin;
 	}
 
 	public String getCorrelationId() {
