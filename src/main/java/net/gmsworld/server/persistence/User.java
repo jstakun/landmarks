@@ -69,7 +69,7 @@ public class User {
 	  
 	  public User() {
 		  this.regDate = new Date(System.currentTimeMillis());
-		  this.secret = RandomStringUtils.random(32);
+		  this.secret = RandomStringUtils.randomAlphabetic(32);
 	  }
 
 	  //public String getPassword()
