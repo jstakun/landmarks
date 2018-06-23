@@ -351,7 +351,7 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
 				if (u == null) {
 					u = new User(login, password,  email, firstname, lastname);
 					userPeristenceUtils.save(u, em);
-					request.setAttribute("output", "{\"status\":\"ok\",\"login\":\"" + login + "\"}");
+					request.setAttribute("output", "{\"status\":\"ok\",\"login\":\"" + login + "\",\"secret\":\"" + u.getSecret() + "\"}");
 				} else {
 					request.setAttribute("output", "{\"error\":\"User exists!\"}");    	
 				}
