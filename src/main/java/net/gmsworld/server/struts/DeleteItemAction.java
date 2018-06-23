@@ -45,24 +45,23 @@ public class DeleteItemAction extends ActionSupport implements ServletRequestAwa
 		}
 	}
 	
-	private String executeUser() {
-		    
-			EntityManager em = EMF.getEntityManager();
-            try {
-				UserPersistenceUtils userPeristenceUtils = (UserPersistenceUtils) ServiceLocator.getInstance().getService("bean/UserPersistenceUtils");
-				User u = userPeristenceUtils.findBySecret(secret, em);
-				if (u == null) {
-					request.setAttribute("output", "{\"error\":\"User not found!\"}");
-				} else {
-					userPeristenceUtils.remove(u, em);
-					request.setAttribute("output", "{\"status\":\"ok\"}");    	
-				}
-            } catch (Exception e) {
-				request.setAttribute("output", "{\"error\":\"" + e.getMessage() + "\"}");
-				logger.log(Level.SEVERE, e.getMessage(), e);
-			} finally {
-				em.close();
+	private String executeUser() {    
+		EntityManager em = EMF.getEntityManager();
+        try {
+			UserPersistenceUtils userPeristenceUtils = (UserPersistenceUtils) ServiceLocator.getInstance().getService("bean/UserPersistenceUtils");
+			User u = userPeristenceUtils.findBySecret(secret, em);
+			if (u == null) {
+				request.setAttribute("output", "{\"error\":\"User not found!\"}");
+			} else {
+				userPeristenceUtils.remove(u, em);
+				request.setAttribute("output", "{\"status\":\"ok\"}");    	
 			}
-            return SUCCESS;
-		}	
+        } catch (Exception e) {
+			request.setAttribute("output", "{\"error\":\"" + e.getMessage() + "\"}");
+			logger.log(Level.SEVERE, e.getMessage(), e);
+		} finally {
+			em.close();
+		}
+        return SUCCESS;
+	}	
 }
