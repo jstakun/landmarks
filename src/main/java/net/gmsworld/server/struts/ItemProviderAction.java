@@ -253,12 +253,15 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
 	private String executeUser() {
 		String id = getParameter("login");
 		String pwd = getParameter("password");
+		String secret = getParameter("secret");
 		boolean confirm = (NumberUtils.getInt(getParameter("confirm"), 0)==1);
 		
 		if (StringUtils.isNotEmpty(id) && StringUtils.isNotEmpty(pwd)) {
 			return login(id, pwd);
 		} else if (StringUtils.isNotEmpty(id)) {
 	    	return findByIdUser(id, confirm);
+		} else if (StringUtils.isNotEmpty(secret)) {
+	    	return findBySecretUser(secret);	
 	    } else { 
 	    	addActionError("Missing required user parameter!");
 	    	return ERROR;
@@ -347,6 +350,28 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
     			output = JSONUtil.serialize(u);
     		} else {   	
     			logger.log(Level.INFO, "No user found wih id: " + id);
+    			output = "{}";
+    		}  		
+    	} catch (Exception e) {
+        	output = "{\"error\":\"" + e.getMessage() + "\"}";
+			logger.log(Level.SEVERE, e.getMessage(), e);
+		} finally {
+			em.close();
+		}
+    	request.setAttribute("output", output);
+    	return SUCCESS;
+	}
+	
+	private String findBySecretUser(String secret) {
+		String output = null;
+		EntityManager em = EMF.getEntityManager();
+    	try {
+    		UserPersistenceUtils userPeristenceUtils = (UserPersistenceUtils) ServiceLocator.getInstance().getService("bean/UserPersistenceUtils");
+    		User u = userPeristenceUtils.findBySecret(secret, em);
+    		if (u != null) {
+    			output = JSONUtil.serialize(u);
+    		} else {   	
+    			logger.log(Level.INFO, "No user found wih provided secret!");
     			output = "{}";
     		}  		
     	} catch (Exception e) {

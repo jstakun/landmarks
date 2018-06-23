@@ -37,7 +37,7 @@ public class DeleteItemAction extends ActionSupport implements ServletRequestAwa
 	
 	public String execute()
 	{	
-		if (StringUtils.equals(type, "user") && StringUtils.isNotEmpty(secret)) {
+		if (StringUtils.equals(getType(), "user") && StringUtils.isNotEmpty(getSecret())) {
 			return executeUser(); 
 	    } else {
 			addActionError("Missing or wrong required parameter type!");
@@ -49,7 +49,7 @@ public class DeleteItemAction extends ActionSupport implements ServletRequestAwa
 		EntityManager em = EMF.getEntityManager();
         try {
 			UserPersistenceUtils userPeristenceUtils = (UserPersistenceUtils) ServiceLocator.getInstance().getService("bean/UserPersistenceUtils");
-			User u = userPeristenceUtils.findBySecret(secret, em);
+			User u = userPeristenceUtils.findBySecret(getSecret(), em);
 			if (u == null) {
 				request.setAttribute("output", "{\"error\":\"User not found!\"}");
 			} else {
@@ -63,5 +63,21 @@ public class DeleteItemAction extends ActionSupport implements ServletRequestAwa
 			em.close();
 		}
         return SUCCESS;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public String getSecret() {
+		return secret;
+	}
+
+	public void setSecret(String secret) {
+		this.secret = secret;
 	}	
 }
