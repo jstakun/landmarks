@@ -39,6 +39,11 @@
 			<result name="error">/error.jsp</result>
 		</action>
 		
+		<action name="deleteItem" class="net.gmsworld.server.struts.DeleteItemAction">
+			<result name="success">/json.jsp</result>
+			<result name="error">/error.jsp</result>
+		</action>
+		
 		<action name="layerLandmarks" class="net.gmsworld.server.struts.LayerFormAction" method="execute">
 		    <result type="chain" name="success">
 		        <param name="actionName">layersProvider</param>

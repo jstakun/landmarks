@@ -7,6 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 
 import net.gmsworld.server.persistence.User;
 
@@ -27,8 +28,18 @@ public class UserPersistenceUtils {
 		EMF.update(u, entityManager);
 	}
 	
+	public void remove(User u, EntityManager entityManager) {
+		EMF.remove(u, entityManager);
+	}
+	
 	public User findById(String login, EntityManager entityManager) {
 		return entityManager.find(User.class, login);
+	}
+	
+	public User findBySecret(String secret, EntityManager entityManager) {
+		 TypedQuery<User> query = entityManager.createNamedQuery(User.FIND_BY_SECRET, User.class);
+		 query.setParameter("secret", secret);
+		 return query.getSingleResult();
 	}
 	
 	public void setConfirmation(String login, EntityManager entityManager) {

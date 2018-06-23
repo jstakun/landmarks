@@ -5,13 +5,23 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+
+import org.apache.commons.lang3.RandomStringUtils;
 
 @Entity
 @Table(name = "GMSWORLD_USER")
 
+@NamedQueries({
+@NamedQuery(name = "User.findBySecret", query = "select u from User u where u.secret=:secret"),
+})
+
 public class User {
 
+	public final static String FIND_BY_SECRET = "User.findBySecret"; 
+	
 	@Id
 	@Column(name = "LOGIN")
 	private String login;
@@ -43,6 +53,9 @@ public class User {
 	@Column(name = "LAST_LOGON_DATE")
 	private Date lastLogonDate;
 	
+	@Column(name = "SECRET")
+	private String secret;
+	
 	public User(String login, String password, String email, String firstname, String lastname)
 	  {
 		  this();
@@ -56,6 +69,7 @@ public class User {
 	  
 	  public User() {
 		  this.regDate = new Date(System.currentTimeMillis());
+		  this.secret = RandomStringUtils.random(32);
 	  }
 
 	  //public String getPassword()
@@ -145,4 +159,12 @@ public class User {
 	    public String getEmail() {
 	    	return email;
 	    }
+
+		public String getSecret() {
+			return secret;
+		}
+
+		public void setSecret(String secret) {
+			this.secret = secret;
+		}
 }

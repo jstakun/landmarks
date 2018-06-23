@@ -35,8 +35,7 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    private String cc;
 	    private String ccNick;
 	    private String recipients;
-	    
-	       	    
+	      	    
 	    @Override
 		public void setServletRequest(HttpServletRequest request) {
 			this.request = request;
