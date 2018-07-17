@@ -117,7 +117,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 		}
 	}
 	
-	private String getUserDevices() {
+	public String getUserDevices() {
 		String result;
 		if ( username != null) {
 			EntityManager em = EMF.getEntityManager();
