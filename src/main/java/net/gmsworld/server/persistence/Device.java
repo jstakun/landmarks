@@ -20,12 +20,14 @@ import javax.persistence.Table;
 @NamedQueries({
 	@NamedQuery(name = "Device.findByImei", query = "select d from Device d where d.imei = :imei"),
 	@NamedQuery(name = "Device.findByNameAndUsername", query = "select d from Device d where d.name = :name and d.username = :username"),
+	@NamedQuery(name = "Device.findByUsername", query = "select d from Device d where d.username = :username"),
 })
 
 public class Device implements Serializable {
 
 	 public final static String FIND_BY_IMEI= "Device.findByImei";
 	 public final static String FIND_BY_NAME_AND_USERNAME = "Device.findByNameAndUsername";
+	 public final static String FIND_BY_USERNAME = "Device.findByUsername";
 	
 	 @Id
 	 @Column(name = "IMEI")

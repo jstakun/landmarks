@@ -216,6 +216,14 @@
 			<result name="error">/error.jsp</result>
 		</action>
 		
+		<action name="getUserDevices" class="net.gmsworld.server.struts.DeviceAction" method="getUserDevices">
+			<result type="chain" name="json">
+            	<param name="actionName">getJSonResult</param>
+            	<param name="namespace">/json</param>
+        	</result>
+			<result name="error">/error.jsp</result>
+		</action>
+		
 		<action name="commandDevice" class="net.gmsworld.server.struts.DeviceAction" method="commandDevice">
 			<result name="success">/json.jsp</result>
 			<result name="error">/error.jsp</result>

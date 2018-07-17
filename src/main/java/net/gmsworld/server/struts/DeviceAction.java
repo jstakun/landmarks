@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -114,6 +115,33 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 			addActionError("Missing required parameter!");
 	    	return ERROR;
 		}
+	}
+	
+	private String getUserDevices() {
+		String result;
+		if ( username != null) {
+			EntityManager em = EMF.getEntityManager();
+			try {
+				List<Device> devices = getDevicePersistenceUtils().findDeviceByUsername(username,  em);
+				if (devices  != null) {
+					request.setAttribute(JSonDataAction.JSON_OUTPUT, devices);
+					result = "json";
+				} else {
+					addActionError("No devices found!");
+					result = ERROR;
+				}
+			} catch (Exception e) {
+				logger.log(Level.SEVERE, e.getMessage(), e);
+				addActionError(e.getMessage());
+		    	result = ERROR;
+			} finally {
+				em.close();
+			}
+		} else {
+			addActionError("Missing required parameter!");
+	    	result = ERROR;
+		}
+		return result;
 	}
 	
 	private String getDeviceByImei() {

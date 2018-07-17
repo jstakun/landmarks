@@ -49,4 +49,16 @@ public class DevicePersistenceUtils {
 		}					
 	    return d;
 	}
+	
+	public List<Device> findDeviceByUsername(String username, EntityManager entityManager) {
+		TypedQuery<Device> query = entityManager.createNamedQuery(Device.FIND_BY_USERNAME, Device.class);
+		query.setParameter("username", username);
+		List<Device> dl = null;
+		try {
+			dl = query.getResultList();
+		} catch (NoResultException nre) {
+			logger.log(Level.WARNING, "No device found with username {0}", username);
+		}					
+	    return dl;
+	}
 }
