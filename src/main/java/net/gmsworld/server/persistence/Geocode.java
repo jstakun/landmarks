@@ -21,7 +21,7 @@ import javax.persistence.Table;
 @NamedQueries({
 @NamedQuery(name = "Geocode.findNewest", query = "select g from Geocode g order by g.creationDate desc", hints={@QueryHint(name="org.hibernate.cacheable",value="true")}),
 @NamedQuery(name = "Geocode.findAddress", query = "select g from Geocode g where lower(g.location) like lower(:address) order by g.creationDate desc", hints={@QueryHint(name="org.hibernate.cacheable",value="true")}),
-@NamedQuery(name = "Geocode.findCoords", query = "select g from Geocode g where abs(g.latitude,:lat) < 0.001 and abs(g.longitude,:lng) < 0.001 order by g.creationDate desc", hints={@QueryHint(name="org.hibernate.cacheable",value="true")}),
+@NamedQuery(name = "Geocode.findCoords", query = "select g from Geocode g where abs(g.latitude,:lat) < 0.0001 and abs(g.longitude,:lng) < 0.0001 order by g.creationDate desc", hints={@QueryHint(name="org.hibernate.cacheable",value="true")}),
 })
 
 public class Geocode implements Serializable {
