@@ -85,7 +85,9 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
 	private String executeGeocode() {
 		if (getParameter("address") != null) {
 	    	return findByAddressGeocode(getParameter("address"));
-	    } else if (getParameter("limit") != null) {
+		} else if (getParameter("lat") != null && getParameter("lng") != null) {
+		    return findByCoordsGeocode(NumberUtils.getDouble(getParameter("lat")), NumberUtils.getDouble(getParameter("lng")));
+		} else if (getParameter("limit") != null) {
 	    	int limit = NumberUtils.getInt(getParameter("limit"), 10);
 	    	return findNewestGeocodes(limit);
 	    } else if (getParameter("id") != null) {
@@ -152,11 +154,33 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
 		EntityManager em = EMF.getEntityManager();
     	try {
     		GeocodePersistenceUtils geocodePeristenceUtils = (GeocodePersistenceUtils) ServiceLocator.getInstance().getService("bean/GeocodePersistenceUtils");
-    		Geocode g = geocodePeristenceUtils.findAddress(address, em);
+    		Geocode g = geocodePeristenceUtils.findByAddress(address, em);
     		if (g != null) {
     			output = JSONUtil.serialize(g);
     		} else {
     			logger.log(Level.INFO, "No geocode found for address: " + address);
+    			output = "{}";
+    		}
+    	} catch (Exception e) {
+        	output = "{\"error\":\"" + e.getMessage() + "\"}";
+			logger.log(Level.SEVERE, e.getMessage(), e);
+		} finally {
+			em.close();
+		}
+    	request.setAttribute("output", output);
+    	return SUCCESS;
+	}
+	
+	private String findByCoordsGeocode(double lat, double lng) {
+		String output = null;
+		EntityManager em = EMF.getEntityManager();
+    	try {
+    		GeocodePersistenceUtils geocodePeristenceUtils = (GeocodePersistenceUtils) ServiceLocator.getInstance().getService("bean/GeocodePersistenceUtils");
+    		Geocode g = geocodePeristenceUtils.findByCoords(lat, lng, em);
+    		if (g != null) {
+    			output = JSONUtil.serialize(g);
+    		} else {
+    			logger.log(Level.INFO, "No geocode found for coords: " + lat + "," + lng);
     			output = "{}";
     		}
     	} catch (Exception e) {

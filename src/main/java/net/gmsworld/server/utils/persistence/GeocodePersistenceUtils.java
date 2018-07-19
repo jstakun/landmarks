@@ -20,25 +20,30 @@ public class GeocodePersistenceUtils {
         return query.getResultList();
     }
 	
-	public Geocode findAddress(String address, EntityManager entityManager){
+	public Geocode findByAddress(String address, EntityManager entityManager){
 		TypedQuery<Geocode> query = entityManager.createNamedQuery(Geocode.FIND_ADDRESS, Geocode.class);
 		query.setParameter("address", address);
 		Geocode g = null;
-		/*try {
-			g = query.getSingleResult();
-			g.setCreationDate(new Date(System.currentTimeMillis()));
-			save(g); 
-		} catch (NoResultException nre) {
-		} catch (NonUniqueResultException nure) {
-		}*/
-		
 		List<Geocode> geocodes = query.getResultList();
 		if (!geocodes.isEmpty()) {
 			g = geocodes.get(0);
 			g.setCreationDate(new Date(System.currentTimeMillis()));
 			save(g, entityManager);
-		}
-					
+		}			
+	    return g;
+	}
+	
+	public Geocode findByCoords(double lat, double lng, EntityManager entityManager){
+		TypedQuery<Geocode> query = entityManager.createNamedQuery(Geocode.FIND_COORDS, Geocode.class);
+		query.setParameter("lat", lat);
+		query.setParameter("lng", lng);
+		Geocode g = null;
+		List<Geocode> geocodes = query.getResultList();
+		if (!geocodes.isEmpty()) {
+			g = geocodes.get(0);
+			g.setCreationDate(new Date(System.currentTimeMillis()));
+			save(g, entityManager);
+		}			
 	    return g;
 	}
 	
