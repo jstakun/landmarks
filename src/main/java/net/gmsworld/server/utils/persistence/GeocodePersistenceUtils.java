@@ -4,7 +4,10 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+
+import com.google.gdata.util.common.base.StringUtil;
 
 import net.gmsworld.server.persistence.Geocode;
 
@@ -34,9 +37,9 @@ public class GeocodePersistenceUtils {
 	}
 	
 	public Geocode findByCoords(double lat, double lng, EntityManager entityManager){
-		TypedQuery<Geocode> query = entityManager.createNamedQuery(Geocode.FIND_COORDS, Geocode.class);
-		query.setParameter("lat", lat);
-		query.setParameter("lng", lng);
+		Query query = entityManager.createNativeQuery("select * from geocode where abs(latitude - " + lat + ") < 0.0001 and abs(longitude - " + lng + ") < 0.0001 order by creation_date desc", Geocode.class); //.createNamedQuery(Geocode.FIND_COORDS, Geocode.class);
+		//query.setParameter("lat", lat);
+		//query.setParameter("lng", lng);
 		Geocode g = null;
 		List<Geocode> geocodes = query.getResultList();
 		if (!geocodes.isEmpty()) {
