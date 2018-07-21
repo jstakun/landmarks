@@ -1,8 +1,8 @@
 package net.gmsworld.server.test;
 
-import net.gmsworld.server.utils.persistence.LandmarkPersistenceUtils;
-
 import org.junit.Test;
+
+import net.gmsworld.server.utils.persistence.LandmarkPersistenceUtils;
 
 public class PostgresQueryBuilderTest {
 
@@ -24,5 +24,4 @@ public class PostgresQueryBuilderTest {
 			System.out.println(queryStr);
 		}
 	}
-
 }

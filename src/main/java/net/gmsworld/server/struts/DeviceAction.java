@@ -282,6 +282,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 					}
 					JSONObject data = new JSONObject().put("command", command).put("pin",  pinString);
 					if (StringUtils.isNotEmpty(args)) {
+						logger.log(Level.INFO, "Args: "  + args);
 						data.put("args", args);
 					}
 					if (StringUtils.isNotEmpty(correlationId)) {
