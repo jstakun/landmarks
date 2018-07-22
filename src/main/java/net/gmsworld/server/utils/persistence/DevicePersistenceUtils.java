@@ -50,9 +50,10 @@ public class DevicePersistenceUtils {
 	    return d;
 	}
 	
-	public List<Device> findDeviceByUsername(String username, EntityManager entityManager) {
+	public List<Device> findDeviceByUsername(String username, int limit, EntityManager entityManager) {
 		TypedQuery<Device> query = entityManager.createNamedQuery(Device.FIND_BY_USERNAME, Device.class);
 		query.setParameter("username", username);
+		query.setMaxResults(limit);
 		List<Device> dl = null;
 		try {
 			dl = query.getResultList();

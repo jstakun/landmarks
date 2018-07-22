@@ -41,6 +41,8 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
     private String args;
     private Long ttl;
     private String correlationId;
+    private String flex;  
+    private Integer limit;
     
     private DevicePersistenceUtils getDevicePersistenceUtils() throws Exception {
     	return (DevicePersistenceUtils) ServiceLocator.getInstance().getService("bean/DevicePersistenceUtils");	
@@ -122,7 +124,10 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 		if ( username != null) {
 			EntityManager em = EMF.getEntityManager();
 			try {
-				List<Device> devices = getDevicePersistenceUtils().findDeviceByUsername(username,  em);
+				if (limit == null || limit <= 0 || limit > 100) {
+					limit = 10;
+				}
+				List<Device> devices = getDevicePersistenceUtils().findDeviceByUsername(username,  limit, em);
 				if (devices  != null) {
 					request.setAttribute(JSonDataAction.JSON_OUTPUT, devices);
 					result = "json";
@@ -287,6 +292,9 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 					if (StringUtils.isNotEmpty(correlationId)) {
 						data.put("correlationId", correlationId);
 					}
+					if (StringUtils.isNotEmpty(flex)) {
+						data.put("flex", flex);
+					}
 					if (ttl == null || ttl < 0) {
 						ttl = 300L; //defaults to 300 seconds
 					}
@@ -429,5 +437,21 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 
 	public void setCorrelationId(String correlationId) {
 		this.correlationId = correlationId;
+	}
+	
+	public String getFlex() {
+		return flex;
+	}
+
+	public void setFlex(String flex) {
+		this.flex = flex;
+	}
+	
+	public Integer getLimit() {
+		return limit;
+	}
+
+	public void setLimit(Integer limit) {
+		this.limit = limit;
 	}
 }

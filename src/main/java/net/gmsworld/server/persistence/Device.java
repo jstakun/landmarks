@@ -18,9 +18,9 @@ import javax.persistence.Table;
 @Table(name = "DEVICE")
 
 @NamedQueries({
-	@NamedQuery(name = "Device.findByImei", query = "select d from Device d where d.imei = :imei"),
-	@NamedQuery(name = "Device.findByNameAndUsername", query = "select d from Device d where d.name = :name and d.username = :username"),
-	@NamedQuery(name = "Device.findByUsername", query = "select d from Device d where d.username = :username"),
+	@NamedQuery(name = "Device.findByImei", query = "select d from Device d where d.imei = :imei order by d.creationDate desc"),
+	@NamedQuery(name = "Device.findByNameAndUsername", query = "select d from Device d where d.name = :name and d.username = :username order by d.creationDate desc"),
+	@NamedQuery(name = "Device.findByUsername", query = "select d from Device d where d.username = :username order by d.creationDate desc"),
 })
 
 public class Device implements Serializable {
