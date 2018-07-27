@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.interceptor.ServletRequestAware;
@@ -318,9 +319,18 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 						logger.log(Level.INFO, "Received following response: " + response);
 					}
 					
-					if (StringUtils.startsWith(response, "{")) {
+					if (StringUtils.startsWith(response, "{") && HttpUtils.getResponseCode(url) == HttpServletResponse.SC_OK) {
 						request.setAttribute("output", response);
 						result = SUCCESS;
+					} else if  (StringUtils.startsWith(response, "{") && HttpUtils.getResponseCode(url) >= 400) {
+						JSONObject responseJson = new JSONObject(response);
+						if (responseJson.has("error")) {
+							JSONObject error = responseJson.getJSONObject("error");
+							addActionError(error.getString("message"));
+						} else {
+							addActionError("Failed to send command. Try again later!");
+						}
+						result = ERROR;
 					} else {
 						addActionError("Failed to send command. Try again later!");
 				    	result = ERROR;
@@ -332,6 +342,34 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 			} catch (Exception e) {
 				logger.log(Level.SEVERE, e.getMessage(), e);
 				addActionError("Internal error: " + e.getMessage());
+		    	result = ERROR;
+			} finally {
+				em.close();
+			}
+		} else {
+			addActionError("Missing required parameter!");
+	    	result = ERROR;
+		}
+		return result;
+	}
+	
+	public String deleteDevice() {
+		String result;
+		if (imei != null) {
+			EntityManager em = EMF.getEntityManager();
+			try {
+				Device device = getDevicePersistenceUtils().findDeviceByImei(imei, em);
+				if (device  != null) {
+					getDevicePersistenceUtils().remove(device, em);
+					request.setAttribute(JSonDataAction.JSON_OUTPUT, "{\"status\":\"ok\"}");
+					result = "json"; 
+				} else {
+					addActionError("No device found!");
+					result = ERROR;
+				}
+			} catch (Exception e) {
+				logger.log(Level.SEVERE, e.getMessage(), e);
+				addActionError(e.getMessage());
 		    	result = ERROR;
 			} finally {
 				em.close();

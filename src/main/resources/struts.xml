@@ -229,6 +229,11 @@
 			<result name="error">/error.jsp</result>
 		</action>
 		
+		<action name="deleteDevice" class="net.gmsworld.server.struts.DeviceAction" method="deleteDevice">
+			<result name="success">/json.jsp</result>
+			<result name="error">/error.jsp</result>
+		</action>
+		
 		<action name="getDeflateResult" class="net.gmsworld.server.layers.DeflateDataAction">
 			<result name="error">/error.jsp</result>
 		</action>

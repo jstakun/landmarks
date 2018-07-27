@@ -22,6 +22,10 @@ public class DevicePersistenceUtils {
 		EMF.update(device, entityManager);
 	}
 	
+	public void remove(Device device, EntityManager entityManager) {
+		EMF.remove(device, entityManager);
+	}
+	
 	public Device findDeviceByNameAndUsername(String name, String username, EntityManager entityManager) {
 		TypedQuery<Device> query = entityManager.createNamedQuery(Device.FIND_BY_NAME_AND_USERNAME, Device.class);
 		query.setParameter("name", name);
