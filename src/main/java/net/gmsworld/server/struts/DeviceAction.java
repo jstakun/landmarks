@@ -362,7 +362,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 				if (device  != null) {
 					getDevicePersistenceUtils().remove(device, em);
 					request.setAttribute("output", "{\"status\":\"ok\"}");
-					result = "json"; 
+					result = SUCCESS; 
 				} else {
 					addActionError("No device found!");
 					result = ERROR;
