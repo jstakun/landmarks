@@ -318,15 +318,15 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 					if (System.getenv("FCM_DEBUG") != null) {
 						logger.log(Level.INFO, "Received following response: " + response);
 					}
-					
-					if (StringUtils.startsWith(response, "{") && HttpUtils.getResponseCode(url) == HttpServletResponse.SC_OK) {
+					Integer responseCode = HttpUtils.getResponseCode(url);
+					if (StringUtils.startsWith(response, "{") && responseCode != null && responseCode == HttpServletResponse.SC_OK) {
 						request.setAttribute("output", response);
 						result = SUCCESS;
-					} else if  (StringUtils.startsWith(response, "{") && HttpUtils.getResponseCode(url) >= 400) {
+					} else if  (StringUtils.startsWith(response, "{") && responseCode != null && responseCode >= 400) {
 						JSONObject responseJson = new JSONObject(response);
 						if (responseJson.has("error")) {
 							JSONObject error = responseJson.getJSONObject("error");
-							addActionError(error.getString("message"));
+							addActionError(error.optString("message"));
 						} else {
 							addActionError("Failed to send command. Try again later!");
 						}
