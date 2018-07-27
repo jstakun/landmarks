@@ -361,7 +361,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 				Device device = getDevicePersistenceUtils().findDeviceByImei(imei, em);
 				if (device  != null) {
 					getDevicePersistenceUtils().remove(device, em);
-					request.setAttribute(JSonDataAction.JSON_OUTPUT, "{\"status\":\"ok\"}");
+					request.setAttribute(JSonDataAction.JSON_OUTPUT, "ok");
 					result = "json"; 
 				} else {
 					addActionError("No device found!");
