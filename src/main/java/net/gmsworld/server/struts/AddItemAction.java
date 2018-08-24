@@ -18,6 +18,7 @@ import net.gmsworld.server.persistence.Comment;
 import net.gmsworld.server.persistence.Geocode;
 import net.gmsworld.server.persistence.Landmark;
 import net.gmsworld.server.persistence.Layer;
+import net.gmsworld.server.persistence.Notification;
 import net.gmsworld.server.persistence.Screenshot;
 import net.gmsworld.server.persistence.User;
 import net.gmsworld.server.utils.DateUtils;
@@ -34,6 +35,7 @@ import net.gmsworld.server.utils.persistence.EMF;
 import net.gmsworld.server.utils.persistence.GeocodePersistenceUtils;
 import net.gmsworld.server.utils.persistence.LandmarkPersistenceUtils;
 import net.gmsworld.server.utils.persistence.LayerPersistenceUtils;
+import net.gmsworld.server.utils.persistence.NotificationPersistenceUtils;
 import net.gmsworld.server.utils.persistence.ScreenshotPersistenceUtils;
 import net.gmsworld.server.utils.persistence.UserPersistenceUtils;
 
@@ -95,6 +97,8 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
 			return executeScreenshot(); 
 	    } else if (StringUtils.equals(type, "user")) {
 			return executeUser(); 
+	    } else if (StringUtils.equals(type, "notification")) {
+			return executeNotification(); 
 	    } else {
 			addActionError("Missing or wrong required parameter type!");
             return ERROR;
@@ -363,7 +367,33 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
 			}
             return SUCCESS;
 		}
-	}	
+	}
+	
+	private String executeNotification() {
+		if (isEmptyAny("id", "status")) {
+            addActionError("Missing required notification parameter!");
+            return ERROR;
+		} else {
+			String id = request.getParameter("id");
+			String statusStr = request.getParameter("status");
+			Notification.Status status = Notification.Status.UNVERIFIED;
+			if (StringUtils.equals(statusStr, "1") || StringUtils.equalsIgnoreCase(statusStr, "true")) {
+				status = Notification.Status.VERIFIED;
+			}
+			EntityManager em = EMF.getEntityManager();
+            try {
+            	NotificationPersistenceUtils notificationPeristenceUtils = (NotificationPersistenceUtils) ServiceLocator.getInstance().getService("bean/NotificationPersistenceUtils");
+            	notificationPeristenceUtils.persist(id, status, em);
+				request.setAttribute("output", "{\"status\":\"ok\",\"id\":\"" + id + "\"}");
+			} catch (Exception e) {
+				request.setAttribute("output", "{\"error\":\"" + e.getMessage() + "\"}");
+				logger.log(Level.SEVERE, e.getMessage(), e);
+			} finally {
+				em.close();
+			}
+			return SUCCESS;
+		}
+	}
 	
 	@Override
 	public void setServletRequest(HttpServletRequest request) {

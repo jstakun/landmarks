@@ -14,6 +14,7 @@ import com.opensymphony.xwork2.ActionSupport;
 import net.gmsworld.server.persistence.User;
 import net.gmsworld.server.utils.ServiceLocator;
 import net.gmsworld.server.utils.persistence.EMF;
+import net.gmsworld.server.utils.persistence.NotificationPersistenceUtils;
 import net.gmsworld.server.utils.persistence.UserPersistenceUtils;
 
 public class DeleteItemAction extends ActionSupport implements ServletRequestAware {
@@ -23,6 +24,7 @@ public class DeleteItemAction extends ActionSupport implements ServletRequestAwa
 	
 	private String type;
 	private String secret;
+	private String id;
 	
 	private HttpServletRequest request;
 	
@@ -39,6 +41,8 @@ public class DeleteItemAction extends ActionSupport implements ServletRequestAwa
 	{	
 		if (StringUtils.equals(getType(), "user") && StringUtils.isNotEmpty(getSecret())) {
 			return executeUser(); 
+	    } else if (StringUtils.equals(getType(), "notification") && StringUtils.isNotEmpty(getId())) {
+			return executeNotification(); 
 	    } else {
 			addActionError("Missing or wrong required parameter type!");
             return ERROR;
@@ -64,6 +68,24 @@ public class DeleteItemAction extends ActionSupport implements ServletRequestAwa
 		}
         return SUCCESS;
 	}
+	
+	private String executeNotification() {    
+		EntityManager em = EMF.getEntityManager();
+        try {
+			NotificationPersistenceUtils notificationPeristenceUtils = (NotificationPersistenceUtils) ServiceLocator.getInstance().getService("bean/NotificationPersistenceUtils");
+			if (notificationPeristenceUtils.remove(getId(), em)) {
+				request.setAttribute("output", "{\"error\":\"Notification not found!\"}");
+			} else {
+				request.setAttribute("output", "{\"status\":\"ok\"}");    	
+			}
+        } catch (Exception e) {
+			request.setAttribute("output", "{\"error\":\"" + e.getMessage() + "\"}");
+			logger.log(Level.SEVERE, e.getMessage(), e);
+		} finally {
+			em.close();
+		}
+        return SUCCESS;
+	}
 
 	public String getType() {
 		return type;
@@ -79,5 +101,13 @@ public class DeleteItemAction extends ActionSupport implements ServletRequestAwa
 
 	public void setSecret(String secret) {
 		this.secret = secret;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}	
 }

@@ -12,6 +12,7 @@ import net.gmsworld.server.persistence.Checkin;
 import net.gmsworld.server.persistence.Comment;
 import net.gmsworld.server.persistence.Geocode;
 import net.gmsworld.server.persistence.Layer;
+import net.gmsworld.server.persistence.Notification;
 import net.gmsworld.server.persistence.Screenshot;
 import net.gmsworld.server.persistence.User;
 import net.gmsworld.server.utils.NumberUtils;
@@ -22,6 +23,7 @@ import net.gmsworld.server.utils.persistence.CommentPersistenceUtils;
 import net.gmsworld.server.utils.persistence.EMF;
 import net.gmsworld.server.utils.persistence.GeocodePersistenceUtils;
 import net.gmsworld.server.utils.persistence.LayerPersistenceUtils;
+import net.gmsworld.server.utils.persistence.NotificationPersistenceUtils;
 import net.gmsworld.server.utils.persistence.ScreenshotPersistenceUtils;
 import net.gmsworld.server.utils.persistence.UserPersistenceUtils;
 
@@ -76,6 +78,8 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
 			return executeScreenshot(); 
 	    } else if (StringUtils.equals(type, "user")) {
 			return executeUser(); 
+	    } else if (StringUtils.equals(type, "notification")) {
+			return executeNotification(); 
 	    } else {
 			addActionError("Missing or wrong required parameter type!");
             return ERROR;
@@ -290,6 +294,37 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
 	    	addActionError("Missing required user parameter!");
 	    	return ERROR;
 	    }
+	}
+	
+	private String executeNotification() {
+		String response = "";
+		String id = getParameter("id");
+		String secret = getParameter("secret");
+		String statusStr = getParameter("status");
+		EntityManager em = EMF.getEntityManager();
+		try {
+			NotificationPersistenceUtils notificationPeristenceUtils = (NotificationPersistenceUtils) ServiceLocator.getInstance().getService("bean/NotificationPersistenceUtils");
+		
+			if (StringUtils.isNotEmpty(id)) {
+				response =  JSONUtil.serialize(notificationPeristenceUtils.findById(id, em));
+			} else if (StringUtils.isNotEmpty(id)) {
+				response = JSONUtil.serialize(notificationPeristenceUtils.findBySecret(secret, em));
+			} else if (StringUtils.equals(statusStr, "1") || StringUtils.equalsIgnoreCase(statusStr, "true")) {
+				response = 	JSONUtil.serialize(notificationPeristenceUtils.findByStatus(Notification.Status.VERIFIED, em));
+			} else if (StringUtils.equals(statusStr, "0") || StringUtils.equalsIgnoreCase(statusStr, "false")) {
+				response = 	JSONUtil.serialize(notificationPeristenceUtils.findByStatus(Notification.Status.UNVERIFIED, em));
+			} else { 
+				addActionError("Missing required notification parameter!");
+				response = ERROR;
+			}
+		} catch (Exception e) {
+			addActionError("Failed to execute action!");
+	    	logger.log(Level.SEVERE, e.getMessage(), e);
+			response = ERROR;
+		} finally {
+			em.close();
+		}
+		return response;
 	}
 	
 	private String findByIdScreenshot(int id) {
