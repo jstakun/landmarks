@@ -298,9 +298,11 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
 	
 	private String executeNotification() {
 		String response = "{}";
+		String responseStatus = SUCCESS;
 		String id = getParameter("id");
 		String secret = getParameter("secret");
 		String statusStr = getParameter("status");
+		
 		EntityManager em = EMF.getEntityManager();
 		try {
 			NotificationPersistenceUtils notificationPeristenceUtils = (NotificationPersistenceUtils) ServiceLocator.getInstance().getService("bean/NotificationPersistenceUtils");
@@ -308,7 +310,7 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
 			if (StringUtils.isNotEmpty(id)) {
 				Notification n = notificationPeristenceUtils.findById(id, em);
 				if (n != null) {
-					response =  JSONUtil.serialize(n);
+					response = JSONUtil.serialize(n);
 				}
 			} else if (StringUtils.isNotEmpty(secret)) {
 				Notification n = notificationPeristenceUtils.findBySecret(secret, em);
@@ -320,27 +322,28 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
 				if (n != null) {
 					response = JSONUtil.serialize(n);
 				} else {
-					response = "{\"results\":[}]";
+					response = "{\"results\":[]}";
 				}
 			} else if (StringUtils.equals(statusStr, "0") || StringUtils.equalsIgnoreCase(statusStr, "false")) {
 				List<Notification> n = notificationPeristenceUtils.findByStatus(Notification.Status.UNVERIFIED, em);
 				if (n != null) {
 					response = JSONUtil.serialize(n);
 				} else {
-					response = "{\"results\":[}]";
+					response = "{\"results\":[]}";
 				}
 			} else { 
 				addActionError("Missing required notification parameter!");
-				response = ERROR;
+				responseStatus = ERROR;
 			}
 		} catch (Exception e) {
 			addActionError("Failed to execute action!");
 	    	logger.log(Level.SEVERE, e.getMessage(), e);
-			response = ERROR;
+	    	responseStatus = ERROR;
 		} finally {
 			em.close();
 		}
-		return response;
+		request.setAttribute("output", response);
+		return responseStatus;
 	}
 	
 	private String findByIdScreenshot(int id) {
