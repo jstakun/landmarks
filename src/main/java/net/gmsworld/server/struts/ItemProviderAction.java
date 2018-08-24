@@ -297,7 +297,7 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
 	}
 	
 	private String executeNotification() {
-		String response = "";
+		String response = "{}";
 		String id = getParameter("id");
 		String secret = getParameter("secret");
 		String statusStr = getParameter("status");
@@ -306,13 +306,29 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
 			NotificationPersistenceUtils notificationPeristenceUtils = (NotificationPersistenceUtils) ServiceLocator.getInstance().getService("bean/NotificationPersistenceUtils");
 		
 			if (StringUtils.isNotEmpty(id)) {
-				response =  JSONUtil.serialize(notificationPeristenceUtils.findById(id, em));
+				Notification n = notificationPeristenceUtils.findById(id, em);
+				if (n != null) {
+					response =  JSONUtil.serialize(n);
+				}
 			} else if (StringUtils.isNotEmpty(secret)) {
-				response = JSONUtil.serialize(notificationPeristenceUtils.findBySecret(secret, em));
+				Notification n = notificationPeristenceUtils.findBySecret(secret, em);
+				if (n != null) {
+					response = JSONUtil.serialize(n);
+				}
 			} else if (StringUtils.equals(statusStr, "1") || StringUtils.equalsIgnoreCase(statusStr, "true")) {
-				response = 	JSONUtil.serialize(notificationPeristenceUtils.findByStatus(Notification.Status.VERIFIED, em));
+				List<Notification> n = notificationPeristenceUtils.findByStatus(Notification.Status.VERIFIED, em);
+				if (n != null) {
+					response = JSONUtil.serialize(n);
+				} else {
+					response = "{\"results\":[}]";
+				}
 			} else if (StringUtils.equals(statusStr, "0") || StringUtils.equalsIgnoreCase(statusStr, "false")) {
-				response = 	JSONUtil.serialize(notificationPeristenceUtils.findByStatus(Notification.Status.UNVERIFIED, em));
+				List<Notification> n = notificationPeristenceUtils.findByStatus(Notification.Status.UNVERIFIED, em);
+				if (n != null) {
+					response = JSONUtil.serialize(n);
+				} else {
+					response = "{\"results\":[}]";
+				}
 			} else { 
 				addActionError("Missing required notification parameter!");
 				response = ERROR;
