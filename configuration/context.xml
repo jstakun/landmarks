@@ -43,7 +43,11 @@
         
         <Resource name="bean/CacheBean" auth="Container"
             type="net.gmsworld.server.utils.memcache.CacheBean"
-            factory="org.apache.naming.factory.BeanFactory"/> 
+            factory="org.apache.naming.factory.BeanFactory"/>
+            
+        <Resource name="bean/NotificationPersistenceUtils" auth="Container"
+            type="net.gmsworld.server.utils.persistence.NotificationPersistenceUtils"
+            factory="org.apache.naming.factory.BeanFactory"/>     
                     
        <!--Resource name="mail/Session" auth="Container"
                type="javax.mail.Session"
