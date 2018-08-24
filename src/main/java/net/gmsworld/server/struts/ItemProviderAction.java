@@ -307,7 +307,7 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
 		
 			if (StringUtils.isNotEmpty(id)) {
 				response =  JSONUtil.serialize(notificationPeristenceUtils.findById(id, em));
-			} else if (StringUtils.isNotEmpty(id)) {
+			} else if (StringUtils.isNotEmpty(secret)) {
 				response = JSONUtil.serialize(notificationPeristenceUtils.findBySecret(secret, em));
 			} else if (StringUtils.equals(statusStr, "1") || StringUtils.equalsIgnoreCase(statusStr, "true")) {
 				response = 	JSONUtil.serialize(notificationPeristenceUtils.findByStatus(Notification.Status.VERIFIED, em));
