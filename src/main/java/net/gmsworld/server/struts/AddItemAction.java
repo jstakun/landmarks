@@ -370,7 +370,7 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
 	}
 	
 	private String executeNotification() {
-		if (isEmptyAny("id", "status")) {
+		if (isEmptyAny("id")) {
             addActionError("Missing required notification parameter!");
             return ERROR;
 		} else {

@@ -88,6 +88,10 @@
   <resource-env-ref-name>bean/UserPersistenceUtils</resource-env-ref-name>
   <resource-env-ref-type>net.gmsworld.server.utils.persistence.UserPersistenceUtils</resource-env-ref-type>
  </resource-env-ref>
+  <resource-env-ref>
+  <resource-env-ref-name>bean/NotificationPersistenceUtils</resource-env-ref-name>
+  <resource-env-ref-type>net.gmsworld.server.utils.persistence.NotificationPersistenceUtils</resource-env-ref-type>
+ </resource-env-ref>
  <resource-ref>
   <description>Landmarks DB Connection</description>
   <res-ref-name>jdbc/LandmarksDB</res-ref-name>
