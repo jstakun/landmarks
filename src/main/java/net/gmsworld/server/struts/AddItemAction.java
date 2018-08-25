@@ -383,8 +383,8 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
 			EntityManager em = EMF.getEntityManager();
             try {
             	NotificationPersistenceUtils notificationPeristenceUtils = (NotificationPersistenceUtils) ServiceLocator.getInstance().getService("bean/NotificationPersistenceUtils");
-            	notificationPeristenceUtils.persist(id, status, em);
-				request.setAttribute("output", "{\"status\":\"ok\",\"id\":\"" + id + "\"}");
+            	Notification n = notificationPeristenceUtils.persist(id, status, em);
+				request.setAttribute("output", "{\"status\":\"ok\",\"id\":\"" + id + "\",\"secret\":\"" +  n.getSecret() + "\"}");
 			} catch (Exception e) {
 				request.setAttribute("output", "{\"error\":\"" + e.getMessage() + "\"}");
 				logger.log(Level.SEVERE, e.getMessage(), e);
