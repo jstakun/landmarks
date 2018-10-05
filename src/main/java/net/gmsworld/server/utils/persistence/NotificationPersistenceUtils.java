@@ -24,7 +24,7 @@ public class NotificationPersistenceUtils {
 			n = findById(id, entityManager);
 			if (n == null) {
 				n = new Notification(id, status);
-				n.setSecret(RandomStringUtils.randomAlphabetic(32));
+				n.setSecret(RandomStringUtils.randomAlphabetic(32) + "." + RandomStringUtils.randomNumeric(4));
 			} else {
 				n.setStatus(status);
 				n.setLastUpdateDate(new Date());
