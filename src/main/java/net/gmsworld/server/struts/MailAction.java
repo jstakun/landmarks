@@ -316,10 +316,9 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    		  	if ( f[1].endsWith( "." )) { 
 	    		  		f[1] = f[1].substring( 0, (f[1].length() - 1));
 	    		  	}
+	    		  	logger.info( "Found MX server " + f[1]);
 	    		  	res.add( f[1] );
 	    	  }
-	    	  
-	    	  logger.info( "Found " + res.size() + " MX servers");
 	    	  
 	    	  return res;
 	      }
