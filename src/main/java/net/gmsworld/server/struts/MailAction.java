@@ -1,6 +1,14 @@
 package net.gmsworld.server.struts;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Hashtable;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -10,12 +18,21 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import javax.naming.Context;
+import javax.naming.NamingEnumeration;
+import javax.naming.NamingException;
+import javax.naming.directory.Attribute;
+import javax.naming.directory.Attributes;
+import javax.naming.directory.DirContext;
+import javax.naming.directory.InitialDirContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.interceptor.ServletRequestAware;
 
 import com.opensymphony.xwork2.ActionSupport;
+
+import net.gmsworld.server.config.ConfigurationManager;
 
 public class MailAction extends ActionSupport implements ServletRequestAware {
 
@@ -41,7 +58,7 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 			this.request = request;
 		}
 
-	    public String execute() 
+	    public String sendEmail() 
 	    {
 	       if (StringUtils.isNotEmpty(from) && (StringUtils.isNotEmpty(to) || StringUtils.isNotEmpty(recipients)) && (StringUtils.isNotEmpty(body) || StringUtils.isNotEmpty(subject))) {	    	
 	    	   try
@@ -249,4 +266,149 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 		public void setRecipients(String recipients) {
 			this.recipients = recipients;
 		}
-	}
+
+		 private int hear( BufferedReader in ) throws IOException {
+	          String line = null;
+	          int res = 0;
+	          while ( (line = in.readLine()) != null ) {
+	        	  String pfx = line.substring( 0, 3 );
+	        	  logger.info("Received: " + line);
+	        	  try {
+	        		  res = Integer.parseInt( pfx );
+	        	  } 
+	        	  catch (Exception ex) {
+	        		  logger.log(Level.SEVERE, ex.getMessage(), ex);
+	        		  res = -1;
+	        	  }
+	        	  if ( line.charAt( 3 ) != '-' ) break;
+	          }
+	          return res;
+	      }
+	    
+	      private void say( BufferedWriter wr, String text )  throws IOException {
+	    	  wr.write( text + "\r\n" );
+	    	  wr.flush();
+	    	  logger.info("Sending: " + text);
+	    	  return;
+	      }
+	      
+	      private ArrayList<String> getMX( String hostName ) throws NamingException {
+	    	  Hashtable<String, String> env = new Hashtable<String, String>();
+	    	  env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.dns.DnsContextFactory");
+	          //env.put(Context.PROVIDER_URL, "dns://8.8.8.8 dns://8.8.4.4");
+	    	  DirContext ictx = new InitialDirContext( env );
+	    	  Attributes attrs = ictx.getAttributes( hostName, new String[] { "MX" });
+	    	  Attribute attr = attrs.get( "MX" );
+	    	  
+	    	  if (( attr == null ) || ( attr.size() == 0 )) {
+	    		  attrs = ictx.getAttributes( hostName, new String[] { "A" });
+	    		  attr = attrs.get( "A" );
+	    		  if ( attr == null ) {
+	    			  throw new NamingException( "No match for name '" + hostName + "'" );
+	    		  }
+	    	  }
+	    	  
+	    	  ArrayList<String> res = new ArrayList<String>();
+	    	  NamingEnumeration<?> en = attr.getAll();
+	    	  while ( en.hasMore() ) {
+	    		  	String x = (String) en.next();
+	    		  	String f[] = x.split( " " );
+	    		  	if ( f[1].endsWith( "." )) { 
+	    		  		f[1] = f[1].substring( 0, (f[1].length() - 1));
+	    		  	}
+	    		  	res.add( f[1] );
+	    	  }
+	    	  
+	    	  logger.info( "Found " + res.size() + " MX servers");
+	    	  
+	    	  return res;
+	      }
+	      
+	      public String emailAccountExists() {
+	    	  if (StringUtils.isNotEmpty(to) ) {
+	    		  // Find the separator for the domain name
+	    		  int pos = to.indexOf( '@' );
+	    		  // If the address does not contain an '@', it's not valid
+	    		  if ( pos == -1 ) {
+	    			  addActionError("Invalid address format");
+	    			  return ERROR; 
+	    		  }
+	    		  // Isolate the domain/machine name and get a list of mail exchangers
+	    		  String domain = to.substring( ++pos );
+	    		  ArrayList<String> mxList = null;
+	    		  try {
+	    			  mxList = getMX( domain );
+	    		  } catch (NamingException ex) {
+	    			  logger.log(Level.SEVERE, ex.getMessage(), ex);
+	    			  addActionError(ex.getMessage());
+	    			  return ERROR; 
+	    		  }
+	    	  
+	    		  if ( mxList.size() == 0 ) {
+	    			  addActionError("No mail servers found");
+	    			  return ERROR; 
+	    		  }
+	        
+	    		  for ( int mx = 0 ; mx < mxList.size() ; mx++ ) {
+	    			  boolean valid = false;
+	    			  Socket skt = null;
+	    			  BufferedReader rdr = null;
+	    			  BufferedWriter wtr = null;
+	    			  try {
+	    				  int res;
+	    				  skt = new Socket( (String) mxList.get( mx ), 25 );
+	    				  rdr = new BufferedReader( new InputStreamReader( skt.getInputStream() ) );
+	    				  wtr = new BufferedWriter( new OutputStreamWriter( skt.getOutputStream() ) );
+	    				  res = hear( rdr );
+	    				  if ( res != 220 ) throw new Exception( "Invalid header" );
+	    				  say( wtr, "EHLO gms-world.net");
+	    				  res = hear( rdr );
+	    				  if ( res != 250 ) throw new Exception( "Not ESMTP" );
+	    				  // validate the sender address  
+	    				  say( wtr, "MAIL FROM: <" + ConfigurationManager.DL_MAIL + ">" );
+	    				  res = hear( rdr );
+	    				  if ( res != 250 ) throw new Exception( "Sender rejected" );
+	    				  say( wtr, "RCPT TO: <" + to + ">" );
+	    				  res = hear( rdr );
+	    				  say( wtr, "RSET" ); hear( rdr );
+	    				  say( wtr, "QUIT" ); hear( rdr );
+	    				  if ( res != 250 && res != 451) {
+	    					  throw new Exception("Received following SMTP server response: " + res);
+	    				  };
+	    				  valid = true;
+	    			  } catch (Exception ex) {
+	    				  logger.log(Level.SEVERE, ex.getMessage(), ex);
+	    				  addActionError(ex.getMessage());
+	    			  } finally {
+	    				  if (rdr != null) {
+	    					  try {
+	    						  rdr.close();
+	    					  } catch (Exception e) {}
+	    				  }
+	    				  if (wtr != null) {
+	    					  try { 
+	    						  wtr.close();
+	    					  } catch (Exception e) {}
+	    				  }
+	    				  if (skt != null)  {
+	    					  try {
+	    						  skt.close();
+	    					  } catch (Exception e) {}
+	    				  }
+	    			  }
+	    			  if ( valid ) {
+	    				  request.setAttribute("output", "{\"status\":\"ok\"}");
+    					  return SUCCESS;
+    				  }
+	    		  }
+	    		  if (getActionErrors().isEmpty()) {
+	    			  addActionError("Failed to verify email address");
+	    		  }
+			      return ERROR; 
+	    	  } else {
+	    		  addActionError("Missing required parameters!");
+			       return ERROR; 
+	    	  }
+	      }
+}
+

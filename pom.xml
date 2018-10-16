@@ -13,6 +13,8 @@
     <youtube.version>v3-rev178-1.22.0</youtube.version>
     <struts.version>2.3.34</struts.version>
     <version.org.infinispan>8.3.0.Final-redhat-1</version.org.infinispan>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
   </properties>
   
   <dependencyManagement>
