@@ -348,10 +348,10 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    			  addActionError("No mail servers found");
 	    			  return ERROR; 
 	    		  }
-	        
+	              
+	    		  boolean valid = false;
 	    		  for ( int mx = 0 ; mx < mxList.size() ; mx++ ) {
 	    			  final String mailserver = mxList.get( mx );
-	    			  boolean valid = false;
 	    			  Socket skt = null;
 	    			  BufferedReader rdr = null;
 	    			  BufferedWriter wtr = null;
@@ -403,12 +403,11 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    					  } catch (Exception e) {}
 	    				  }
 	    			  }
-	    			  if ( valid ) {
-	    				  request.setAttribute("output", "{\"status\":\"ok\"}");
-    					  return SUCCESS;
-    				  }
 	    		  }
-	    		  if (getActionErrors().isEmpty()) {
+	    		  if ( valid ) {
+    				  request.setAttribute("output", "{\"status\":\"ok\"}");
+					  return SUCCESS;
+				  } else if (getActionErrors().isEmpty()) {
 	    			  addActionError("Failed to verify email address");
 	    		  }
 			      return ERROR; 
