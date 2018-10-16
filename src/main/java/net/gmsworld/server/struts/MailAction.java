@@ -373,7 +373,7 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    				  say( wtr, "RSET" ); hear( rdr );
 	    				  say( wtr, "QUIT" ); hear( rdr );
 	    				  if ( res != 250 && res != 451) {
-	    					  throw new Exception("Received following SMTP server response: " + res);
+	    					  throw new Exception("Received following SMTP server response: " + res + " from " + mxList.get( mx ));
 	    				  };
 	    				  valid = true;
 	    			  } catch (Exception ex) {
