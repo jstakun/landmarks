@@ -357,6 +357,7 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    			  try {
 	    				  int res;
 	    				  skt = new Socket( (String) mxList.get( mx ), 25 );
+	    				  skt.setSoTimeout(10000); //10 sec
 	    				  rdr = new BufferedReader( new InputStreamReader( skt.getInputStream() ) );
 	    				  wtr = new BufferedWriter( new OutputStreamWriter( skt.getOutputStream() ) );
 	    				  res = hear( rdr );
