@@ -350,13 +350,15 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    		  }
 	        
 	    		  for ( int mx = 0 ; mx < mxList.size() ; mx++ ) {
+	    			  final String mailserver = mxList.get( mx );
 	    			  boolean valid = false;
 	    			  Socket skt = null;
 	    			  BufferedReader rdr = null;
 	    			  BufferedWriter wtr = null;
 	    			  try {
 	    				  int res;
-	    				  skt = new Socket( (String) mxList.get( mx ), 25 );
+	    				  logger.info("Connecting to " + mailserver);
+	    				  skt = new Socket( mailserver, 25 );
 	    				  skt.setSoTimeout(10000); //10 sec
 	    				  rdr = new BufferedReader( new InputStreamReader( skt.getInputStream() ) );
 	    				  wtr = new BufferedWriter( new OutputStreamWriter( skt.getOutputStream() ) );
@@ -377,7 +379,7 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    					  //account doesn't exists
 	    					  break;
 	    				  } else if ( res != 250) {
-	    					  throw new Exception("Received following SMTP server response: " + res + " from " + mxList.get( mx ));
+	    					  throw new Exception("Received following SMTP server response: " + res + " from " + mailserver);
 	    				  };
 	    				  valid = true;
 	    				  break;
