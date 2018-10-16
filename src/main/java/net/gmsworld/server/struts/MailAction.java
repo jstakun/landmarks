@@ -339,7 +339,7 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    		  try {
 	    			  mxList = getMX( domain );
 	    		  } catch (NamingException ex) {
-	    			  logger.log(Level.SEVERE, ex.getMessage(), ex);
+	    			  logger.severe(ex.getMessage());
 	    			  addActionError(ex.getMessage());
 	    			  return ERROR; 
 	    		  }
@@ -377,7 +377,7 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    				  };
 	    				  valid = true;
 	    			  } catch (Exception ex) {
-	    				  logger.log(Level.SEVERE, ex.getMessage(), ex);
+	    				  logger.severe(ex.getMessage());
 	    				  addActionError(ex.getMessage());
 	    			  } finally {
 	    				  if (rdr != null) {
