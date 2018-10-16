@@ -373,10 +373,14 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    				  res = hear( rdr );
 	    				  say( wtr, "RSET" ); hear( rdr );
 	    				  say( wtr, "QUIT" ); hear( rdr );
-	    				  if ( res != 250 && res != 451) {
+	    				  if (res == 550) {
+	    					  //account doesn't exists
+	    					  break;
+	    				  } else if ( res != 250) {
 	    					  throw new Exception("Received following SMTP server response: " + res + " from " + mxList.get( mx ));
 	    				  };
 	    				  valid = true;
+	    				  break;
 	    			  } catch (Exception ex) {
 	    				  logger.severe(ex.getMessage());
 	    				  addActionError(ex.getMessage());
