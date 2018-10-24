@@ -49,6 +49,19 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
     	return (DevicePersistenceUtils) ServiceLocator.getInstance().getService("bean/DevicePersistenceUtils");	
     }
     
+    private boolean setGeo(Device device) {
+    	if (StringUtils.isNotEmpty(flex)) {
+			 String[] tokens = StringUtils.split(flex,",");
+			 for (String token : tokens) {
+				  if (StringUtils.startsWith(token, "geo:")) {
+					   device.setGeo(token.substring(4) + " " + System.currentTimeMillis());
+					   return true;
+				  }
+			 }
+		}
+    	return false;
+    }
+    
 	public String createDevice() {
 		String result;
 		if (imei != null) {
@@ -58,6 +71,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 					name = name.replace(" ", "-");
 				}
 				Device device = new Device(imei, token, username, name) ;
+				setGeo(device);
 				getDevicePersistenceUtils().save(device, em);
 				request.setAttribute(JSonDataAction.JSON_OUTPUT, device);
 				result = "json";
@@ -92,6 +106,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 					device.setName(name.replace(" ", "-"));
 				}
 				device.setCreationDate(new Date());
+				setGeo(device);
 				getDevicePersistenceUtils().update(device, em);
 				request.setAttribute(JSonDataAction.JSON_OUTPUT, device);
 				result = "json";
@@ -128,7 +143,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 				if (limit == null || limit <= 0 || limit > 100) {
 					limit = 10;
 				}
-				List<Device> devices = getDevicePersistenceUtils().findDeviceByUsername(username,  limit, em);
+				List<Device> devices = getDevicePersistenceUtils().findDeviceByUsername(username, limit, em);
 				if (devices  != null) {
 					request.setAttribute(JSonDataAction.JSON_OUTPUT, devices);
 					result = "json";
@@ -223,6 +238,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 						device.setName(name.replace(" ", "-"));
 					}
 					device.setCreationDate(new Date());
+					setGeo(device);
 					devicePersistenceUtils.update(device, em);
 				} else {
 					device = devicePersistenceUtils.findDeviceByImei(imei, em);
@@ -236,6 +252,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 							device.setName(name.replace(" ", "-"));
 						}
 						device.setCreationDate(new Date());
+						setGeo(device);
 						devicePersistenceUtils.update(device, em);
 					} else if (device != null) {
 						addActionError("Invalid device " + imei + " update!");
@@ -246,6 +263,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 							name = name.replace(" ", "-");
 						}
 						device = new Device(imei, token, username, name) ;
+						setGeo(device);
 						devicePersistenceUtils.save(device, em);
 					}
 				}
@@ -279,6 +297,9 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 					device = getDevicePersistenceUtils().findDeviceByNameAndUsername(name, username, em);
 				}
 				if (device  != null) {
+					if (setGeo(device)) {
+						getDevicePersistenceUtils().update(device, em);
+					}
 					String url = "https://fcm.googleapis.com/v1/projects/" + Commons.getProperty(Property.FCM_PROJECT) + "/messages:send";
 					String pinString;
 					if (pin < 1000) {

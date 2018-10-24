@@ -25,23 +25,25 @@ import javax.persistence.Table;
 
 public class Device implements Serializable {
 
-	 public final static String FIND_BY_IMEI= "Device.findByImei";
-	 public final static String FIND_BY_NAME_AND_USERNAME = "Device.findByNameAndUsername";
-	 public final static String FIND_BY_USERNAME = "Device.findByUsername";
+	public final static String FIND_BY_IMEI= "Device.findByImei";
+	public final static String FIND_BY_NAME_AND_USERNAME = "Device.findByNameAndUsername";
+	public final static String FIND_BY_USERNAME = "Device.findByUsername";
 	
-	 @Id
-	 @Column(name = "IMEI")
+	@Id
+	@Column(name = "IMEI")
 	private String imei;
-	 @Column(name = "TOKEN")
+	@Column(name = "TOKEN")
 	private String token;
-	 @Column(name = "USERNAME")
+	@Column(name = "USERNAME")
 	private String username;
-	 @Column(name = "CREATION_DATE")
+	@Column(name = "CREATION_DATE")
 	private Date creationDate;
-	 @Column(name = "NAME")
+	@Column(name = "NAME")
 	private String name;
+	@Column(name = "GEO")
+	private String geo;
 	
-	 private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
 	public Device(String imei, String token, String username, String name) {
 		this();
@@ -89,5 +91,13 @@ public class Device implements Serializable {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getGeo() {
+		return geo;
+	}
+
+	public void setGeo(String geo) {
+		this.geo = geo;
 	}   
 }
