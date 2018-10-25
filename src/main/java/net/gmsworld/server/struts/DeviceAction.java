@@ -63,8 +63,8 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
     	return false;
     }
     
-    private void setGeoFromFlex(String flex) {
-    	if (StringUtils.isNotEmpty(flex)) {
+    private void setGeoFromFlex() {
+    	 if (StringUtils.isNotEmpty(flex)) {
     	     String[] tokens = StringUtils.split(flex,",");
     	     String deviceId = null, geo = null;
 			 for (String token : tokens) {
@@ -73,23 +73,24 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 				 } else if (StringUtils.startsWith(token, "deviceId:")) {
 					  deviceId = token.substring(8);
 				 }
+				 if (StringUtils.isNotEmpty(geo) && StringUtils.isNotEmpty(deviceId)) {
+					  EntityManager em = EMF.getEntityManager();
+					  try {
+							Device device = getDevicePersistenceUtils().findDeviceByImei(deviceId, em);
+							if (device != null) {
+							 	logger.log(Level.INFO, "Setting device geo location");
+							 	device.setGeo(geo);
+							 	getDevicePersistenceUtils().update(device, em);
+							}
+					  } catch (Exception e) {
+							logger.log(Level.SEVERE, e.getMessage(), e);	 
+					  } finally {
+							em.close();
+					  }
+					  break;
+				 } 
     		 }
-			 if (StringUtils.isNotEmpty(geo) && StringUtils.isNotEmpty(deviceId)) {
-				 EntityManager em = EMF.getEntityManager();
-				 try {
-					 	Device device = getDevicePersistenceUtils().findDeviceByImei(deviceId, em);
-					 	if (device != null) {
-					 		logger.log(Level.INFO, "Setting device geo location");
-					 		device.setGeo(geo);
-					 		getDevicePersistenceUtils().update(device, em);
-					 	}
-				 } catch (Exception e) {
-						logger.log(Level.SEVERE, e.getMessage(), e);	 
-				 } finally {
-					 	em.close();
-				 }
-			 }
-    	}
+    	 }
     }
     
 	public String createDevice() {
@@ -343,7 +344,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 					}
 					if (StringUtils.isNotEmpty(flex)) {
 						data.put("flex", flex);
-						setGeoFromFlex(flex);
+						setGeoFromFlex();
 					}
 					if (ttl == null || ttl < 0) {
 						ttl = 300L; //defaults to 300 seconds
