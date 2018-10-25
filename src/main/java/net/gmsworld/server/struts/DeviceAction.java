@@ -70,26 +70,26 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 			 for (String token : tokens) {
 				  if (StringUtils.startsWith(token, "geo:")) {
 					   geo = token.substring(4) + " " + System.currentTimeMillis();
-				 } else if (StringUtils.startsWith(token, "deviceId:")) {
-					  deviceId = token.substring(8);
-				 }
-				 if (StringUtils.isNotEmpty(geo) && StringUtils.isNotEmpty(deviceId)) {
-					  EntityManager em = EMF.getEntityManager();
-					  try {
+				  } else if (StringUtils.startsWith(token, "deviceId:")) {
+					   deviceId = token.substring(9);
+				  }
+				  if (StringUtils.isNotEmpty(geo) && StringUtils.isNotEmpty(deviceId)) {
+					   EntityManager em = EMF.getEntityManager();
+					   try {
 							Device device = getDevicePersistenceUtils().findDeviceByImei(deviceId, em);
 							if (device != null) {
 							 	logger.log(Level.INFO, "Setting device geo location");
 							 	device.setGeo(geo);
 							 	getDevicePersistenceUtils().update(device, em);
 							}
-					  } catch (Exception e) {
+					   } catch (Exception e) {
 							logger.log(Level.SEVERE, e.getMessage(), e);	 
-					  } finally {
+					   } finally {
 							em.close();
-					  }
-					  break;
-				 } 
-    		 }
+					   }
+					   break;
+				  } 
+    		  }
     	 }
     }
     
