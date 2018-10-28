@@ -215,7 +215,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 					request.setAttribute(JSonDataAction.JSON_OUTPUT, device);
 					result = "json";
 				} else {
-					addActionError("Device " + imei + " not device found!");
+					addActionError("Device " + imei + " not found!");
 					ServletActionContext.getResponse().setStatus(404);
 					result = ERROR;
 				}
@@ -245,7 +245,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 					request.setAttribute(JSonDataAction.JSON_OUTPUT, device);
 					result = "json";
 				} else {
-					addActionError("Device " + name + " not device found!");
+					addActionError("Device " + name + " not found!");
 					ServletActionContext.getResponse().setStatus(404);
 					result = ERROR;
 				}
@@ -320,7 +320,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 				} 
 			} catch (Exception e) {
 				logger.log(Level.SEVERE, e.getMessage(), e);
-				addActionError("Device " + imei + "error: " + e.getMessage());
+				addActionError("Device " + imei + " error: " + e.getMessage());
 				ServletActionContext.getResponse().setStatus(500);
 		    	result = ERROR;
 			} finally {
@@ -394,7 +394,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 						JSONObject responseJson = new JSONObject(response);
 						if (responseJson.has("error")) {
 							JSONObject error = responseJson.getJSONObject("error");
-							addActionError("Device " + imei + "error: " + error.optString("message"));
+							addActionError("Device " + imei + " error: " + error.optString("message"));
 						} else {
 							addActionError("Failed to send command to device " + imei + ". Try again later!");
 						}
@@ -406,7 +406,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 				    	result = ERROR;
 					}
 				} else {
-					addActionError("Device " + imei + " not device found!");
+					addActionError("Device " + imei + " not found!");
 					ServletActionContext.getResponse().setStatus(404);
 			    	result = ERROR;
 				}
@@ -437,13 +437,13 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 					request.setAttribute("output", "{\"status\":\"ok\"}");
 					result = SUCCESS; 
 				} else {
-					addActionError("Device " + imei + " device found!");
+					addActionError("Device " + imei + " not found!");
 					ServletActionContext.getResponse().setStatus(404);
 					result = ERROR;
 				}
 			} catch (Exception e) {
 				logger.log(Level.SEVERE, e.getMessage(), e);
-				addActionError("Device " + imei + "error: " + e.getMessage());
+				addActionError("Device " + imei + " error: " + e.getMessage());
 				ServletActionContext.getResponse().setStatus(500);
 		    	result = ERROR;
 			} finally {
