@@ -394,6 +394,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 			} catch (Exception e) {
 				logger.log(Level.SEVERE, e.getMessage(), e);
 				addActionError("Device " + imei + " error: " + e.getMessage());
+				ServletActionContext.getResponse().setStatus(500);
 		    	result = ERROR;
 			} finally {
 				em.close();
