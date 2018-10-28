@@ -110,12 +110,14 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 			} catch (Exception e) {
 				logger.log(Level.SEVERE, e.getMessage(), e);
 				addActionError("Device " + imei + " error: "  + e.getMessage());
+				ServletActionContext.getResponse().setStatus(500);
 		    	result = ERROR;
 			} finally {
 				em.close();
 			}
 		} else {
 			addActionError("Missing required parameter!");
+			ServletActionContext.getResponse().setStatus(400);
 	    	result = ERROR;
 		}
 		return result;
@@ -145,12 +147,14 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 			} catch (Exception e) {
 				logger.log(Level.SEVERE, e.getMessage(), e);
 				addActionError("Device " + imei + " error: "  + e.getMessage());
+				ServletActionContext.getResponse().setStatus(500);
 		    	result = ERROR;
 			} finally {
 				em.close();
 			}
 		} else {
 			addActionError("Missing required parameter!");
+			ServletActionContext.getResponse().setStatus(400);
 	    	result = ERROR;
 		}
 		return result;
@@ -163,6 +167,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 			return getDeviceByName();
 		} else {
 			addActionError("Missing required parameter!");
+			ServletActionContext.getResponse().setStatus(400);
 	    	return ERROR;
 		}
 	}
@@ -181,10 +186,12 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 					result = "json";
 				} else {
 					addActionError("No user " + username + " devices found!");
+					ServletActionContext.getResponse().setStatus(404);
 					result = ERROR;
 				}
 			} catch (Exception e) {
 				logger.log(Level.SEVERE, e.getMessage(), e);
+				ServletActionContext.getResponse().setStatus(500);
 				addActionError("User " + username + " devices error: " + e.getMessage());
 		    	result = ERROR;
 			} finally {
@@ -192,6 +199,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 			}
 		} else {
 			addActionError("Missing required parameter!");
+			ServletActionContext.getResponse().setStatus(400);
 	    	result = ERROR;
 		}
 		return result;
@@ -208,17 +216,20 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 					result = "json";
 				} else {
 					addActionError("Device " + imei + " not device found!");
+					ServletActionContext.getResponse().setStatus(404);
 					result = ERROR;
 				}
 			} catch (Exception e) {
 				logger.log(Level.SEVERE, e.getMessage(), e);
-				addActionError("Device " + imei + " erro:r " + e.getMessage());
+				addActionError("Device " + imei + " error: " + e.getMessage());
+				ServletActionContext.getResponse().setStatus(500);
 		    	result = ERROR;
 			} finally {
 				em.close();
 			}
 		} else {
 			addActionError("Missing required parameter!");
+			ServletActionContext.getResponse().setStatus(400);
 	    	result = ERROR;
 		}
 		return result;
@@ -235,17 +246,20 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 					result = "json";
 				} else {
 					addActionError("Device " + name + " not device found!");
+					ServletActionContext.getResponse().setStatus(404);
 					result = ERROR;
 				}
 			} catch (Exception e) {
 				logger.log(Level.SEVERE, e.getMessage(), e);
 				addActionError("Device " + name + " error: " + e.getMessage());
+				ServletActionContext.getResponse().setStatus(500);
 		    	result = ERROR;
 			} finally {
 				em.close();
 			}
 		} else {
 			addActionError("Missing required parameter!");
+			ServletActionContext.getResponse().setStatus(400);
 	    	result = ERROR;
 		}
 		return result;
@@ -288,6 +302,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 						devicePersistenceUtils.update(device, em);
 					} else if (device != null) {
 						addActionError("Invalid device " + imei + " update!");
+						ServletActionContext.getResponse().setStatus(400);
 				    	result = ERROR;
 					} else {
 						//create new device
@@ -306,12 +321,14 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 			} catch (Exception e) {
 				logger.log(Level.SEVERE, e.getMessage(), e);
 				addActionError("Device " + imei + "error: " + e.getMessage());
+				ServletActionContext.getResponse().setStatus(500);
 		    	result = ERROR;
 			} finally {
 				em.close();
 			}
 		} else {
 			addActionError("Missing or invalid required parameter!");
+			ServletActionContext.getResponse().setStatus(400);
 	    	result = ERROR;
 		}
 		return result;
@@ -385,10 +402,12 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 						result = ERROR;
 					} else {
 						addActionError("Failed to send command to device " + imei + ". Try again later!");
+						ServletActionContext.getResponse().setStatus(500);
 				    	result = ERROR;
 					}
 				} else {
 					addActionError("Device " + imei + " not device found!");
+					ServletActionContext.getResponse().setStatus(404);
 			    	result = ERROR;
 				}
 			} catch (Exception e) {
@@ -401,6 +420,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 			}
 		} else {
 			addActionError("Missing required parameter!");
+			ServletActionContext.getResponse().setStatus(400);
 	    	result = ERROR;
 		}
 		return result;
@@ -418,17 +438,20 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 					result = SUCCESS; 
 				} else {
 					addActionError("Device " + imei + " device found!");
+					ServletActionContext.getResponse().setStatus(404);
 					result = ERROR;
 				}
 			} catch (Exception e) {
 				logger.log(Level.SEVERE, e.getMessage(), e);
 				addActionError("Device " + imei + "error: " + e.getMessage());
+				ServletActionContext.getResponse().setStatus(500);
 		    	result = ERROR;
 			} finally {
 				em.close();
 			}
 		} else {
 			addActionError("Missing required parameter!");
+			ServletActionContext.getResponse().setStatus(400);
 	    	result = ERROR;
 		}
 		return result;
