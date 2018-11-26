@@ -28,6 +28,7 @@ import javax.naming.directory.InitialDirContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.ServletRequestAware;
 
 import com.opensymphony.xwork2.ActionSupport;
@@ -330,6 +331,7 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    		  // If the address does not contain an '@', it's not valid
 	    		  if ( pos == -1 ) {
 	    			  addActionError("Invalid address format");
+	    			  ServletActionContext.getResponse().setStatus(400);
 	    			  return ERROR; 
 	    		  }
 	    		  // Isolate the domain/machine name and get a list of mail exchangers
@@ -340,11 +342,13 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    		  } catch (NamingException ex) {
 	    			  logger.severe(ex.getMessage());
 	    			  addActionError(ex.getMessage());
+	    			  ServletActionContext.getResponse().setStatus(500);
 	    			  return ERROR; 
 	    		  }
 	    	  
 	    		  if ( mxList.size() == 0 ) {
 	    			  addActionError("No mail servers found");
+	    			  ServletActionContext.getResponse().setStatus(400);
 	    			  return ERROR; 
 	    		  }
 	              
@@ -406,13 +410,17 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    		  if ( valid ) {
     				  request.setAttribute("output", "{\"status\":\"ok\"}");
 					  return SUCCESS;
-				  } else if (getActionErrors().isEmpty()) {
-	    			  addActionError("Failed to verify email address");
-	    		  }
-			      return ERROR; 
+				  } else {
+					  if (getActionErrors().isEmpty()) {
+						  addActionError("Failed to verify email address");
+					  }
+					  ServletActionContext.getResponse().setStatus(500);
+					  return ERROR; 
+				  }
 	    	  } else {
 	    		  addActionError("Missing required parameters!");
-			       return ERROR; 
+	    		  ServletActionContext.getResponse().setStatus(400);
+			      return ERROR; 
 	    	  }
 	      }
 }

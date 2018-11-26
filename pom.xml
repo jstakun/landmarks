@@ -95,12 +95,12 @@
     <dependency>
     	<groupId>org.json</groupId>
     	<artifactId>json</artifactId>
-    	<version>20180130</version>
+    	<version>20180813</version>
     </dependency>
     <dependency>
     	<groupId>org.ocpsoft.prettytime</groupId>
     	<artifactId>prettytime</artifactId>
-    	<version>3.2.4.Final</version>
+    	<version>4.0.1.Final</version>
     </dependency>
     <dependency>
     	<groupId>net.sf.jtidy</groupId>
@@ -120,17 +120,12 @@
     <dependency>
     	<groupId>org.twitter4j</groupId>
     	<artifactId>twitter4j-core</artifactId>
-    	<version>4.0.5</version>
+    	<version>4.0.7</version>
     </dependency>
     <dependency>
     	<groupId>com.twitter</groupId>
     	<artifactId>twitter-text</artifactId>
     	<version>1.14.0</version>
-    </dependency>
-    <dependency>
-    	<groupId>com.mastercard.api</groupId>
-    	<artifactId>locations</artifactId>
-    	<version>1.0.3</version>
     </dependency>
     <dependency>
     	<groupId>org.apache.httpcomponents</groupId>
