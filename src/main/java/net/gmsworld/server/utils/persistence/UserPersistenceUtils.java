@@ -64,7 +64,7 @@ public class UserPersistenceUtils {
 		} 
 	}
 	
-	private static String getHash(String password) throws Exception {
+	public static String getHash(String password) throws Exception {
 		MessageDigest digester = MessageDigest.getInstance("SHA-256");
 	    digester.update(password.getBytes());
 	    return Base64.getEncoder().encodeToString(digester.digest());

@@ -356,7 +356,15 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
 					u = new User(login, password,  email, firstname, lastname);
 					userPeristenceUtils.save(u, em);
 					request.setAttribute("output", "{\"status\":\"ok\",\"login\":\"" + login + "\",\"secret\":\"" + u.getSecret() + "\"}");
-				} else {
+				} else if (StringUtils.equals(email, u.getEmail()) && !UserPersistenceUtils.getHash(password).equals(u.getPassword())) {
+					u.setPassword(password);
+					if (!u.isConfirmed()) {
+						u.setConfirmed(true);
+						u.setConfirmDate(new Date(System.currentTimeMillis()));
+					}
+					userPeristenceUtils.save(u, em);
+					request.setAttribute("output", "{\"status\":\"password changed\",\"login\":\"" + login + "\",\"secret\":\"" + u.getSecret() + "\"}");
+				} else {	
 					request.setAttribute("output", "{\"error\":\"User exists!\"}");    	
 				}
             } catch (Exception e) {
