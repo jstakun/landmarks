@@ -283,9 +283,10 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
 		String pwd = getParameter("password");
 		String secret = getParameter("secret");
 		boolean confirm = (NumberUtils.getInt(getParameter("confirm"), 0)==1);
+		boolean enc = (NumberUtils.getInt(getParameter("enc"), 0)==1);
 		
 		if (StringUtils.isNotEmpty(id) && StringUtils.isNotEmpty(pwd)) {
-			return login(id, pwd);
+			return login(id, pwd, enc);
 		} else if (StringUtils.isNotEmpty(id)) {
 	    	return findByIdUser(id, confirm);
 		} else if (StringUtils.isNotEmpty(secret)) {
@@ -462,12 +463,12 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
     	return SUCCESS;
 	}
 	
-	private String login(String login, String password) {
+	private String login(String login, String password, boolean enc) {
 		String output = null;
 		EntityManager em = EMF.getEntityManager();
     	try {
     		UserPersistenceUtils userPeristenceUtils = (UserPersistenceUtils) ServiceLocator.getInstance().getService("bean/UserPersistenceUtils");
-    		boolean auth = userPeristenceUtils.login(login, password, em);
+    		boolean auth = userPeristenceUtils.login(login, password, enc, em);
     		output = "{\"auth\": " + auth + "}";
     	} catch (Exception e) {
         	output = "{\"error\":\"" + e.getMessage() + "\"}";

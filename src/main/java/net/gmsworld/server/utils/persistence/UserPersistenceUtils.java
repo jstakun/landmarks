@@ -70,12 +70,16 @@ public class UserPersistenceUtils {
 	    return Base64.getEncoder().encodeToString(digester.digest());
 	}
 	
-	public boolean login(String login, String password, EntityManager entityManager) {
+	public boolean login(String login, String password, boolean enc, EntityManager entityManager) {
 		boolean auth = false;
 		User u = findById(login, entityManager);
 		if (u != null) {
 			try {
-				auth = (getHash(password).equals(u.getPassword()));
+				if (enc) {
+					auth = password.equals(u.getPassword());
+				} else {
+					auth = (getHash(password).equals(u.getPassword()));
+				}
 			} catch (Exception e) {
 				logger.log(Level.SEVERE, e.getMessage(), e);
 			}
