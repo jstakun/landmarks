@@ -16,6 +16,7 @@ import net.gmsworld.server.utils.memcache.CacheUtil;
 import net.gmsworld.server.utils.persistence.EMF;
 import net.gmsworld.server.utils.persistence.LandmarkPersistenceUtils;
 
+import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.ParameterAware;
 import org.apache.struts2.interceptor.ServletRequestAware;
 import org.apache.struts2.json.JSONUtil;
@@ -96,8 +97,9 @@ public class LandmarkProviderAction extends ActionSupport implements ParameterAw
 		int limit = NumberUtils.getInt(getParameter("limit"), 10);
 		String output = null;
 		List<Landmark> newestLandmarks = CacheUtil.getList(Landmark.class, key);
-		EntityManager em = EMF.getEntityManager();
+		EntityManager em = null;
 		try {
+			em = EMF.getEntityManager();
 			if (newestLandmarks == null) {
 				newestLandmarks = getLandmarkPersistenceUtils().findNewestLandmarks(limit, em);
 				if (newestLandmarks != null && !newestLandmarks.isEmpty()) {
@@ -105,11 +107,14 @@ public class LandmarkProviderAction extends ActionSupport implements ParameterAw
 				}
 			}
 			output = JSONUtil.serialize(newestLandmarks, null, null, true, true);
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			output = "{\"error\":\"" + e.getMessage() + "\"}";
 			logger.log(Level.SEVERE, e.getMessage(), e);
+			ServletActionContext.getResponse().setStatus(500);
 		} finally {
-			em.close();
+			if (em != null) {
+				em.close();
+			}
 		}
 		logger.log(Level.INFO, "findNewestLandmarks(): found " + (newestLandmarks == null ? 0 : newestLandmarks.size()) + " landmarks in " + (System.currentTimeMillis() - start)  + " millis!");
 		request.setAttribute("output", output);
