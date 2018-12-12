@@ -380,7 +380,8 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    				  say( wtr, "QUIT" ); hear( rdr );
 	    				  if (res == 550) {
 	    					  addActionError("Email account doesn't exists");
-	    					  break;
+	    					  ServletActionContext.getResponse().setStatus(400);
+	    	    			  break;
 	    				  } else if ( res != 250) {
 	    					  throw new Exception("Received following SMTP server response: " + res + " from " + mailserver);
 	    				  };
@@ -389,6 +390,7 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    			  } catch (Exception ex) {
 	    				  logger.severe(ex.getMessage());
 	    				  addActionError(ex.getMessage());
+	    				  ServletActionContext.getResponse().setStatus(500);
 	    			  } finally {
 	    				  if (rdr != null) {
 	    					  try {
