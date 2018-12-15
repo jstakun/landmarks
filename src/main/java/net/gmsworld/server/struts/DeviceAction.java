@@ -137,7 +137,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 					device.setUsername(username);
 				}
 				if (name != null) {
-					device.setName(name.replace(" ", "-"));
+					device.setName(name.replace(" ", "-").replace(",", "-"));
 				}
 				device.setCreationDate(new Date());
 				setGeo(device);
@@ -281,7 +281,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 						device.setUsername(username);
 					}
 					if (name != null) {
-						device.setName(name.replace(" ", "-"));
+						device.setName(name.replace(" ", "-").replace(",", "-"));
 					}
 					device.setCreationDate(new Date());
 					setGeo(device);
@@ -295,7 +295,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 							device.setUsername(username);
 						}
 						if (name != null) {
-							device.setName(name.replace(" ", "-"));
+							device.setName(name.replace(" ", "-").replace(",", "-"));
 						}
 						device.setCreationDate(new Date());
 						setGeo(device);
@@ -307,7 +307,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 					} else {
 						//create new device
 						if (name != null) {
-							name = name.replace(" ", "-");
+							name = name.replace(" ", "-").replace(",", "-");
 						}
 						device = new Device(imei, token, username, name) ;
 						setGeo(device);
