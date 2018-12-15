@@ -100,7 +100,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 			EntityManager em = EMF.getEntityManager();
 			try {
 				if (name != null) {
-					name = name.replace(" ", "-");
+					name = name.replace(" ", "-").replace(",", "-");
 				}
 				Device device = new Device(imei, token, username, name) ;
 				setGeo(device);
