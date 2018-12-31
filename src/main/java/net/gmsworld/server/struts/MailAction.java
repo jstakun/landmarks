@@ -313,12 +313,16 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    	  NamingEnumeration<?> en = attr.getAll();
 	    	  while ( en.hasMore() ) {
 	    		  	String x = (String) en.next();
-	    		  	String f[] = x.split( " " );
-	    		  	if ( f[1].endsWith( "." )) { 
-	    		  		f[1] = f[1].substring( 0, (f[1].length() - 1));
+	    		  	String f[] = x.split(" ");
+	    		  	if (f.length > 1) {
+	    		  		if (f[1].endsWith(".")) { 
+	    		  			f[1] = f[1].substring(0, (f[1].length() - 1));
+	    		  		}
+	    		  		logger.info("Found MX server " + f[1]);
+	    		  		res.add(f[1]);
+	    		  	} else {
+	    		  		logger.severe("Invalid MX server " + x);
 	    		  	}
-	    		  	logger.info( "Found MX server " + f[1]);
-	    		  	res.add( f[1] );
 	    	  }
 	    	  
 	    	  return res;
