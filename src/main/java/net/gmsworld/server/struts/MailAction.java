@@ -293,7 +293,7 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    	  return;
 	      }
 	      
-	      private ArrayList<String> getMX( String hostName ) throws NamingException {
+	      private ArrayList<String> getMX(String hostName) throws NamingException {
 	    	  Hashtable<String, String> env = new Hashtable<String, String>();
 	    	  env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.dns.DnsContextFactory");
 	          //env.put(Context.PROVIDER_URL, "dns://8.8.8.8 dns://8.8.4.4");
@@ -342,7 +342,7 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    		  String domain = to.substring( ++pos );
 	    		  ArrayList<String> mxList = null;
 	    		  try {
-	    			  mxList = getMX( domain );
+	    			  mxList = getMX(domain);
 	    		  } catch (NamingException ex) {
 	    			  logger.severe(ex.getMessage());
 	    			  addActionError(ex.getMessage());
@@ -350,7 +350,7 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    			  return ERROR; 
 	    		  }
 	    	  
-	    		  if ( mxList.size() == 0 ) {
+	    		  if (mxList.size() == 0) {
 	    			  addActionError("No mail servers found");
 	    			  ServletActionContext.getResponse().setStatus(400);
 	    			  return ERROR; 
