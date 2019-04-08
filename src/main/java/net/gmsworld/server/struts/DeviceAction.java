@@ -2,6 +2,7 @@ package net.gmsworld.server.struts;
 
 import java.io.FileInputStream;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -367,9 +368,9 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 					if (ttl == null || ttl < 0) {
 						ttl = 300L; //defaults to 300 seconds
 					}
-					JSONObject android = new JSONObject().put("ttl", Long.toString(ttl) + "s").put("priority","high");
-					JSONObject webpush = new JSONObject().put("headers", new JSONObject().put("TTL", Long.toString(ttl)).put("Urgency","high"));
-					JSONObject apns = new JSONObject().put("headers", new JSONObject().put("apns-expiration", Long.toString((((System.currentTimeMillis() + (ttl*1000L))/1000)))).put("apns-priority","10"));
+					JSONObject android = new JSONObject().put("ttl", Long.toString(ttl) + "s").put("priority","high").put("collapseKey", device.getImei());
+					JSONObject webpush = new JSONObject().put("headers", new JSONObject().put("TTL", Long.toString(ttl)).put("Urgency","high").put("Topic",device.getImei()));
+					JSONObject apns = new JSONObject().put("headers", new JSONObject().put("apns-expiration", Long.toString((((System.currentTimeMillis() + (ttl*1000L))/1000)))).put("apns-priority","10").put("apns-collapse-id", device.getImei()));
 					JSONObject content = new JSONObject().put("message", new JSONObject().put("token", device.getToken()).put("data", data).put("android", android).put("webpush", webpush).put("apns", apns));
 					
 					String auth  = "Bearer " + getAccessToken();
@@ -388,8 +389,22 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 					}
 					Integer responseCode = HttpUtils.getResponseCode(url);
 					if (StringUtils.startsWith(response, "{") && responseCode != null && responseCode == HttpServletResponse.SC_OK) {
-						request.setAttribute("output", response);
-						result = SUCCESS;
+						JSONObject responseJson = new JSONObject(response);
+						if (responseJson.has("name")) {
+							//check when device has been last seen
+							final Date deviceStatus = getDeviceStatus(device);
+							if (new Date().compareTo(deviceStatus) == 0) {
+								request.setAttribute("output", response);
+								result = SUCCESS;
+							} else {
+								addActionError("Device " + imei + " has been last seen on " + new SimpleDateFormat("yyyy-MM-dd").format(deviceStatus));
+								ServletActionContext.getResponse().setStatus(410);
+								result = ERROR;
+							}
+						} else {
+							addActionError("Failed to send command to device " + imei + ". Try again later!");
+							result = ERROR;
+						}
 					} else if  (StringUtils.startsWith(response, "{") && responseCode != null && responseCode >= 400) {
 						JSONObject responseJson = new JSONObject(response);
 						if (responseJson.has("error")) {
@@ -478,6 +493,18 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 		  GoogleCredential googleCredential = GoogleCredential.fromStream(is).createScoped(Arrays.asList("https://www.googleapis.com/auth/firebase.messaging"));
 		  googleCredential.refreshToken();
 		  return googleCredential.getAccessToken();
+	}
+	
+	private Date getDeviceStatus(Device device) throws Exception {
+		String response = HttpUtils.processFileRequestWithOtherAuthn(new URL("https://iid.googleapis.com/iid/info/" + device.getToken()), "GET", "application/json", "details=true", "application/json", "key=" + Commons.getProperty(Property.FCM_APP_KEY));
+		if  (StringUtils.startsWith(response, "{")) {
+			JSONObject responseJson = new JSONObject(response);
+			String connectDate = responseJson.optString("connectDate");
+			if (StringUtils.isNotEmpty(connectDate)) {
+				return new SimpleDateFormat("yyyy-MM-dd").parse(connectDate);
+			}	
+		}
+		return new Date();
 	}
 	
 	@Override
