@@ -496,15 +496,22 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 	}
 	
 	private Date getDeviceStatus(Device device) throws Exception {
+		Date d = new Date();
 		String response = HttpUtils.processFileRequestWithOtherAuthn(new URL("https://iid.googleapis.com/iid/info/" + device.getToken()), "GET", "application/json", "details=true", "application/json", "key=" + Commons.getProperty(Property.FCM_APP_KEY));
+		
 		if  (StringUtils.startsWith(response, "{")) {
+			if (System.getenv("FCM_DEBUG") != null) {
+				logger.log(Level.INFO, "Received: " + response);
+			}
 			JSONObject responseJson = new JSONObject(response);
 			String connectDate = responseJson.optString("connectDate");
 			if (StringUtils.isNotEmpty(connectDate)) {
-				return new SimpleDateFormat("yyyy-MM-dd").parse(connectDate);
-			}	
+				d = new SimpleDateFormat("yyyy-MM-dd").parse(connectDate);
+			}
+		} else {
+			logger.log(Level.SEVERE, "Received following response: " + response);
 		}
-		return new Date();
+		return d;
 	}
 	
 	@Override
