@@ -392,12 +392,12 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 						JSONObject responseJson = new JSONObject(response);
 						if (responseJson.has("name")) {
 							//check when device has been last seen
-							final Date deviceStatus = getDeviceStatus(device);
-							if (new Date().compareTo(deviceStatus) == 0) {
+							int deviceLastSeen =  getDeviceLastSeen(device);
+							if (deviceLastSeen <= 1) {
 								request.setAttribute("output", response);
 								result = SUCCESS;
 							} else {
-								addActionError("Device " + imei + " has been last seen on " + new SimpleDateFormat("yyyy-MM-dd").format(deviceStatus));
+								addActionError("Device " + imei + " has been last seen " + deviceLastSeen + " days ago");
 								ServletActionContext.getResponse().setStatus(410);
 								result = ERROR;
 							}
@@ -495,9 +495,8 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 		  return googleCredential.getAccessToken();
 	}
 	
-	private Date getDeviceStatus(Device device) throws Exception {
-		Date d = new Date();
-		String response = HttpUtils.processFileRequestWithOtherAuthn(new URL("https://iid.googleapis.com/iid/info/" + device.getToken()), "GET", "application/json", "details=true", "application/json", "key=" + Commons.getProperty(Property.FCM_APP_KEY));
+	private int getDeviceLastSeen(Device device) throws Exception {
+		String response = HttpUtils.processFileRequestWithOtherAuthn(new URL("https://iid.googleapis.com/iid/info/" + device.getToken() + "?details=true"), "GET", "application/json", null, "application/json", "key=" + Commons.getProperty(Property.FCM_APP_KEY));
 		
 		if  (StringUtils.startsWith(response, "{")) {
 			if (System.getenv("FCM_DEBUG") != null) {
@@ -506,12 +505,15 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 			JSONObject responseJson = new JSONObject(response);
 			String connectDate = responseJson.optString("connectDate");
 			if (StringUtils.isNotEmpty(connectDate)) {
-				d = new SimpleDateFormat("yyyy-MM-dd").parse(connectDate);
+				Date deviceSeenDate = new SimpleDateFormat("yyyy-MM-dd").parse(connectDate);
+				long diff = new Date().getTime() - deviceSeenDate.getTime();
+			    long diffDays = diff / (24 * 60 * 60 * 1000) + 1;
+			    return (int) diffDays;
 			}
 		} else {
 			logger.log(Level.SEVERE, "Received following response: " + response);
 		}
-		return d;
+		return 0;
 	}
 	
 	@Override
