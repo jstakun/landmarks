@@ -507,7 +507,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 			if (StringUtils.isNotEmpty(connectDate)) {
 				Date deviceSeenDate = new SimpleDateFormat("yyyy-MM-dd").parse(connectDate);
 				long diff = new Date().getTime() - deviceSeenDate.getTime();
-			    long diffDays = diff / (24 * 60 * 60 * 1000) + 1;
+			    long diffDays = diff / (24 * 60 * 60 * 1000);
 			    return (int) diffDays;
 			}
 		} else {
