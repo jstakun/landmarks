@@ -55,39 +55,11 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
 	private HttpServletRequest request;
 	private TomcatThreadProvider threadProvider = new TomcatThreadProvider();
 	
-	private String type;
-	private String name;
-	private String route;
-	
 	public AddItemAction() {
 		super();
 		GeocodeHelperFactory.setCacheProvider(new JBossCacheProvider());
 	}
 	
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getRoute() {
-		return route;
-	}
-
-	public void setRoute(String route) {
-		this.route = route;
-	}
-
 	@Override
 	public void setParameters(Map<String, String[]> arg0) {
 		this.parameters = arg0;		
@@ -112,7 +84,7 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
 
 	public String execute()
 	{	
-		//String type = getParameterValue("type");
+		String type = getParameterValue("type");
 		if (StringUtils.equals(type, "landmark")) {
 			return executeLandmark();
 		} else if (StringUtils.equals(type, "geocode")) {
@@ -436,12 +408,12 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
 	}
 	
 	private String executeRoute() {
-		if (StringUtils.isEmpty(route) || StringUtils.isEmpty(name)) {
+		if (isEmptyAny("route", "name")) {
 			addActionError("Missing required route parameter!");
             return ERROR;
 		} else {
-			//final String route = request.getParameter("route");
-			//final String name = request.getParameter("name");
+			final String route = request.getParameter("route");
+			final String name = request.getParameter("name");
 			EntityManager em = EMF.getEntityManager();
             try {
             	RoutePersistenceUtils routePeristenceUtils = (RoutePersistenceUtils) ServiceLocator.getInstance().getService("bean/RoutePersistenceUtils");
