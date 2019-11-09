@@ -90,4 +90,12 @@ public class CacheUtil {
 		}
 	    return null;
 	}
+	
+	public static Object remove(String key) {
+		if (getCache() != null) {
+			return getCache().remove(key);
+		} else {
+			return null;
+		}
+	}
 }

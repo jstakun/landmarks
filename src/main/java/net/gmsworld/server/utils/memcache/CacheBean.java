@@ -37,4 +37,8 @@ public class CacheBean {
 	public boolean containsKey(String key) {
 		return cache.containsKey(key);
 	}
+	
+	public Object remove(String key) {
+		return cache.remove(key);
+	}
 }

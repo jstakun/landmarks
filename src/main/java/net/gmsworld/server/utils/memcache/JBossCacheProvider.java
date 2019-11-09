@@ -39,4 +39,9 @@ public class JBossCacheProvider implements CacheProvider {
 	public <T> List<T> getList(Class<T> type, String key) {
 		return CacheUtil.getList(type, key);
 	}
+
+	@Override
+	public Object remove(String key) {
+		return CacheUtil.remove(key);
+	}
 }
