@@ -288,37 +288,16 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 					setGeo(device);
 					devicePersistenceUtils.update(device, em);
 				} else {
-					device = devicePersistenceUtils.findDeviceByImei(imei, em);
-					if (device != null && StringUtils.isNotBlank(token) ) {
-						logger.log(Level.INFO, "Updating existing device " + device.getImei() + " which has not been used for some time");
-						device.setToken(token);
-						if (username != null) {
-							device.setUsername(username);
-						}
-						if (name != null) {
-							device.setName(name.replace(" ", "-").replace(",", "-"));
-						}
-						device.setCreationDate(new Date());
-						setGeo(device);
-						devicePersistenceUtils.update(device, em);
-					} else if (device != null) {
-						addActionError("Invalid device " + imei + " update!");
-						ServletActionContext.getResponse().setStatus(400);
-				    	result = ERROR;
-					} else {
-						//create new device
-						if (name != null) {
-							name = name.replace(" ", "-").replace(",", "-");
-						}
-						device = new Device(imei, token, username, name) ;
-						setGeo(device);
-						devicePersistenceUtils.save(device, em);
+				    //create new device
+					if (name != null) {
+						name = name.replace(" ", "-").replace(",", "-");
 					}
+					device = new Device(imei, token, username, name) ;
+					setGeo(device);
+					devicePersistenceUtils.save(device, em);
 				}
-				if (result == null) {
-					request.setAttribute(JSonDataAction.JSON_OUTPUT, device);
-					result = "json";
-				} 
+				request.setAttribute(JSonDataAction.JSON_OUTPUT, device);
+				result = "json";
 			} catch (Exception e) {
 				logger.log(Level.SEVERE, e.getMessage(), e);
 				addActionError("Device " + imei + " error: " + e.getMessage());
