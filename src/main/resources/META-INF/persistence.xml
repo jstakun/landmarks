@@ -16,6 +16,7 @@
         <class>net.gmsworld.server.persistence.User</class>
         <class>net.gmsworld.server.persistence.Device</class>
         <class>net.gmsworld.server.persistence.Notification</class>
+        <class>net.gmsworld.server.persistence.Route</class>
         <properties>
             <!--property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver" />
             <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://landmarksdb:5432/landmarksdb" />

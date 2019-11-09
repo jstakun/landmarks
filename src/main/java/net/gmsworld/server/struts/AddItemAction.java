@@ -19,6 +19,7 @@ import net.gmsworld.server.persistence.Geocode;
 import net.gmsworld.server.persistence.Landmark;
 import net.gmsworld.server.persistence.Layer;
 import net.gmsworld.server.persistence.Notification;
+import net.gmsworld.server.persistence.Route;
 import net.gmsworld.server.persistence.Screenshot;
 import net.gmsworld.server.persistence.User;
 import net.gmsworld.server.utils.DateUtils;
@@ -36,6 +37,7 @@ import net.gmsworld.server.utils.persistence.GeocodePersistenceUtils;
 import net.gmsworld.server.utils.persistence.LandmarkPersistenceUtils;
 import net.gmsworld.server.utils.persistence.LayerPersistenceUtils;
 import net.gmsworld.server.utils.persistence.NotificationPersistenceUtils;
+import net.gmsworld.server.utils.persistence.RoutePersistenceUtils;
 import net.gmsworld.server.utils.persistence.ScreenshotPersistenceUtils;
 import net.gmsworld.server.utils.persistence.UserPersistenceUtils;
 
@@ -99,6 +101,8 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
 			return executeUser(); 
 	    } else if (StringUtils.equals(type, "notification")) {
 			return executeNotification(); 
+	    } else if (StringUtils.equals(type, "route")) {
+			return executeRoute(); 
 	    } else {
 			addActionError("Missing or wrong required parameter type!");
             return ERROR;
@@ -393,6 +397,28 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
             	NotificationPersistenceUtils notificationPeristenceUtils = (NotificationPersistenceUtils) ServiceLocator.getInstance().getService("bean/NotificationPersistenceUtils");
             	Notification n = notificationPeristenceUtils.persist(id, status, em);
 				request.setAttribute("output", "{\"status\":\"" +  n.getStatus().name() + "\",\"id\":\"" + id + "\",\"secret\":\"" +  n.getSecret() + "\"}");
+			} catch (Exception e) {
+				request.setAttribute("output", "{\"error\":\"" + e.getMessage() + "\"}");
+				logger.log(Level.SEVERE, e.getMessage(), e);
+			} finally {
+				em.close();
+			}
+			return SUCCESS;
+		}
+	}
+	
+	private String executeRoute() {
+		if (isEmptyAny("route", "name")) {
+			addActionError("Missing required route parameter!");
+            return ERROR;
+		} else {
+			final String route = request.getParameter("route");
+			final String name = request.getParameter("name");
+			EntityManager em = EMF.getEntityManager();
+            try {
+            	RoutePersistenceUtils routePeristenceUtils = (RoutePersistenceUtils) ServiceLocator.getInstance().getService("bean/RoutePersistenceUtils");
+            	Route r = routePeristenceUtils.persist(name, route, em);
+				request.setAttribute("output", "{\"route\":\"" +  r.getName()+ "\"}");
 			} catch (Exception e) {
 				request.setAttribute("output", "{\"error\":\"" + e.getMessage() + "\"}");
 				logger.log(Level.SEVERE, e.getMessage(), e);
