@@ -23,7 +23,7 @@
             <property name="javax.persistence.jdbc.user" value="postgresql" /> 
             <property name="javax.persistence.jdbc.password" value="postgresql" /--> 
             <property name="hibernate.connection.datasource" value="java:comp/env/jdbc/LandmarksDB"/>
-            <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL92Dialect"/>
             <property name="hibernate.connection.useUnicode" value="true" />
             <property name="hibernate.connection.characterEncoding" value="UTF-8" />
             <property name="hibernate.connection.charSet" value="UTF-8" />

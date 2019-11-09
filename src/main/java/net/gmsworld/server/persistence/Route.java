@@ -5,6 +5,10 @@ import java.lang.Long;
 import java.lang.String;
 import javax.persistence.*;
 
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.TypeDefs;
+
 /**
  * Entity implementation class for Entity: Route
  *
@@ -17,11 +21,16 @@ import javax.persistence.*;
 	@NamedQuery(name = "Route.findByName", query = "select r from Route r where r.name = :name", hints={@QueryHint(name="org.hibernate.cacheable",value="true")}),
 })
 
+@TypeDefs({
+	@TypeDef( name= "StringJsonObject", typeClass = StringJsonUserType.class)
+})
+
 public class Route implements Serializable {
   
 	public final static String FIND_BY_NAME = "Route.findByName";
    	
 	private String name;
+	@Type(type = "StringJsonObject")
 	private String route;   
 	@Id
 	@GeneratedValue(generator = "route_id_seq", strategy = GenerationType.SEQUENCE)
