@@ -417,7 +417,13 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
 			EntityManager em = EMF.getEntityManager();
             try {
             	RoutePersistenceUtils routePeristenceUtils = (RoutePersistenceUtils) ServiceLocator.getInstance().getService("bean/RoutePersistenceUtils");
-            	Route r = routePeristenceUtils.persist(name, route, em);
+            	Route r = routePeristenceUtils.findByName(name, em);
+            	if (r != null) {
+            		r.setRoute(route);
+            		routePeristenceUtils.update(r, em);
+            	} else {
+            		r = routePeristenceUtils.persist(name, route, em);
+            	}
 				request.setAttribute("output", "{\"route\":\"" +  r.getName()+ "\"}");
 			} catch (Exception e) {
 				request.setAttribute("output", "{\"error\":\"" + e.getMessage() + "\"}");

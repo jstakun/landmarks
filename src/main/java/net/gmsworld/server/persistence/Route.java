@@ -3,6 +3,8 @@ package net.gmsworld.server.persistence;
 import java.io.Serializable;
 import java.lang.Long;
 import java.lang.String;
+import java.util.Date;
+
 import javax.persistence.*;
 
 import org.hibernate.annotations.Type;
@@ -35,14 +37,15 @@ public class Route implements Serializable {
 	@Id
 	@GeneratedValue(generator = "route_id_seq", strategy = GenerationType.SEQUENCE)
 	private Long id;
+	private Date creationDate;
 	private static final long serialVersionUID = 1L;
 
 	public Route() {
-		super();
+		this.setCreationDate(new Date(System.currentTimeMillis()));
 	}
 	
 	public Route(String name, String route) {
-		super();
+		this();
 		this.name = name;
 		this.route = route;
 	}
@@ -67,6 +70,14 @@ public class Route implements Serializable {
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public Date getCreationDate() {
+		return creationDate;
+	}
+
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
 	}
    
 }

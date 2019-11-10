@@ -1,8 +1,11 @@
 package net.gmsworld.server.utils.persistence;
 
+import java.util.Date;
+
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
+import net.gmsworld.server.persistence.Device;
 import net.gmsworld.server.persistence.Route;
 
 public class RoutePersistenceUtils {
@@ -18,4 +21,9 @@ public class RoutePersistenceUtils {
         query.setParameter("name", name);
 		return query.getSingleResult(); 
     }
+	
+	public void update(Route route, EntityManager entityManager) {
+		route.setCreationDate(new Date(System.currentTimeMillis()));
+		EMF.update(route, entityManager);
+	}
 }

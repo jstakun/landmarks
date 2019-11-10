@@ -359,8 +359,7 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
 		EntityManager em = EMF.getEntityManager();
 		try {
 			if (StringUtils.isNotEmpty(name)) {
-				RoutePersistenceUtils routePeristenceUtils = (RoutePersistenceUtils) ServiceLocator.getInstance().getService("bean/RoutePersistenceUtils");
-				
+				RoutePersistenceUtils routePeristenceUtils = (RoutePersistenceUtils) ServiceLocator.getInstance().getService("bean/RoutePersistenceUtils");		
 				Route r = routePeristenceUtils.findByName(name, em);
 				if (r != null) {
 					response = r.getRoute();
