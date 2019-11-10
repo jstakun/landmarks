@@ -6,7 +6,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 
-import net.gmsworld.server.persistence.Device;
 import net.gmsworld.server.persistence.Route;
 
 public class RoutePersistenceUtils {
