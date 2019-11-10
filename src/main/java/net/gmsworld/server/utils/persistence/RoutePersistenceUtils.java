@@ -3,6 +3,7 @@ package net.gmsworld.server.utils.persistence;
 import java.util.Date;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 
 import net.gmsworld.server.persistence.Device;
@@ -17,9 +18,13 @@ public class RoutePersistenceUtils {
 	}
 	
 	public Route findByName(String name, EntityManager entityManager) {
-		TypedQuery<Route> query = entityManager.createNamedQuery(Route.FIND_BY_NAME, Route.class);
-        query.setParameter("name", name);
-		return query.getSingleResult(); 
+		try {
+			TypedQuery<Route> query = entityManager.createNamedQuery(Route.FIND_BY_NAME, Route.class);
+			query.setParameter("name", name);
+			return query.getSingleResult();
+		} catch (NoResultException ne) {
+			return null;
+		}
     }
 	
 	public void update(Route route, EntityManager entityManager) {
