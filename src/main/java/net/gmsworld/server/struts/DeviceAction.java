@@ -363,7 +363,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 					
 					String response = HttpUtils.processFileRequestWithOtherAuthn(new URL(url), "POST", "application/json", body, "application/json", auth);
 					
-					if (System.getenv("FCM_DEBUG") != null) {
+					if (System.getenv("FCM_DEBUG") != null && response != null) {
 						logger.log(Level.INFO, "Received following response: " + response);
 					}
 					Integer responseCode = HttpUtils.getResponseCode(url);
@@ -382,6 +382,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 							}
 						} else {
 							addActionError("Failed to send command to device " + imei + ". Try again later!");
+							logger.log(Level.SEVERE, "Received invalid response " + response);
 							result = ERROR;
 						}
 					} else if  (StringUtils.startsWith(response, "{") && responseCode != null && responseCode >= 400) {
@@ -392,10 +393,12 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 						} else {
 							addActionError("Failed to send command to device " + imei + ". Try again later!");
 						}
+						logger.log(Level.SEVERE, "Received error response " + response);
 						ServletActionContext.getResponse().setStatus(responseCode);
 						result = ERROR;
 					} else {
 						addActionError("Failed to send command to device " + imei + ". Try again later!");
+						logger.log(Level.SEVERE, "Received invalid response " + response);
 						ServletActionContext.getResponse().setStatus(500);
 				    	result = ERROR;
 					}
