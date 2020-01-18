@@ -34,11 +34,15 @@ import org.apache.struts2.interceptor.ServletRequestAware;
 import com.opensymphony.xwork2.ActionSupport;
 
 import net.gmsworld.server.config.ConfigurationManager;
+import net.gmsworld.server.utils.memcache.CacheUtil;
 
 public class MailAction extends ActionSupport implements ServletRequestAware {
 
 	    private static final long serialVersionUID = 1L;
 	    private Logger logger = Logger.getLogger(getClass().getName());
+	    
+	    private static final String VALID_PREFIX = ":valid";
+	    private static final String INVALID_PREFIX = ":invalid";
 	 
 	    private HttpServletRequest request;
 		
@@ -53,7 +57,7 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    private String cc;
 	    private String ccNick;
 	    private String recipients;
-	      	    
+	      	
 	    @Override
 		public void setServletRequest(HttpServletRequest request) {
 			this.request = request;
@@ -268,7 +272,7 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 			this.recipients = recipients;
 		}
 
-		 private int hear( BufferedReader in ) throws IOException {
+		private int hear( BufferedReader in ) throws IOException {
 	          String line = null;
 	          int res = 0;
 	          while ( (line = in.readLine()) != null ) {
@@ -284,16 +288,16 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	        	  if ( line.charAt( 3 ) != '-' ) break;
 	          }
 	          return res;
-	      }
+	     }
 	    
-	      private void say( BufferedWriter wr, String text )  throws IOException {
+	     private void say( BufferedWriter wr, String text )  throws IOException {
 	    	  wr.write( text + "\r\n" );
 	    	  wr.flush();
 	    	  logger.info("Sending: " + text);
 	    	  return;
-	      }
+	     }
 	      
-	      private ArrayList<String> getMX(String hostName) throws NamingException {
+	     private ArrayList<String> getMX(String hostName) throws NamingException {
 	    	  Hashtable<String, String> env = new Hashtable<String, String>();
 	    	  env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.dns.DnsContextFactory");
 	          //env.put(Context.PROVIDER_URL, "dns://8.8.8.8 dns://8.8.4.4");
@@ -326,100 +330,116 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    	  }
 	    	  
 	    	  return res;
-	      }
+	     }
 	      
-	      public String emailAccountExists() {
+	     public String emailAccountExists() {
 	    	  if (StringUtils.isNotEmpty(to) ) {
+	    		  boolean valid = CacheUtil.containsKey(to + VALID_PREFIX);
+	    		  
+	    		  if (!valid || !CacheUtil.containsKey(to + INVALID_PREFIX)) {
 	    		  // Find the separator for the domain name
-	    		  int pos = to.indexOf( '@' );
+	    			  int pos = to.indexOf( '@' );
 	    		  // If the address does not contain an '@', it's not valid
-	    		  if ( pos == -1 ) {
-	    			  addActionError("Invalid address format");
-	    			  ServletActionContext.getResponse().setStatus(400);
-	    			  return ERROR; 
-	    		  }
-	    		  // Isolate the domain/machine name and get a list of mail exchangers
-	    		  String domain = to.substring( ++pos );
-	    		  ArrayList<String> mxList = null;
-	    		  try {
-	    			  mxList = getMX(domain);
-	    		  } catch (NamingException ex) {
-	    			  logger.severe(ex.getMessage());
-	    			  addActionError(ex.getMessage());
-	    			  ServletActionContext.getResponse().setStatus(500);
-	    			  return ERROR; 
-	    		  }
-	    	  
-	    		  if (mxList.size() == 0) {
-	    			  addActionError("No mail servers found");
-	    			  ServletActionContext.getResponse().setStatus(400);
-	    			  return ERROR; 
-	    		  }
-	              
-	    		  boolean valid = false;
-	    		  for ( int mx = 0 ; mx < mxList.size() ; mx++ ) {
-	    			  final String mailserver = mxList.get( mx );
-	    			  Socket skt = null;
-	    			  BufferedReader rdr = null;
-	    			  BufferedWriter wtr = null;
+	    			  if ( pos == -1 ) {
+	    				addActionError("Invalid address format");
+	    			    ServletActionContext.getResponse().setStatus(400);
+	    			    return ERROR; 
+	    		      }
+	    			  // Isolate the domain/machine name and get a list of mail exchangers
+	    			  String domain = to.substring( ++pos );
+	    			  ArrayList<String> mxList = null;
 	    			  try {
-	    				  int res;
-	    				  logger.info("Connecting to " + mailserver);
-	    				  skt = new Socket( mailserver, 25 );
-	    				  skt.setSoTimeout(10000); //10 sec
-	    				  rdr = new BufferedReader( new InputStreamReader( skt.getInputStream() ) );
-	    				  wtr = new BufferedWriter( new OutputStreamWriter( skt.getOutputStream() ) );
-	    				  res = hear( rdr );
-	    				  if ( res != 220 ) throw new Exception( "Invalid header" );
-	    				  say( wtr, "EHLO gms-world.net");
-	    				  res = hear( rdr );
-	    				  if ( res != 250 ) throw new Exception( "Not ESMTP" );
-	    				  // validate the sender address  
-	    				  say( wtr, "MAIL FROM: <" + ConfigurationManager.DL_MAIL + ">" );
-	    				  res = hear( rdr );
-	    				  if ( res != 250 ) throw new Exception( "Sender rejected" );
-	    				  say( wtr, "RCPT TO: <" + to + ">" );
-	    				  res = hear( rdr );
-	    				  say( wtr, "RSET" ); hear( rdr );
-	    				  say( wtr, "QUIT" ); hear( rdr );
-	    				  if (res == 550) {
-	    					  addActionError("Email account doesn't exists");
-	    					  break;
-	    				  } else if ( res != 250) {
-	    					  throw new Exception("Received following SMTP server response: " + res + " from " + mailserver);
-	    				  };
-	    				  valid = true;
-	    				  break;
-	    			  } catch (Exception ex) {
+	    				  mxList = getMX(domain);
+	    			  } catch (NamingException ex) {
 	    				  logger.severe(ex.getMessage());
 	    				  addActionError(ex.getMessage());
-	    			  } finally {
-	    				  if (rdr != null) {
-	    					  try {
-	    						  rdr.close();
-	    					  } catch (Exception e) {}
-	    				  }
-	    				  if (wtr != null) {
-	    					  try { 
-	    						  wtr.close();
-	    					  } catch (Exception e) {}
-	    				  }
-	    				  if (skt != null)  {
-	    					  try {
-	    						  skt.close();
-	    					  } catch (Exception e) {}
+	    				  ServletActionContext.getResponse().setStatus(500);
+	    				  return ERROR; 
+	    			  }
+	    	  
+	    			  if (mxList.size() == 0) {
+	    				  addActionError("No mail servers found");
+	    				  ServletActionContext.getResponse().setStatus(400);
+	    				  return ERROR; 
+	    			  }
+	              
+	    			  for ( int mx = 0 ; mx < mxList.size() ; mx++ ) {
+	    				  final String mailserver = mxList.get( mx );
+	    				  Socket skt = null;
+	    				  BufferedReader rdr = null;
+	    				  BufferedWriter wtr = null;
+	    				  try {
+	    					  int res;
+	    					  logger.info("Connecting to " + mailserver);
+	    					  skt = new Socket( mailserver, 25 );
+	    					  skt.setSoTimeout(10000); //10 sec
+	    					  rdr = new BufferedReader( new InputStreamReader( skt.getInputStream() ) );
+	    					  wtr = new BufferedWriter( new OutputStreamWriter( skt.getOutputStream() ) );
+	    					  res = hear( rdr );
+	    					  if ( res != 220 ) {
+	    						  throw new Exception( "Invalid header" );
+	    					  }
+	    					  say( wtr, "EHLO gms-world.net");
+	    					  res = hear( rdr );
+	    					  if ( res != 250 ) {
+	    						  throw new Exception( "Not ESMTP" );
+	    					  }
+	    					  // validate the sender address  
+	    					  say( wtr, "MAIL FROM: <" + ConfigurationManager.DL_MAIL + ">" );
+	    					  res = hear( rdr );
+	    					  if ( res != 250 ) {
+	    						  throw new Exception( "Sender rejected" );
+	    					  }
+	    					  say( wtr, "RCPT TO: <" + to + ">" );
+	    					  res = hear( rdr );
+	    					  say( wtr, "RSET" ); hear( rdr );
+	    					  say( wtr, "QUIT" ); hear( rdr );
+	    					  if (res == 550) {
+	    						  addActionError("Email account doesn't exists");
+	    						  break;
+	    					  } else if ( res != 250) {
+	    						  throw new Exception("Received following SMTP server response: " + res + " from " + mailserver);
+	    					  };
+	    					  valid = true;
+	    					  CacheUtil.put(to + VALID_PREFIX, "true");
+	    					  break;
+	    				  } catch (Exception ex) {
+	    					  logger.severe(ex.getMessage());
+	    					  addActionError(ex.getMessage());
+	    				  } finally {
+	    					  if (rdr != null) {
+	    						  try {
+	    							  rdr.close();
+	    						  } catch (Exception e) {}
+	    					  }
+	    					  if (wtr != null) {
+	    						  try { 
+	    							  wtr.close();
+	    						  } catch (Exception e) {}
+	    					  }
+	    					  if (skt != null)  {
+	    						  try {
+	    							  skt.close();
+	    						  } catch (Exception e) {}
+	    					  }
 	    				  }
 	    			  }
 	    		  }
-	    		  if ( valid ) {
+	    		  
+	    		  if (valid) {
     				  request.setAttribute("output", "{\"status\":\"ok\"}");
 					  return SUCCESS;
 				  } else {
-					  if (getActionErrors().isEmpty()) {
+					  if (getActionErrors().isEmpty() && !CacheUtil.containsKey(to + INVALID_PREFIX)) {
 						  addActionError("Failed to verify email address");
 						  ServletActionContext.getResponse().setStatus(500);
 					  } else {
-						  ServletActionContext.getResponse().setStatus(400);
+						  if (CacheUtil.containsKey(to + INVALID_PREFIX)) {
+							  addActionError("Invalid email address");
+						  } else {
+							  CacheUtil.put(to + INVALID_PREFIX, "true");
+							  ServletActionContext.getResponse().setStatus(400);
+						  }
 					  }
 					  return ERROR; 
 				  }
@@ -428,6 +448,6 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    		  ServletActionContext.getResponse().setStatus(400);
 			      return ERROR; 
 	    	  }
-	      }
+	     }
 }
 
