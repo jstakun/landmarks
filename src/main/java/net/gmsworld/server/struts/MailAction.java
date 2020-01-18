@@ -34,7 +34,8 @@ import org.apache.struts2.interceptor.ServletRequestAware;
 import com.opensymphony.xwork2.ActionSupport;
 
 import net.gmsworld.server.config.ConfigurationManager;
-import net.gmsworld.server.utils.memcache.CacheUtil;
+import net.gmsworld.server.utils.memcache.CacheProvider;
+import net.gmsworld.server.utils.memcache.JBossCacheProvider;
 
 public class MailAction extends ActionSupport implements ServletRequestAware {
 
@@ -45,6 +46,8 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    private static final String INVALID_PREFIX = ":invalid";
 	 
 	    private HttpServletRequest request;
+	    
+	    private CacheProvider cacheProvider;
 		
 	    private String from;
 	    private String password;
@@ -58,6 +61,11 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    private String ccNick;
 	    private String recipients;
 	      	
+	    public MailAction() {
+	    	super();
+	    	cacheProvider = new JBossCacheProvider();
+	    }
+	    
 	    @Override
 		public void setServletRequest(HttpServletRequest request) {
 			this.request = request;
@@ -334,9 +342,9 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	      
 	     public String emailAccountExists() {
 	    	  if (StringUtils.isNotEmpty(to) ) {
-	    		  boolean valid = CacheUtil.containsKey(to + VALID_PREFIX);
+	    		  boolean valid = cacheProvider.containsKey(to + VALID_PREFIX);
 	    		  
-	    		  if (!valid && !CacheUtil.containsKey(to + INVALID_PREFIX)) {
+	    		  if (!valid && !cacheProvider.containsKey(to + INVALID_PREFIX)) {
 	    		  // Find the separator for the domain name
 	    			  int pos = to.indexOf( '@' );
 	    		  // If the address does not contain an '@', it's not valid
@@ -427,17 +435,17 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    		  
 	    		  if (valid) {
     				  request.setAttribute("output", "{\"status\":\"ok\"}");
-    				  CacheUtil.put(to + VALID_PREFIX, "true");
+    				  cacheProvider.put(to + VALID_PREFIX, "true");
   	    			  return SUCCESS;
 				  } else {
-					  if (getActionErrors().isEmpty() && !CacheUtil.containsKey(to + INVALID_PREFIX)) {
+					  if (getActionErrors().isEmpty() && !cacheProvider.containsKey(to + INVALID_PREFIX)) {
 						  addActionError("Failed to verify email address");
 						  ServletActionContext.getResponse().setStatus(500);
 					  } else {
-						  if (CacheUtil.containsKey(to + INVALID_PREFIX)) {
+						  if (cacheProvider.containsKey(to + INVALID_PREFIX)) {
 							  addActionError("Invalid email address");
 						  } else {
-							  CacheUtil.put(to + INVALID_PREFIX, "true");
+							  cacheProvider.put(to + INVALID_PREFIX, "true");
 						  }
 						  ServletActionContext.getResponse().setStatus(400);
 					  }
