@@ -435,7 +435,9 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    		  
 	    		  if (valid) {
     				  request.setAttribute("output", "{\"status\":\"ok\"}");
-    				  cacheProvider.put(to + VALID_PREFIX, "true");
+    				  if (!cacheProvider.containsKey(to + VALID_PREFIX)) {
+    					  cacheProvider.put(to + VALID_PREFIX, "true");
+    				  }
   	    			  return SUCCESS;
 				  } else {
 					  if (getActionErrors().isEmpty() && !cacheProvider.containsKey(to + INVALID_PREFIX)) {
