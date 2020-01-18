@@ -336,7 +336,7 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    	  if (StringUtils.isNotEmpty(to) ) {
 	    		  boolean valid = CacheUtil.containsKey(to + VALID_PREFIX);
 	    		  
-	    		  if (!valid || !CacheUtil.containsKey(to + INVALID_PREFIX)) {
+	    		  if (!valid && !CacheUtil.containsKey(to + INVALID_PREFIX)) {
 	    		  // Find the separator for the domain name
 	    			  int pos = to.indexOf( '@' );
 	    		  // If the address does not contain an '@', it's not valid
@@ -401,7 +401,6 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    						  throw new Exception("Received following SMTP server response: " + res + " from " + mailserver);
 	    					  };
 	    					  valid = true;
-	    					  CacheUtil.put(to + VALID_PREFIX, "true");
 	    					  break;
 	    				  } catch (Exception ex) {
 	    					  logger.severe(ex.getMessage());
@@ -428,7 +427,8 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    		  
 	    		  if (valid) {
     				  request.setAttribute("output", "{\"status\":\"ok\"}");
-					  return SUCCESS;
+    				  CacheUtil.put(to + VALID_PREFIX, "true");
+  	    			  return SUCCESS;
 				  } else {
 					  if (getActionErrors().isEmpty() && !CacheUtil.containsKey(to + INVALID_PREFIX)) {
 						  addActionError("Failed to verify email address");
@@ -438,8 +438,8 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 							  addActionError("Invalid email address");
 						  } else {
 							  CacheUtil.put(to + INVALID_PREFIX, "true");
-							  ServletActionContext.getResponse().setStatus(400);
 						  }
+						  ServletActionContext.getResponse().setStatus(400);
 					  }
 					  return ERROR; 
 				  }
