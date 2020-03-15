@@ -34,6 +34,7 @@ import org.apache.struts2.interceptor.ServletRequestAware;
 import com.opensymphony.xwork2.ActionSupport;
 
 import net.gmsworld.server.config.ConfigurationManager;
+import net.gmsworld.server.layers.AwsSesUtils;
 import net.gmsworld.server.utils.memcache.CacheProvider;
 import net.gmsworld.server.utils.memcache.JBossCacheProvider;
 
@@ -60,6 +61,7 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    private String cc;
 	    private String ccNick;
 	    private String recipients;
+	    private String type;
 	      	
 	    public MailAction() {
 	    	super();
@@ -71,9 +73,26 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 			this.request = request;
 		}
 
-	    public String sendEmail() 
+	    public String sendEmail() {
+	    	if (StringUtils.isNotEmpty(from) && (StringUtils.isNotEmpty(to) || StringUtils.isNotEmpty(recipients)) && (StringUtils.isNotEmpty(body) || StringUtils.isNotEmpty(subject))) {	    	
+		    	if (StringUtils.equalsIgnoreCase(type, "ses")) {
+		    		if (AwsSesUtils.sendEmail(from, fromNick, to, toNick, cc, ccNick, body, contentType, subject)) {
+		    			return SUCCESS;
+		    		} else {
+		    			addActionError("Failed to send email message using SES!");
+		    			return ERROR;
+		    		}
+		    	} else {
+		    		return sendJamesEmail();
+		    	}
+	    	} else {
+	    	   addActionError("Missing required parameters!");
+		       return ERROR; 
+	       }
+	    }
+	    
+	    private String sendJamesEmail() 
 	    {
-	       if (StringUtils.isNotEmpty(from) && (StringUtils.isNotEmpty(to) || StringUtils.isNotEmpty(recipients)) && (StringUtils.isNotEmpty(body) || StringUtils.isNotEmpty(subject))) {	    	
 	    	   try
 	    	   {
 	    		   Properties properties = new Properties();
@@ -186,10 +205,6 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    		   addActionError(e.getMessage());
 	    		   return ERROR;  
 	    	   }
-	       } else {
-	    	   addActionError("Missing required parameters!");
-		       return ERROR; 
-	       }
 	    }
 
 	    public String getFrom() {
@@ -278,6 +293,14 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 
 		public void setRecipients(String recipients) {
 			this.recipients = recipients;
+		}
+		
+		public String getType() {
+			return type;
+		}
+
+		public void setType(String type) {
+			this.type = type;
 		}
 
 		private int hear( BufferedReader in ) throws IOException {

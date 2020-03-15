@@ -94,8 +94,6 @@ public class LayerProviderAction extends ActionSupport implements ParameterAware
         	layer = Commons.COUPONS_LAYER;
         } else if (StringUtils.contains(uri, "flickrProvider")) {
         	layer = Commons.FLICKR_LAYER;
-        } else if (StringUtils.contains(uri, "freebaseProvider")) {
-        	layer = Commons.FREEBASE_LAYER;
         } else if (StringUtils.contains(uri, "instagramProvider")) {
         	layer = Commons.INSTAGRAM_LAYER;
         } else if (StringUtils.contains(uri, "picasaProvider")) {
@@ -228,8 +226,6 @@ public class LayerProviderAction extends ActionSupport implements ParameterAware
         	 return executeLayer(Commons.EXPEDIA_LAYER, limit, locale, null, 1);	
          } else if (StringUtils.equals(layer, Commons.WIKIPEDIA_LAYER)) {
         	 return executeLayer(Commons.WIKIPEDIA_LAYER, limit, language, null, 1);	
-         } else if (StringUtils.equals(layer, Commons.FREEBASE_LAYER)) {
-        	 return executeLayer(Commons.FREEBASE_LAYER, limit, language, null, 1);	
          } else if (StringUtils.equals(layer, Commons.INSTAGRAM_LAYER)) {
         	 return executeLayer(Commons.INSTAGRAM_LAYER, limit, language, null, 1000);	
          } else if (StringUtils.equals(layer, Commons.FLICKR_LAYER)) {

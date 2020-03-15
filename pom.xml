@@ -11,7 +11,7 @@
     <google.http.client.version>1.22.0</google.http.client.version>
     <freebase.version>v1-rev68-1.20.0</freebase.version>
     <youtube.version>v3-rev178-1.22.0</youtube.version>
-    <struts.version>2.3.34</struts.version>
+    <struts.version>2.3.37</struts.version>
     <version.org.infinispan>8.3.0.Final-redhat-1</version.org.infinispan>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
@@ -100,12 +100,12 @@
     <dependency>
     	<groupId>org.json</groupId>
     	<artifactId>json</artifactId>
-    	<version>20180813</version>
+    	<version>20190722</version>
     </dependency>
     <dependency>
     	<groupId>org.ocpsoft.prettytime</groupId>
     	<artifactId>prettytime</artifactId>
-    	<version>4.0.1.Final</version>
+    	<version>4.0.4.Final</version>
     </dependency>
     <dependency>
     	<groupId>net.sf.jtidy</groupId>
@@ -125,12 +125,12 @@
     <dependency>
     	<groupId>com.twitter</groupId>
     	<artifactId>twitter-text</artifactId>
-    	<version>1.14.0</version>
+    	<version>1.14.7</version>
     </dependency>
     <dependency>
     	<groupId>org.apache.httpcomponents</groupId>
     	<artifactId>httpclient</artifactId>
-    	<version>4.5.2</version>
+    	<version>4.5.12</version>
     </dependency>
     <dependency>
   		<groupId>org.scribe</groupId>
@@ -140,7 +140,7 @@
     <dependency>
     	<groupId>net.gms-world</groupId>
     	<artifactId>gmsworldlayers</artifactId>
-    	<version>0.0.4.27</version>
+    	<version>0.0.4.28</version>
     </dependency>
     <dependency>
     	<groupId>commons-lang</groupId>
@@ -181,7 +181,7 @@
     <dependency>
     	<groupId>junit</groupId>
     	<artifactId>junit</artifactId>
-    	<version>4.11</version>
+    	<version>4.13</version>
     	<scope>test</scope>
     </dependency>
   </dependencies>

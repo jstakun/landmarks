@@ -166,10 +166,8 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
             		landmarkPersistenceUtils.save(landmark, em);	
 				
             		//add bitly hash
-            		String hash = UrlUtils.getHash(ConfigurationManager.SERVER_URL + "showLandmark/" + landmark.getId());
+            		final String hash = UrlUtils.getBitlyHash(ConfigurationManager.SERVER_URL + "showLandmark/" + landmark.getId());
             		if (hash != null) {
-            			//landmark.setHash(hash);
-            			//landmarkPersistenceUtils.update(landmark);	
             			request.setAttribute("output", "{\"status\":\"ok\",\"id\":" + landmark.getId() + ",\"hash\":\"" + hash + "\"}");
             		} else {
             			request.setAttribute("output", "{\"status\":\"ok\",\"id\":" + landmark.getId() + "}");

@@ -361,7 +361,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 						logger.log(Level.INFO, "Auth: " + auth);
 					}
 					
-					String response = HttpUtils.processFileRequestWithOtherAuthn(new URL(url), "POST", "application/json", body, "application/json", auth);
+					String response = HttpUtils.processFileRequestWithAuthn(new URL(url), "POST", "application/json", body, "application/json", auth);
 					
 					if (System.getenv("FCM_DEBUG") != null && response != null) {
 						logger.log(Level.INFO, "Received following response: " + response);
@@ -478,7 +478,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 	}
 	
 	private int getDeviceLastSeen(Device device) throws Exception {
-		String response = HttpUtils.processFileRequestWithOtherAuthn(new URL("https://iid.googleapis.com/iid/info/" + device.getToken() + "?details=true"), "GET", "application/json", null, "application/json", "key=" + Commons.getProperty(Property.FCM_APP_KEY));
+		String response = HttpUtils.processFileRequestWithAuthn(new URL("https://iid.googleapis.com/iid/info/" + device.getToken() + "?details=true"), "GET", "application/json", null, "application/json", "key=" + Commons.getProperty(Property.FCM_APP_KEY));
 		
 		if  (StringUtils.startsWith(response, "{")) {
 			if (System.getenv("FCM_DEBUG") != null) {

@@ -24,7 +24,7 @@ import org.hibernate.annotations.TypeDefs;
 })
 
 @TypeDefs({
-	@TypeDef( name= "StringJsonObject", typeClass = StringJsonUserType.class)
+	@TypeDef( name= "StringJsonObject", typeClass = net.gmsworld.server.persistence.StringJsonUserType.class)
 })
 
 public class Route implements Serializable {
