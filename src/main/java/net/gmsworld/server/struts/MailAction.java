@@ -77,6 +77,10 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    	if (StringUtils.isNotEmpty(from) && (StringUtils.isNotEmpty(to) || StringUtils.isNotEmpty(recipients)) && (StringUtils.isNotEmpty(body) || StringUtils.isNotEmpty(subject))) {	    	
 		    	if (StringUtils.equalsIgnoreCase(type, "ses")) {
 		    		if (AwsSesUtils.sendEmail(from, fromNick, to, toNick, cc, ccNick, body, contentType, subject)) {
+		    			final String debug = System.getenv("SMTP_DEBUG");
+			    		if (StringUtils.equalsIgnoreCase(debug, "true")) {
+			    			logger.fine("Sending email message from " + fromNick + " <" + from + "> to " + toNick + " <" + to + ">");
+			    		}
 		    			return SUCCESS;
 		    		} else {
 		    			addActionError("Failed to send email message using SES!");
@@ -134,7 +138,7 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    		   
 	    		   t.connect(host, port, from, password);
 	    		   
-	    		   logger.log(Level.INFO, "Mail client connected to " + t.getURLName().getHost() + ":" + t.getURLName().getPort());
+	    		   logger.info("Mail client connected to " + t.getURLName().getHost() + ":" + t.getURLName().getPort());
 	    		   
 	    		   MimeMessage message = new MimeMessage(session);
 	          
@@ -192,7 +196,7 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    		   } else {
 	    			   output = "{\"status\":\"Message " + message.getMessageID() + " sent to " + recipients + "\"}"; 
 	    		   }
-	    		   logger.log(Level.INFO, output);
+	    		   logger.info(output);
 	    		   request.setAttribute("output", output);
 	    		   
 	    		   t.close();
