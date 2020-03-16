@@ -81,6 +81,14 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 			    		if (StringUtils.equalsIgnoreCase(debug, "true")) {
 			    			logger.fine("Sending email message from " + fromNick + " <" + from + "> to " + toNick + " <" + to + ">");
 			    		}
+			    		String output = null;
+			    		if (to != null) {
+			    			output = "{\"status\":\"Message sent to " + to + "\"}";
+			    		} else {
+			    			output = "{\"status\":\"Message sent to " + recipients + "\"}"; 
+			    		}
+			    		logger.info(output);
+			    		request.setAttribute("output", output);
 		    			return SUCCESS;
 		    		} else {
 		    			addActionError("Failed to send email message using SES!");
