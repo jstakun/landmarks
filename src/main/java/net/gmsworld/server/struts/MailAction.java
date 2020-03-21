@@ -76,7 +76,18 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    public String sendEmail() {
 	    	if (StringUtils.isNotEmpty(from) && (StringUtils.isNotEmpty(to) || StringUtils.isNotEmpty(recipients)) && (StringUtils.isNotEmpty(body) || StringUtils.isNotEmpty(subject))) {	    	
 		    	if (StringUtils.equalsIgnoreCase(type, "ses")) {
-		    		if (AwsSesUtils.sendEmail(from, fromNick, to, toNick, cc, ccNick, body, contentType, subject)) {
+		    		boolean status;
+		    		if (StringUtils.isNotEmpty(recipients)) {
+		    			 try {
+		    				 status = AwsSesUtils.sendEmail(from, fromNick, recipients, body, contentType, subject);
+		    			 } catch (Exception e) {
+		    				 logger.log(Level.SEVERE, e.getMessage(), e);
+		    				 status = false;
+		    			 }
+		    		} else {
+		    			 status = AwsSesUtils.sendEmail(from, fromNick, to, toNick, cc, ccNick, body, contentType, subject);	
+		    		}
+		    		if (status) {
 		    			final String debug = System.getenv("SMTP_DEBUG");
 			    		if (StringUtils.equalsIgnoreCase(debug, "true")) {
 			    			logger.fine("Sending email message from " + fromNick + " <" + from + "> to " + toNick + " <" + to + ">");
