@@ -18,6 +18,7 @@ import net.gmsworld.server.persistence.Screenshot;
 import net.gmsworld.server.persistence.User;
 import net.gmsworld.server.utils.NumberUtils;
 import net.gmsworld.server.utils.ServiceLocator;
+import net.gmsworld.server.utils.StringUtil;
 import net.gmsworld.server.utils.memcache.CacheUtil;
 import net.gmsworld.server.utils.persistence.CheckinPersistenceUtils;
 import net.gmsworld.server.utils.persistence.CommentPersistenceUtils;
@@ -188,7 +189,7 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
     		if (g != null) {
     			output = JSONUtil.serialize(g);
     		} else {
-    			logger.log(Level.INFO, "No geocode found for coords: " + lat + "," + lng);
+    			logger.log(Level.INFO, "No geocode found for coords: " + StringUtil.formatCoordE6(lat) + "," + StringUtil.formatCoordE6(lng));
     			output = "{}";
     		}
     	} catch (Exception e) {
