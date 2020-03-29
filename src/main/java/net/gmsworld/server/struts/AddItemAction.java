@@ -167,13 +167,13 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
 				
             		//add bitly hash
             		final String hash = UrlUtils.getBitlyHash(ConfigurationManager.SERVER_URL + "showLandmark/" + landmark.getId());
-            		if (hash != null) {
-            			request.setAttribute("output", "{\"status\":\"ok\",\"id\":" + landmark.getId() + ",\"hash\":\"" + hash + "\"}");
-            		} else {
-            			request.setAttribute("output", "{\"status\":\"ok\",\"id\":" + landmark.getId() + "}");
-            		}
             		threadProvider.newThread(new LandmarkExtender(landmark, hash)).start();
-            		logger.log(Level.INFO, "Done in " + (System.currentTimeMillis()-start) + " millis.");
+            		logger.log(Level.INFO, "Landmark extending done in " + (System.currentTimeMillis()-start) + " millis.");
+            		if (hash != null) {
+            			request.setAttribute("output", "{\"status\":\"ok\",\"flex\":" + landmark.getFlex() + ",\"id\":" + landmark.getId() + ",\"hash\":\"" + hash + "\"}");
+            		} else {
+            			request.setAttribute("output", "{\"status\":\"ok\",\"flex\":" + landmark.getFlex() + ",\"id\":" + landmark.getId() + "}");
+            		}
             	}  
             } catch (NamingException e) {
             	request.setAttribute("output", "{\"error\":\"" + e.getMessage() + "\"}");
