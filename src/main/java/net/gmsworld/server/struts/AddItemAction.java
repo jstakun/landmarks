@@ -457,7 +457,7 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
         	    if (StringUtils.isNotEmpty(hash)) {
         	    	landmark.setHash(hash);
         	    }
-        	    String desc = landmarkPersistenceUtils.setFlex(landmark);
+        	    final String desc = landmarkPersistenceUtils.setFlex(landmark);
         	    if (StringUtils.isEmpty(landmark.getDescription())) {
         	    	landmark.setDecription(desc);
         	    }
