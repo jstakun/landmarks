@@ -280,8 +280,7 @@ public class LandmarkPersistenceUtils {
 		return joinedTokens;
 	}
 	
-	public String setFlex(Landmark landmark) throws Exception {
-    	AddressInfo addressInfo = GeocodeHelperFactory.getInstance().processReverseGeocodeBackend(landmark.getLatitude(), landmark.getLongitude());
+	public String setFlex(Landmark landmark, AddressInfo addressInfo) throws Exception {
     	String flexStr = landmark.getFlex();
     	JSONObject flex = null; 
     	if (flexStr != null) {

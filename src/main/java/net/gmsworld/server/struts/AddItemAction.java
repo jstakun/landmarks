@@ -44,7 +44,9 @@ import net.gmsworld.server.utils.persistence.UserPersistenceUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.interceptor.ParameterAware;
 import org.apache.struts2.interceptor.ServletRequestAware;
+import org.json.JSONObject;
 
+import com.openlapi.AddressInfo;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class AddItemAction extends ActionSupport implements ParameterAware, ServletRequestAware {
@@ -167,13 +169,17 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
 				
             		//add bitly hash
             		final String hash = UrlUtils.getBitlyHash(ConfigurationManager.SERVER_URL + "showLandmark/" + landmark.getId());
-            		threadProvider.newThread(new LandmarkExtender(landmark, hash)).start();
+            		AddressInfo addressInfo = GeocodeHelperFactory.getInstance().processReverseGeocodeBackend(latitude, longitude);
+            		JSONObject output = new JSONObject();
+            		output.put("status", "ok")
+            		.put("cc", addressInfo.getField(AddressInfo.COUNTRY_CODE))
+            		.put("country", addressInfo.getField(AddressInfo.CITY));
+            		if (StringUtils.isNotEmpty(hash)) {
+            			output.put("hash", hash);
+            		} 
+            		request.setAttribute("output", output.toString());
+            		threadProvider.newThread(new LandmarkExtender(landmark, hash, addressInfo)).start();
             		logger.log(Level.INFO, "Landmark extending done in " + (System.currentTimeMillis()-start) + " millis.");
-            		if (hash != null) {
-            			request.setAttribute("output", "{\"status\":\"ok\",\"flex\":" + landmark.getFlex() + ",\"id\":" + landmark.getId() + ",\"hash\":\"" + hash + "\"}");
-            		} else {
-            			request.setAttribute("output", "{\"status\":\"ok\",\"flex\":" + landmark.getFlex() + ",\"id\":" + landmark.getId() + "}");
-            		}
             	}  
             } catch (NamingException e) {
             	request.setAttribute("output", "{\"error\":\"" + e.getMessage() + "\"}");
@@ -442,10 +448,12 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
 
 		private Landmark landmark;
 		private String hash;
+		private AddressInfo addressInfo;
 		
-		public LandmarkExtender(Landmark landmark, String hash) {
+		public LandmarkExtender(Landmark landmark, String hash, AddressInfo addressInfo) {
 			this.landmark = landmark;
 			this.hash = hash;
+			this.addressInfo = addressInfo;
 		}
 		
 		@Override
@@ -457,7 +465,7 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
         	    if (StringUtils.isNotEmpty(hash)) {
         	    	landmark.setHash(hash);
         	    }
-        	    final String desc = landmarkPersistenceUtils.setFlex(landmark);
+        	    final String desc = landmarkPersistenceUtils.setFlex(landmark, addressInfo);
         	    if (StringUtils.isEmpty(landmark.getDescription())) {
         	    	landmark.setDecription(desc);
         	    }
