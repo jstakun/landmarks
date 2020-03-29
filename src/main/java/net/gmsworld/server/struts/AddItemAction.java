@@ -173,7 +173,7 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
             		JSONObject output = new JSONObject();
             		output.put("status", "ok")
             		.put("cc", addressInfo.getField(AddressInfo.COUNTRY_CODE))
-            		.put("country", addressInfo.getField(AddressInfo.CITY));
+            		.put("city", addressInfo.getField(AddressInfo.CITY));
             		if (StringUtils.isNotEmpty(hash)) {
             			output.put("hash", hash);
             		} 
