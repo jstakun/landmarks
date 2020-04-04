@@ -25,11 +25,12 @@ public class NotificationPersistenceUtils {
 			if (n == null) {
 				n = new Notification(id, status);
 				n.setSecret(RandomStringUtils.randomAlphabetic(32) + "." + RandomStringUtils.randomNumeric(4));
+				EMF.save(n, entityManager);
 			} else {
 				n.setStatus(status);
 				n.setLastUpdateDate(new Date());
+				EMF.update(n ,entityManager);
 			}
-			EMF.save(n, entityManager);
 		}
 		return n;
     }

@@ -13,7 +13,7 @@ public class GeocodePersistenceUtils {
 	
 	public void save(Geocode g, EntityManager entityManager) {
 		EMF.save(g, entityManager);
-	}
+	} 
 	
 	public synchronized List<Geocode> findNewest(int limit, EntityManager entityManager) {
         TypedQuery<Geocode> query = entityManager.createNamedQuery(Geocode.FIND_NEWEST, Geocode.class);
@@ -29,7 +29,7 @@ public class GeocodePersistenceUtils {
 		if (!geocodes.isEmpty()) {
 			g = geocodes.get(0);
 			g.setCreationDate(new Date(System.currentTimeMillis()));
-			save(g, entityManager);
+			EMF.update(g, entityManager);
 		}			
 	    return g;
 	}
@@ -41,7 +41,7 @@ public class GeocodePersistenceUtils {
 		if (!geocodes.isEmpty()) {
 			g = geocodes.get(0);
 			g.setCreationDate(new Date(System.currentTimeMillis()));
-			save(g, entityManager);
+			EMF.update(g, entityManager);
 		}			
 	    return g;
 	}

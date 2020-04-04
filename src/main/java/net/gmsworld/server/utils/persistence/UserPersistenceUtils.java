@@ -24,7 +24,7 @@ public class UserPersistenceUtils {
 		}
 	}
 	
-	private void update(User u, EntityManager entityManager) {
+	public void update(User u, EntityManager entityManager) {
 		EMF.update(u, entityManager);
 	}
 	
