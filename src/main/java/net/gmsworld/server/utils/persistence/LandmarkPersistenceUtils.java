@@ -25,7 +25,6 @@ import org.json.JSONObject;
 
 import com.openlapi.AddressInfo;
 
-import net.gmsworld.server.layers.GeocodeHelperFactory;
 import net.gmsworld.server.persistence.Landmark;
 import net.gmsworld.server.utils.DateUtils;
 import net.gmsworld.server.utils.StringUtil;

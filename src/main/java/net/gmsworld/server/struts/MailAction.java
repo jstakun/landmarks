@@ -391,9 +391,8 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    		  boolean valid = cacheProvider.containsKey(to + VALID_PREFIX);
 	    		  
 	    		  if (!valid && !cacheProvider.containsKey(to + INVALID_PREFIX)) {
-	    		  // Find the separator for the domain name
 	    			  int pos = to.indexOf( '@' );
-	    		  // If the address does not contain an '@', it's not valid
+	    			  // If the address does not contain an '@', it's not valid
 	    			  if ( pos == -1 ) {
 	    				addActionError("Invalid address format");
 	    			    ServletActionContext.getResponse().setStatus(400);
@@ -405,8 +404,8 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    			  try {
 	    				  mxList = getMX(domain);
 	    			  } catch (NamingException ex) {
-	    				  logger.severe(ex.getMessage());
-	    				  addActionError(ex.getMessage());
+	    				  logger.severe("mail server discovery exception " + ex.toString());
+	    				  addActionError(ex.toString());
 	    				  ServletActionContext.getResponse().setStatus(500);
 	    				  return ERROR; 
 	    			  }
@@ -457,8 +456,8 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    					  valid = true;
 	    					  break;
 	    				  } catch (Exception ex) {
-	    					  logger.severe(ex.getMessage());
-	    					  addActionError(ex.getMessage());
+	    					  logger.severe(mailserver + " communication exception " + ex.toString());
+	    					  addActionError(ex.toString());
 	    				  } finally {
 	    					  if (rdr != null) {
 	    						  try {

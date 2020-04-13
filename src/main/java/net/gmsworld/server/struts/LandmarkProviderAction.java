@@ -92,15 +92,15 @@ public class LandmarkProviderAction extends ActionSupport implements ParameterAw
 	}
 
 	private String findNewestLandmarks() {
-		final String key = "NewestLandmarks";
-		long start = System.currentTimeMillis();
-		int limit = NumberUtils.getInt(getParameter("limit"), 10);
+		final int limit = NumberUtils.getInt(getParameter("limit"), 10);
+		final String key = "NewestLandmarks" + limit;
+		final long start = System.currentTimeMillis();
 		String output = null;
 		List<Landmark> newestLandmarks = CacheUtil.getList(Landmark.class, key);
 		EntityManager em = null;
 		try {
-			em = EMF.getEntityManager();
 			if (newestLandmarks == null) {
+				em = EMF.getEntityManager();
 				newestLandmarks = getLandmarkPersistenceUtils().findNewestLandmarks(limit, em);
 				if (newestLandmarks != null && !newestLandmarks.isEmpty()) {
 					CacheUtil.putShort(key, newestLandmarks);
