@@ -404,7 +404,7 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    			  try {
 	    				  mxList = getMX(domain);
 	    			  } catch (NamingException ex) {
-	    				  logger.severe("mail server discovery exception " + ex.toString());
+	    				  logger.severe("Mail server discovery exception " + ex.toString());
 	    				  addActionError(ex.toString());
 	    				  ServletActionContext.getResponse().setStatus(500);
 	    				  return ERROR; 
