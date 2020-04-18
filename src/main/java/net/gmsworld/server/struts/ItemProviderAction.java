@@ -108,7 +108,7 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
 	}
 	
 	private String findNewestGeocodes(int limit) {
-		final String key = "NewestGeocodes";
+		final String key = "NewestGeocodes" + limit;
 		String output = null;
 		long startTime = System.currentTimeMillis();
     	List<Geocode> newest = CacheUtil.getList(Geocode.class, key);
