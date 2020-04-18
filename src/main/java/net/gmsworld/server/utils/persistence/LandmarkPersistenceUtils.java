@@ -25,6 +25,7 @@ import org.json.JSONObject;
 
 import com.openlapi.AddressInfo;
 
+import net.gmsworld.server.persistence.Device;
 import net.gmsworld.server.persistence.Landmark;
 import net.gmsworld.server.utils.DateUtils;
 import net.gmsworld.server.utils.StringUtil;
@@ -39,6 +40,16 @@ public class LandmarkPersistenceUtils {
 	
 	public void update(Landmark landmark, EntityManager entityManager) {
 		EMF.update(landmark, entityManager);		
+	}
+	
+	public boolean remove(int id, EntityManager entityManager) {
+		Landmark landmark = selectLandmarkById(id, entityManager);
+		if (landmark != null) {
+			EMF.remove(landmark, entityManager);
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	public List<Landmark> findNewestLandmarks(int limit, EntityManager entityManager) {

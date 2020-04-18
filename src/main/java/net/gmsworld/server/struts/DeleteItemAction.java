@@ -7,6 +7,7 @@ import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.ServletRequestAware;
 
 import com.opensymphony.xwork2.ActionSupport;
@@ -14,6 +15,7 @@ import com.opensymphony.xwork2.ActionSupport;
 import net.gmsworld.server.persistence.User;
 import net.gmsworld.server.utils.ServiceLocator;
 import net.gmsworld.server.utils.persistence.EMF;
+import net.gmsworld.server.utils.persistence.LandmarkPersistenceUtils;
 import net.gmsworld.server.utils.persistence.NotificationPersistenceUtils;
 import net.gmsworld.server.utils.persistence.UserPersistenceUtils;
 
@@ -43,7 +45,9 @@ public class DeleteItemAction extends ActionSupport implements ServletRequestAwa
 			return executeUser(); 
 	    } else if (StringUtils.equals(getType(), "notification") && StringUtils.isNotEmpty(getId())) {
 			return executeNotification(); 
-	    } else {
+	    }	else if (StringUtils.equals(getType(), "landmark") && StringUtils.isNumeric(getId())) {
+			return executeLandmark();	
+		} else {
 			addActionError("Missing or wrong required parameter type!");
             return ERROR;
 		}
@@ -56,6 +60,7 @@ public class DeleteItemAction extends ActionSupport implements ServletRequestAwa
 			User u = userPeristenceUtils.findBySecret(getSecret(), em);
 			if (u == null) {
 				request.setAttribute("output", "{\"error\":\"User not found!\"}");
+				ServletActionContext.getResponse().setStatus(404);
 			} else {
 				userPeristenceUtils.remove(u, em);
 				request.setAttribute("output", "{\"status\":\"ok\"}");    	
@@ -63,6 +68,7 @@ public class DeleteItemAction extends ActionSupport implements ServletRequestAwa
         } catch (Exception e) {
 			request.setAttribute("output", "{\"error\":\"" + e.getMessage() + "\"}");
 			logger.log(Level.SEVERE, e.getMessage(), e);
+			ServletActionContext.getResponse().setStatus(500);
 		} finally {
 			em.close();
 		}
@@ -75,12 +81,34 @@ public class DeleteItemAction extends ActionSupport implements ServletRequestAwa
 			NotificationPersistenceUtils notificationPeristenceUtils = (NotificationPersistenceUtils) ServiceLocator.getInstance().getService("bean/NotificationPersistenceUtils");
 			if (notificationPeristenceUtils.remove(getId(), em)) {
 				request.setAttribute("output", "{\"error\":\"Notification not found!\"}");
+				ServletActionContext.getResponse().setStatus(404);
 			} else {
 				request.setAttribute("output", "{\"status\":\"ok\"}");    	
 			}
         } catch (Exception e) {
 			request.setAttribute("output", "{\"error\":\"" + e.getMessage() + "\"}");
 			logger.log(Level.SEVERE, e.getMessage(), e);
+			ServletActionContext.getResponse().setStatus(500);
+		} finally {
+			em.close();
+		}
+        return SUCCESS;
+	}
+	
+	private String executeLandmark() {    
+		EntityManager em = EMF.getEntityManager();
+        try {
+			LandmarkPersistenceUtils landmarkPeristenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().getService("bean/LandmarkPersistenceUtils");
+			if (landmarkPeristenceUtils.remove(Integer.valueOf(getId()), em)) {
+				request.setAttribute("output", "{\"error\":\"Landmark not found!\"}");
+				ServletActionContext.getResponse().setStatus(404);
+			} else {
+				request.setAttribute("output", "{\"status\":\"ok\"}");    	
+			}
+        } catch (Exception e) {
+			request.setAttribute("output", "{\"error\":\"" + e.getMessage() + "\"}");
+			logger.log(Level.SEVERE, e.getMessage(), e);
+			ServletActionContext.getResponse().setStatus(500);
 		} finally {
 			em.close();
 		}
