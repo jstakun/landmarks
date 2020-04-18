@@ -80,10 +80,10 @@ public class DeleteItemAction extends ActionSupport implements ServletRequestAwa
         try {
 			NotificationPersistenceUtils notificationPeristenceUtils = (NotificationPersistenceUtils) ServiceLocator.getInstance().getService("bean/NotificationPersistenceUtils");
 			if (notificationPeristenceUtils.remove(getId(), em)) {
+				request.setAttribute("output", "{\"status\":\"ok\"}");    	
+			} else {
 				request.setAttribute("output", "{\"error\":\"Notification not found!\"}");
 				ServletActionContext.getResponse().setStatus(404);
-			} else {
-				request.setAttribute("output", "{\"status\":\"ok\"}");    	
 			}
         } catch (Exception e) {
 			request.setAttribute("output", "{\"error\":\"" + e.getMessage() + "\"}");
@@ -100,10 +100,10 @@ public class DeleteItemAction extends ActionSupport implements ServletRequestAwa
         try {
 			LandmarkPersistenceUtils landmarkPeristenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().getService("bean/LandmarkPersistenceUtils");
 			if (landmarkPeristenceUtils.remove(Integer.valueOf(getId()), em)) {
+				request.setAttribute("output", "{\"status\":\"ok\"}");    	
+			} else {
 				request.setAttribute("output", "{\"error\":\"Landmark not found!\"}");
 				ServletActionContext.getResponse().setStatus(404);
-			} else {
-				request.setAttribute("output", "{\"status\":\"ok\"}");    	
 			}
         } catch (Exception e) {
 			request.setAttribute("output", "{\"error\":\"" + e.getMessage() + "\"}");
