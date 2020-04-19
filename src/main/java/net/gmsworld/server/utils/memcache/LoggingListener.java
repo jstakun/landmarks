@@ -27,6 +27,8 @@ public class LoggingListener {
 
    @CacheEntryRemoved
    public void observeRemove(CacheEntryRemovedEvent<?, ?> event) {
-	   logger.log(Level.INFO, "Entry with key {0} removed from cache {1}", new Object[]{event.getKey(), event.getCache().getName()});
+	   if (!event.isPre()) {
+		   logger.log(Level.INFO, "Entry with key {0} removed from cache {1}", new Object[]{event.getKey(), event.getCache().getName()});
+	   }
    }
 }
