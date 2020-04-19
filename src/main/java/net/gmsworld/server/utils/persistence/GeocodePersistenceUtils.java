@@ -49,4 +49,14 @@ public class GeocodePersistenceUtils {
 	public Geocode findById(int id, EntityManager entityManager) {
 		return entityManager.find(Geocode.class, id);
 	}
+	
+	public boolean remove(int id, EntityManager entityManager) {
+		Geocode geocode = findById(id, entityManager);
+		if (geocode != null) {
+			EMF.remove(geocode, entityManager);
+			return true;
+		} else {
+			return false;
+		}
+	}
 }

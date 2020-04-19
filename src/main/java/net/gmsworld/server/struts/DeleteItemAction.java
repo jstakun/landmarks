@@ -14,7 +14,9 @@ import com.opensymphony.xwork2.ActionSupport;
 
 import net.gmsworld.server.persistence.User;
 import net.gmsworld.server.utils.ServiceLocator;
+import net.gmsworld.server.utils.memcache.CacheUtil;
 import net.gmsworld.server.utils.persistence.EMF;
+import net.gmsworld.server.utils.persistence.GeocodePersistenceUtils;
 import net.gmsworld.server.utils.persistence.LandmarkPersistenceUtils;
 import net.gmsworld.server.utils.persistence.NotificationPersistenceUtils;
 import net.gmsworld.server.utils.persistence.UserPersistenceUtils;
@@ -45,8 +47,10 @@ public class DeleteItemAction extends ActionSupport implements ServletRequestAwa
 			return executeUser(); 
 	    } else if (StringUtils.equals(getType(), "notification") && StringUtils.isNotEmpty(getId())) {
 			return executeNotification(); 
-	    }	else if (StringUtils.equals(getType(), "landmark") && StringUtils.isNumeric(getId())) {
-			return executeLandmark();	
+	    } else if (StringUtils.equals(getType(), "landmark") && StringUtils.isNumeric(getId())) {
+	    	return executeLandmark();	
+		} else if (StringUtils.equals(getType(), "geocode") && StringUtils.isNumeric(getId())) {
+	    	return executeGeocode();	
 		} else {
 			addActionError("Missing or wrong required parameter type!");
             return ERROR;
@@ -100,9 +104,33 @@ public class DeleteItemAction extends ActionSupport implements ServletRequestAwa
         try {
 			LandmarkPersistenceUtils landmarkPeristenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().getService("bean/LandmarkPersistenceUtils");
 			if (landmarkPeristenceUtils.remove(Integer.valueOf(getId()), em)) {
+				//invalidate NewestLandmarks
+        		CacheUtil.removeAll(LandmarkProviderAction.NEWEST_LANDMARKS, 1, LandmarkProviderAction.MAX_LANDMARKS);
 				request.setAttribute("output", "{\"status\":\"ok\"}");    	
 			} else {
 				request.setAttribute("output", "{\"error\":\"Landmark not found!\"}");
+				ServletActionContext.getResponse().setStatus(404);
+			}
+        } catch (Exception e) {
+			request.setAttribute("output", "{\"error\":\"" + e.getMessage() + "\"}");
+			logger.log(Level.SEVERE, e.getMessage(), e);
+			ServletActionContext.getResponse().setStatus(500);
+		} finally {
+			em.close();
+		}
+        return SUCCESS;
+	}
+
+	private String executeGeocode() {    
+		EntityManager em = EMF.getEntityManager();
+        try {
+			GeocodePersistenceUtils geocodePeristenceUtils = (GeocodePersistenceUtils) ServiceLocator.getInstance().getService("bean/LandmarkPersistenceUtils");
+			if (geocodePeristenceUtils.remove(Integer.valueOf(getId()), em)) {
+				//invalidate NewestGeocodes
+        		CacheUtil.removeAll(ItemProviderAction.NEWEST_GEOCODES, 1, ItemProviderAction.MAX_ITEMS);
+				request.setAttribute("output", "{\"status\":\"ok\"}");    	
+			} else {
+				request.setAttribute("output", "{\"error\":\"Geocode not found!\"}");
 				ServletActionContext.getResponse().setStatus(404);
 			}
         } catch (Exception e) {
