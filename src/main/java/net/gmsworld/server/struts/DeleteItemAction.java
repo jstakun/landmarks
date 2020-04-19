@@ -124,7 +124,7 @@ public class DeleteItemAction extends ActionSupport implements ServletRequestAwa
 	private String executeGeocode() {    
 		EntityManager em = EMF.getEntityManager();
         try {
-			GeocodePersistenceUtils geocodePeristenceUtils = (GeocodePersistenceUtils) ServiceLocator.getInstance().getService("bean/LandmarkPersistenceUtils");
+			GeocodePersistenceUtils geocodePeristenceUtils = (GeocodePersistenceUtils) ServiceLocator.getInstance().getService("bean/GeocodePersistenceUtils");
 			if (geocodePeristenceUtils.remove(Integer.valueOf(getId()), em)) {
 				//invalidate NewestGeocodes
         		CacheUtil.removeAll(ItemProviderAction.NEWEST_GEOCODES, 1, ItemProviderAction.MAX_ITEMS);
