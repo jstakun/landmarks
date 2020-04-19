@@ -29,6 +29,7 @@ import net.gmsworld.server.utils.NumberUtils;
 import net.gmsworld.server.utils.ServiceLocator;
 import net.gmsworld.server.utils.StringUtil;
 import net.gmsworld.server.utils.UrlUtils;
+import net.gmsworld.server.utils.memcache.CacheUtil;
 import net.gmsworld.server.utils.memcache.JBossCacheProvider;
 import net.gmsworld.server.utils.persistence.CheckinPersistenceUtils;
 import net.gmsworld.server.utils.persistence.CommentPersistenceUtils;
@@ -152,9 +153,7 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
             	int id = -1;
             	if (!newestLandmarks.isEmpty()) {
             		Landmark newest = newestLandmarks.get(0);
-            	
-            		logger.log(Level.INFO, "Comparing " + landmark.getName() + ": " + StringUtil.formatCoordE2(landmark.getLatitude()) + "," + StringUtil.formatCoordE2(landmark.getLongitude()) + 
-            			               " with " + newest.getName() + ": " + StringUtil.formatCoordE2(newest.getLatitude()) + "," + StringUtil.formatCoordE2(newest.getLongitude()));
+            		logger.log(Level.INFO, "Comparing " + landmark.getName() + ": " + StringUtil.formatCoordE2(landmark.getLatitude()) + "," + StringUtil.formatCoordE2(landmark.getLongitude()) +  " with " + newest.getName() + ": " + StringUtil.formatCoordE2(newest.getLatitude()) + "," + StringUtil.formatCoordE2(newest.getLongitude()));
             		if (newest.compare(landmark)) {
             			id =  newest.getId(); 
             		}
@@ -166,14 +165,17 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
             	} else {
             		logger.log(Level.INFO, "New landmark will be created...");
             		landmarkPersistenceUtils.save(landmark, em);	
-				
+				    //invalidate NewestLandmarks
+            		CacheUtil.removeAll(LandmarkProviderAction.NEWEST_LANDMARKS, 1, LandmarkProviderAction.MAX_LANDMARKS);
             		//add bitly hash
             		final String hash = UrlUtils.getBitlyHash(ConfigurationManager.SERVER_URL + "showLandmark/" + landmark.getId());
+            		//add city and country
             		AddressInfo addressInfo = GeocodeHelperFactory.getInstance().processReverseGeocodeBackend(latitude, longitude);
             		JSONObject output = new JSONObject();
             		output.put("status", "ok")
             		.put("cc", addressInfo.getField(AddressInfo.COUNTRY_CODE))
-            		.put("city", addressInfo.getField(AddressInfo.CITY));
+            		.put("city", addressInfo.getField(AddressInfo.CITY))
+            		.put("id", landmark.getId());
             		if (StringUtils.isNotEmpty(hash)) {
             			output.put("hash", hash);
             		} 
@@ -207,6 +209,8 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
             try {
             	GeocodePersistenceUtils geocodePeristenceUtils = (GeocodePersistenceUtils) ServiceLocator.getInstance().getService("bean/GeocodePersistenceUtils");
 				geocodePeristenceUtils.save(g, em);	
+				//invalidate NewestGeocodes
+				CacheUtil.removeAll(ItemProviderAction.NEWEST_GEOCODES, 1, ItemProviderAction.MAX_ITEMS);
 				request.setAttribute("output", "{\"status\":\"ok\",\"id\":" + g.getId() + "}");
             } catch (NamingException e) {
             	request.setAttribute("output", "{\"error\":\"" + e.getMessage() + "\"}");

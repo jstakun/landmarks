@@ -43,6 +43,8 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
 	private static final long serialVersionUID = 1L;
 	private Map<String, String[]> parameters;
 	private HttpServletRequest request;
+	protected static final int MAX_ITEMS = 100; 
+	protected static final String NEWEST_GEOCODES = "NewestGeocodes";
 	
 	@Override
 	public void setParameters(Map<String, String[]> arg0) {
@@ -97,7 +99,7 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
 		} else if (getParameter("lat") != null && getParameter("lng") != null) {
 		    return findByCoordsGeocode(NumberUtils.getDouble(getParameter("lat")), NumberUtils.getDouble(getParameter("lng")));
 		} else if (getParameter("limit") != null) {
-	    	int limit = NumberUtils.getInt(getParameter("limit"), 10);
+	    	final int limit = NumberUtils.getInt(getParameter("limit"), 10);
 	    	return findNewestGeocodes(limit);
 	    } else if (getParameter("id") != null) {
 	    	return findByIdGeocode(NumberUtils.getInt(getParameter("id"),-1));
@@ -108,18 +110,19 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
 	}
 	
 	private String findNewestGeocodes(int limit) {
-		final String key = "NewestGeocodes" + limit;
-		String output = null;
+		final int l = NumberUtils.normalizeNumber(limit, 1, MAX_ITEMS);
+		final String key = NEWEST_GEOCODES + l;
 		long startTime = System.currentTimeMillis();
+		String output = null;
+		EntityManager em = null;
     	List<Geocode> newest = CacheUtil.getList(Geocode.class, key);
-    	EntityManager em = null;
     	try {
     		if (newest == null) {
     			em = EMF.getEntityManager();
     	        GeocodePersistenceUtils geocodePeristenceUtils = (GeocodePersistenceUtils) ServiceLocator.getInstance().getService("bean/GeocodePersistenceUtils");
-    			newest = geocodePeristenceUtils.findNewest(limit, em);	
+    			newest = geocodePeristenceUtils.findNewest(l, em);	
     		    if (newest != null && !newest.isEmpty()) {
-    		    	CacheUtil.putShort(key, newest);
+    		    	CacheUtil.put(key, newest);
     		    }
     		}
     		output = JSONUtil.serialize(newest);

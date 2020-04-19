@@ -98,4 +98,10 @@ public class CacheUtil {
 			return null;
 		}
 	}
+	
+	public static void removeAll(String prefix, int minSuffix, int maxSuffix) {
+		if (getCache() != null) {
+			getCache().removeAll(prefix, minSuffix, maxSuffix);
+		}
+	}
 }

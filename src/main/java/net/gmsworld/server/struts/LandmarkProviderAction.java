@@ -29,6 +29,8 @@ public class LandmarkProviderAction extends ActionSupport implements ParameterAw
 	private static final long serialVersionUID = 1L;
 	private Map<String, String[]> parameters;
 	private HttpServletRequest request;
+	protected static final int MAX_LANDMARKS = 100;
+	protected static final String NEWEST_LANDMARKS = "NewestLandmarks";
 	
 	private LandmarkPersistenceUtils getLandmarkPersistenceUtils() throws Exception {
 		 return (LandmarkPersistenceUtils) ServiceLocator.getInstance().getService("bean/LandmarkPersistenceUtils");
@@ -84,26 +86,27 @@ public class LandmarkProviderAction extends ActionSupport implements ParameterAw
 	    } else if (getParameter("days") != null && getParameter("heatMap") != null) {
 	    	return getHeatMap();
 	    } else if (getParameter("limit") != null) {
-	    	return findNewestLandmarks();
+	    	final int limit = NumberUtils.getInt(getParameter("limit"), 10);
+	    	return findNewestLandmarks(limit);
 	    } else { 
 	      	addActionError("Missing required parameter!");
             return ERROR;	
 	    }
 	}
 
-	private String findNewestLandmarks() {
-		final int limit = NumberUtils.getInt(getParameter("limit"), 10);
-		final String key = "NewestLandmarks" + limit;
+	private String findNewestLandmarks(int limit) {
+		final int l = NumberUtils.normalizeNumber(limit, 1, MAX_LANDMARKS);
+		final String key = NEWEST_LANDMARKS + l;
 		final long start = System.currentTimeMillis();
 		String output = null;
-		List<Landmark> newestLandmarks = CacheUtil.getList(Landmark.class, key);
 		EntityManager em = null;
+		List<Landmark> newestLandmarks = CacheUtil.getList(Landmark.class, key);
 		try {
 			if (newestLandmarks == null) {
 				em = EMF.getEntityManager();
-				newestLandmarks = getLandmarkPersistenceUtils().findNewestLandmarks(limit, em);
+				newestLandmarks = getLandmarkPersistenceUtils().findNewestLandmarks(l, em);
 				if (newestLandmarks != null && !newestLandmarks.isEmpty()) {
-					CacheUtil.putShort(key, newestLandmarks);
+					CacheUtil.put(key, newestLandmarks);
 				}
 			}
 			output = JSONUtil.serialize(newestLandmarks, null, null, true, true);

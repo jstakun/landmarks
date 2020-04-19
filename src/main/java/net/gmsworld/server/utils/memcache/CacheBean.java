@@ -41,4 +41,12 @@ public class CacheBean {
 	public Object remove(String key) {
 		return cache.remove(key);
 	}
+	
+	public void removeAll(String prefix, int minSuffix, int maxSuffix) {
+		for (int i=minSuffix;i<=maxSuffix;i++) {
+			if (cache.containsKey(prefix + i)) {
+				cache.remove(prefix + i);
+			}
+		}
+	}
 }
