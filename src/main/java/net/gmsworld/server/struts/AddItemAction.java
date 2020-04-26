@@ -377,7 +377,7 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
 					userPeristenceUtils.update(u, em);
 					request.setAttribute("output", "{\"status\":\"password changed\",\"login\":\"" + login + "\",\"secret\":\"" + u.getSecret() + "\"}");
 				} else {	
-					request.setAttribute("output", "{\"error\":\"User exists!\"}");    	
+					request.setAttribute("output", "{\"error\":\"user exists\",\"secret\":\"" + u.getSecret() + "\"}");    	
 				}
             } catch (Exception e) {
 				request.setAttribute("output", "{\"error\":\"" + e.getMessage() + "\"}");
