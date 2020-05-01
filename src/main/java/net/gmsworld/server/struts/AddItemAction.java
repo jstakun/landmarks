@@ -204,13 +204,16 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
             int status = NumberUtils.getInt(getParameterValue("status"), 0);
             String location = getParameterValue("address");
 
-            Geocode g = new Geocode(location, status, latitude, longitude);
             EntityManager em = EMF.getEntityManager();
             try {
             	GeocodePersistenceUtils geocodePeristenceUtils = (GeocodePersistenceUtils) ServiceLocator.getInstance().getService("bean/GeocodePersistenceUtils");
-				geocodePeristenceUtils.save(g, em);	
-				//invalidate NewestGeocodes
-				CacheUtil.removeAll(ItemProviderAction.NEWEST_GEOCODES, 1, ItemProviderAction.MAX_ITEMS);
+            	Geocode g = geocodePeristenceUtils.findByCoords(latitude, longitude, em);
+            	if (g == null) {
+            		g = new Geocode(location, status, latitude, longitude);
+            		geocodePeristenceUtils.save(g, em);	
+            		//invalidate NewestGeocodes
+            		CacheUtil.removeAll(ItemProviderAction.NEWEST_GEOCODES, 1, ItemProviderAction.MAX_ITEMS);
+            	}
 				request.setAttribute("output", "{\"status\":\"ok\",\"id\":" + g.getId() + "}");
             } catch (NamingException e) {
             	request.setAttribute("output", "{\"error\":\"" + e.getMessage() + "\"}");
