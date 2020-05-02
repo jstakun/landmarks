@@ -151,7 +151,7 @@ public class LandmarkPersistenceUtils {
     			setParameter("latitude", latitude).
     			setParameter("longitude", longitude).
     			setParameter("radius", radius);
-		query.setHint("org.hibernate.cacheable", Boolean.TRUE);		
+		//query.setHint("org.hibernate.cacheable", Boolean.TRUE);		
     	return ((BigInteger) query.getSingleResult()).intValue();
     }
 	
