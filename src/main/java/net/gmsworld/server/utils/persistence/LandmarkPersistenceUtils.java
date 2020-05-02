@@ -146,7 +146,7 @@ public class LandmarkPersistenceUtils {
 	
 	public int countLandmarksByCoordsAndLayer(String layer, double latitude, double longitude, int radius, EntityManager entityManager) {
     	//radius in meters
-		Query query = entityManager.createNativeQuery("SELECT count(*) FROM landmark WHERE WHERE VALIDITY_DATE > now() and layer = :layer and  earth_box(ll_to_earth(:latitude, :longitude), :radius) @> ll_to_earth(latitude, longitude)").
+		Query query = entityManager.createNativeQuery("SELECT count(*) FROM landmark WHERE VALIDITY_DATE > now() and layer = :layer and  earth_box(ll_to_earth(:latitude, :longitude), :radius) @> ll_to_earth(latitude, longitude)").
     			setParameter("layer", layer).
     			setParameter("latitude", latitude).
     			setParameter("longitude", longitude).
