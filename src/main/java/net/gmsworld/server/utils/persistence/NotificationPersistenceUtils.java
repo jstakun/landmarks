@@ -36,14 +36,14 @@ public class NotificationPersistenceUtils {
     }
 	
 	public boolean remove(String id, EntityManager entityManager) {
-		boolean removed = false;
-		if (StringUtils.isNotEmpty(id)) {
-			Notification n = findById(id, entityManager);
-			if (n != null) {
-				EMF.remove(n, entityManager);
-			}
-		}	
-        return removed;
+		Notification n = findById(id, entityManager);
+		if (n != null) {
+			EMF.remove(n, entityManager);
+			return true;
+		} else {
+			return false;
+		}
+		
     }
 	
 	public Notification findById(String id, EntityManager pm) {
