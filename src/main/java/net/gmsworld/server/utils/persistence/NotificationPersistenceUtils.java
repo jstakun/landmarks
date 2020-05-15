@@ -24,10 +24,13 @@ public class NotificationPersistenceUtils {
 			n = findById(id, entityManager);
 			if (n == null) {
 				n = new Notification(id, status);
-				n.setSecret(RandomStringUtils.randomAlphabetic(32) + "." + RandomStringUtils.randomNumeric(4));
+				n.setSecret(generateSecret());
 				EMF.save(n, entityManager);
 			} else {
 				n.setStatus(status);
+				if (status == Notification.Status.UNVERIFIED) {
+					n.setSecret(generateSecret());
+				}
 				n.setLastUpdateDate(new Date());
 				EMF.update(n ,entityManager);
 			}
@@ -82,5 +85,9 @@ public class NotificationPersistenceUtils {
             logger.log(Level.SEVERE, ex.getMessage(), ex);
         } 
 		return notifications;
+	}
+	
+	private static String generateSecret() {
+		return RandomStringUtils.randomAlphabetic(32) + "." + RandomStringUtils.randomNumeric(4);
 	}
 }
