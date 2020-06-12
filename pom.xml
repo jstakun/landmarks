@@ -16,7 +16,6 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
   </properties>
-  
   <dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -27,8 +26,7 @@
     			<scope>import</scope>
 			</dependency>
 		</dependencies>
-</dependencyManagement>
-  
+  </dependencyManagement>
   <dependencies>
     <!-- jboss -->
     <dependency>
@@ -52,19 +50,19 @@
         <version>5.1.12.Final-redhat-1</version> 
     </dependency>
     <dependency>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-infinispan</artifactId>
+        <version>5.1.12.Final-redhat-1</version> 
+     </dependency>
+     <dependency>
             <groupId>org.infinispan</groupId>
             <artifactId>infinispan-embedded</artifactId>
+     </dependency> 
+     <dependency>
+       <groupId>org.postgresql</groupId>
+       <artifactId>postgresql</artifactId>
+       <version>42.2.2</version>
     </dependency>
-    <dependency>
-    <groupId>org.hibernate</groupId>
-    <artifactId>hibernate-infinispan</artifactId>
-     <version>5.1.12.Final-redhat-1</version>
-</dependency>
-  <dependency>
-    <groupId>org.postgresql</groupId>
-    <artifactId>postgresql</artifactId>
-    <version>42.2.2</version>
-</dependency>
     <!-- custom -->
     <dependency>
     	<groupId>org.apache.struts</groupId>
@@ -85,12 +83,12 @@
     	<groupId>com.google.gdata</groupId>
     	<artifactId>core</artifactId>
     	<version>1.47.1</version>
-    	      <exclusions>
-        <exclusion>  
-    <groupId>javax.mail</groupId>
-    <artifactId>mail</artifactId>
-            </exclusion>
-      </exclusions> 
+    	<exclusions>
+              <exclusion>  
+                    <groupId>javax.mail</groupId>
+                    <artifactId>mail</artifactId>
+              </exclusion>
+        </exclusions> 
     </dependency>
     <dependency>
     	<groupId>org.json</groupId>
@@ -135,7 +133,7 @@
     <dependency>
     	<groupId>net.gms-world</groupId>
     	<artifactId>gmsworldlayers</artifactId>
-    	<version>0.0.4.29</version>
+    	<version>0.0.4.30</version>
     </dependency>
     <dependency>
     	<groupId>commons-lang</groupId>
@@ -168,10 +166,10 @@
     	<version>0.9.10</version>
     </dependency>
     <dependency>
-                <groupId>com.sun.mail</groupId>
-                <artifactId>javax.mail</artifactId>
-                <version>1.6.1</version>
-  </dependency>
+        <groupId>com.sun.mail</groupId>
+        <artifactId>javax.mail</artifactId>
+        <version>1.6.1</version>
+    </dependency>
     <!-- test -->
     <dependency>
     	<groupId>junit</groupId>
@@ -180,21 +178,15 @@
     	<scope>test</scope>
     </dependency>
   </dependencies>
-  
-    <repositories>
+  <repositories>
     <repository>
       <id>gms-world</id>
       <name>GMS World repo</name>
       <url>http://external-nexus-service.default.svc:8081/repository/public</url>
     </repository>
   </repositories>
-  
   <profiles>
     <profile>
-     <!-- When built in OpenShift the 'openshift' profile will be used when invoking mvn. -->
-     <!-- Use this profile for any OpenShift specific customization your app will need. -->
-     <!-- By default that is to put the resulting archive into the 'deployments' folder. -->
-     <!-- http://maven.apache.org/guides/mini/guide-building-for-different-environments.html -->
      <id>openshift</id>
      <build>
         <finalName>landmarks</finalName>
