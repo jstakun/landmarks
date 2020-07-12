@@ -430,18 +430,18 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    					  wtr = new BufferedWriter( new OutputStreamWriter( skt.getOutputStream() ) );
 	    					  res = hear( rdr );
 	    					  if ( res != 220 ) {
-	    						  throw new Exception( "Invalid header" );
+	    						  throw new Exception("Invalid SMTP header " + res + ": expected 220");
 	    					  }
 	    					  say( wtr, "EHLO gms-world.net");
 	    					  res = hear( rdr );
 	    					  if ( res != 250 ) {
-	    						  throw new Exception( "Not ESMTP" );
+	    						  throw new Exception("Not ESMTP header " + res + ": expected 250");
 	    					  }
 	    					  // validate the sender address  
 	    					  say( wtr, "MAIL FROM: <" + ConfigurationManager.DL_MAIL + ">" );
 	    					  res = hear( rdr );
 	    					  if ( res != 250 ) {
-	    						  throw new Exception( "Sender rejected" );
+	    						  throw new Exception("SMTP sender rejected " + res + ": expected 250");
 	    					  }
 	    					  say( wtr, "RCPT TO: <" + to + ">" );
 	    					  res = hear( rdr );
@@ -451,7 +451,7 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    						  addActionError("Email account doesn't exists");
 	    						  break;
 	    					  } else if ( res != 250) {
-	    						  throw new Exception("Received following SMTP server response: " + res + " from " + mailserver);
+	    						  throw new Exception("Received SMTP server response " + res + " from " + mailserver + ": expected 250");
 	    					  };
 	    					  valid = true;
 	    					  break;
