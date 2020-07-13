@@ -133,7 +133,7 @@
     <dependency>
     	<groupId>net.gms-world</groupId>
     	<artifactId>gmsworldlayers</artifactId>
-    	<version>0.0.4.30</version>
+    	<version>0.0.4.29</version>
     </dependency>
     <dependency>
     	<groupId>commons-lang</groupId>
