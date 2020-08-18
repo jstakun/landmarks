@@ -103,7 +103,7 @@ public class DeleteItemAction extends ActionSupport implements ServletRequestAwa
 		EntityManager em = EMF.getEntityManager();
         try {
 			LandmarkPersistenceUtils landmarkPeristenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().getService("bean/LandmarkPersistenceUtils");
-			if (landmarkPeristenceUtils.remove(Integer.valueOf(getId()), em)) {
+			if (landmarkPeristenceUtils.remove(Integer.parseInt(getId()), em)) {
 				//invalidate NewestLandmarks
         		CacheUtil.removeAll(LandmarkProviderAction.NEWEST_LANDMARKS, 1, LandmarkProviderAction.MAX_LANDMARKS);
 				request.setAttribute("output", "{\"status\":\"ok\"}");    	
@@ -125,7 +125,7 @@ public class DeleteItemAction extends ActionSupport implements ServletRequestAwa
 		EntityManager em = EMF.getEntityManager();
         try {
 			GeocodePersistenceUtils geocodePeristenceUtils = (GeocodePersistenceUtils) ServiceLocator.getInstance().getService("bean/GeocodePersistenceUtils");
-			if (geocodePeristenceUtils.remove(Integer.valueOf(getId()), em)) {
+			if (geocodePeristenceUtils.remove(Integer.parseInt(getId()), em)) {
 				//invalidate NewestGeocodes
         		CacheUtil.removeAll(ItemProviderAction.NEWEST_GEOCODES, 1, ItemProviderAction.MAX_ITEMS);
 				request.setAttribute("output", "{\"status\":\"ok\"}");    	

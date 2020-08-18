@@ -129,7 +129,7 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    	       String portStr = System.getenv("SMTP_PORT");
 	    	       if (StringUtils.isNotEmpty(portStr)) {
 	    	    	   try {
-	    	    		   port = Integer.valueOf(portStr);
+	    	    		   port = Integer.parseInt(portStr);
 	    	    	   } catch (Exception e) {}
 	    	       }
 	    	       
@@ -137,7 +137,7 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    	       if (StringUtils.isNotEmpty(sslport)) {
 	    	    	   try {
 	    	    		   logger.info("Using SSL");
-	    	    		   port = Integer.valueOf(sslport);
+	    	    		   port = Integer.parseInt(sslport);
 	    	    		   properties.put("mail.smtp.ssl.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
 	    	    		   properties.put("mail.smtp.ssl.trust", host); //,"*");
 	    	    		   properties.put("mail.smtp.ssl.enable", "true");
@@ -426,8 +426,8 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    					  logger.info("Connecting to " + mailserver);
 	    					  skt = new Socket( mailserver, 25 );
 	    					  skt.setSoTimeout(10000); //10 sec
-	    					  rdr = new BufferedReader( new InputStreamReader( skt.getInputStream() ) );
-	    					  wtr = new BufferedWriter( new OutputStreamWriter( skt.getOutputStream() ) );
+	    					  rdr = new BufferedReader( new InputStreamReader( skt.getInputStream(), "UTF-8" ) );
+	    					  wtr = new BufferedWriter( new OutputStreamWriter( skt.getOutputStream(), "UTF-8" ) );
 	    					  res = hear( rdr );
 	    					  if ( res != 220 ) {
 	    						  throw new Exception("Invalid SMTP header " + res + ": expected 220");
