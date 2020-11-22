@@ -146,7 +146,7 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    	       
 	    		   Session session = Session.getInstance(properties);
 	    		 
-	    		   String debug = System.getenv("SMTP_DEBUG");
+	    		   final String debug = System.getenv("SMTP_DEBUG");
 	    		   if (StringUtils.equalsIgnoreCase(debug, "true")) {
 	    			   session.setDebug(true);
 	    		   } else {
@@ -430,28 +430,28 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    					  wtr = new BufferedWriter( new OutputStreamWriter( skt.getOutputStream(), "UTF-8" ) );
 	    					  res = hear( rdr );
 	    					  if ( res != 220 ) {
-	    						  throw new Exception("Invalid SMTP header " + res + ": expected 220");
+	    						  throw new Exception("Invalid SMTP header " + res + ": expected 220  Service ready");
 	    					  }
 	    					  say( wtr, "EHLO gms-world.net");
 	    					  res = hear( rdr );
 	    					  if ( res != 250 ) {
-	    						  throw new Exception("Not ESMTP header " + res + ": expected 250");
+	    						  throw new Exception("Not ESMTP header " + res + ": expected 250 Requested mail action okay, completed");
 	    					  }
 	    					  // validate the sender address  
 	    					  say( wtr, "MAIL FROM: <" + ConfigurationManager.DL_MAIL + ">" );
 	    					  res = hear( rdr );
 	    					  if ( res != 250 ) {
-	    						  throw new Exception("SMTP sender rejected " + res + ": expected 250");
+	    						  throw new Exception("SMTP sender rejected " + res + ": expected 250 Requested mail action okay, completed");
 	    					  }
 	    					  say( wtr, "RCPT TO: <" + to + ">" );
 	    					  res = hear( rdr );
 	    					  say( wtr, "RSET" ); hear( rdr );
 	    					  say( wtr, "QUIT" ); hear( rdr );
 	    					  if (res == 550) {
-	    						  addActionError("Email account doesn't exists");
+	    						  addActionError("Error 500: email account doesn't exists");
 	    						  break;
 	    					  } else if ( res != 250) {
-	    						  throw new Exception("Received SMTP server response " + res + " from " + mailserver + ": expected 250");
+	    						  throw new Exception("Received SMTP server response " + res + " from " + mailserver + ": expected 250 Requested mail action okay, completed");
 	    					  };
 	    					  valid = true;
 	    					  break;
