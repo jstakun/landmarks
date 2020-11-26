@@ -448,7 +448,7 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    					  say( wtr, "RSET" ); hear( rdr );
 	    					  say( wtr, "QUIT" ); hear( rdr );
 	    					  if (res == 550) {
-	    						  addActionError("Error 500: email account doesn't exists");
+	    						  addActionError("Error 550: email account doesn't exists");
 	    						  break;
 	    					  } else if ( res != 250) {
 	    						  throw new Exception("Received SMTP server response " + res + " from " + mailserver + ": expected 250 Requested mail action okay, completed");
