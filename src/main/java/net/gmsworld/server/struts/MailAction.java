@@ -406,7 +406,7 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    			  } catch (NamingException ex) {
 	    				  logger.severe("Mail server discovery exception " + ex.toString());
 	    				  addActionError(ex.toString());
-	    				  ServletActionContext.getResponse().setStatus(500);
+	    				  ServletActionContext.getResponse().setStatus(400);
 	    				  return ERROR; 
 	    			  }
 	    	  
@@ -457,7 +457,7 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    					  break;
 	    				  } catch (Exception ex) {
 	    					  logger.severe(mailserver + " communication exception " + ex.toString());
-	    					  addActionError(ex.toString());
+	    					  //addActionError(ex.toString());
 	    				  } finally {
 	    					  if (rdr != null) {
 	    						  try {
