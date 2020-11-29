@@ -201,13 +201,14 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
 		} else {
 			double latitude = GeocodeUtils.getLatitude(getParameterValue("latitude"));
             double longitude = GeocodeUtils.getLongitude(getParameterValue("longitude"));
+            double precision = NumberUtils.getDouble(getParameterValue("precision"), 0.001d);
             int status = NumberUtils.getInt(getParameterValue("status"), 0);
             String location = getParameterValue("address");
 
             EntityManager em = EMF.getEntityManager();
             try {
             	GeocodePersistenceUtils geocodePeristenceUtils = (GeocodePersistenceUtils) ServiceLocator.getInstance().getService("bean/GeocodePersistenceUtils");
-            	Geocode g = geocodePeristenceUtils.findByCoords(latitude, longitude, em);
+            	Geocode g = geocodePeristenceUtils.findByCoords(latitude, longitude, precision, em);
             	if (g == null) {
             		g = new Geocode(location, status, latitude, longitude);
             		geocodePeristenceUtils.save(g, em);	

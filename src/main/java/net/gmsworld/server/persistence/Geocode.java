@@ -44,7 +44,9 @@ public class Geocode implements Serializable {
 	private int status;
 	@Column(name = "LOCATION")
 	private String location;
-
+	@Column(name = "FLEX")
+	private String flex;
+	
 	public Geocode(String location, int status, double latitude, double longitude)
 	{
 		  this();
@@ -90,5 +92,13 @@ public class Geocode implements Serializable {
 	  {
 	      return creationDate.getTime();
 	  }
+
+	public String getFlex() {
+		return flex;
+	}
+
+	public void setFlex(String flex) {
+		this.flex = flex;
+	}
 
 }

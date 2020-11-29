@@ -97,7 +97,7 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
 		if (getParameter("address") != null) {
 	    	return findByAddressGeocode(getParameter("address"));
 		} else if (getParameter("lat") != null && getParameter("lng") != null) {
-		    return findByCoordsGeocode(NumberUtils.getDouble(getParameter("lat")), NumberUtils.getDouble(getParameter("lng")));
+		    return findByCoordsGeocode(NumberUtils.getDouble(getParameter("lat")), NumberUtils.getDouble(getParameter("lng")), NumberUtils.getDouble(getParameter("precision"), 0.001d));
 		} else if (getParameter("limit") != null) {
 	    	final int limit = NumberUtils.getInt(getParameter("limit"), 10);
 	    	return findNewestGeocodes(limit);
@@ -183,12 +183,12 @@ public class ItemProviderAction extends ActionSupport implements ParameterAware,
     	return SUCCESS;
 	}
 	
-	private String findByCoordsGeocode(double lat, double lng) {
+	private String findByCoordsGeocode(double lat, double lng, double precision) {
 		String output = null;
 		EntityManager em = EMF.getEntityManager();
     	try {
     		GeocodePersistenceUtils geocodePeristenceUtils = (GeocodePersistenceUtils) ServiceLocator.getInstance().getService("bean/GeocodePersistenceUtils");
-    		Geocode g = geocodePeristenceUtils.findByCoords(lat, lng, em);
+    		Geocode g = geocodePeristenceUtils.findByCoords(lat, lng, precision, em);
     		if (g != null) {
     			output = JSONUtil.serialize(g);
     		} else {

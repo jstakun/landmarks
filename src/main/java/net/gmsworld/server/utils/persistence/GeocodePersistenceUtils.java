@@ -34,8 +34,8 @@ public class GeocodePersistenceUtils {
 	    return g;
 	}
 	
-	public Geocode findByCoords(double lat, double lng, EntityManager entityManager){
-		Query query = entityManager.createNativeQuery("select * from geocode where abs(latitude - " + lat + ") < 0.001 and abs(longitude - " + lng + ") < 0.001 order by creation_date desc", Geocode.class); 
+	public Geocode findByCoords(double lat, double lng, double precision, EntityManager entityManager){
+		Query query = entityManager.createNativeQuery("select * from geocode where abs(latitude - " + lat + ") < " + precision + " and abs(longitude - " + lng + ") < " + precision + " order by creation_date desc", Geocode.class); 
 		Geocode g = null;
 		List<Geocode> geocodes = query.getResultList();
 		if (!geocodes.isEmpty()) {
