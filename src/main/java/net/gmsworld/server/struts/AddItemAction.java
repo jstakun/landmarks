@@ -228,6 +228,7 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
             double precision = NumberUtils.getDouble(getParameterValue("precision"), 0.001d);
             int status = NumberUtils.getInt(getParameterValue("status"), 0);
             String location = getParameterValue("address");
+            String flex = getParameterValue("flex");
 
             EntityManager em = EMF.getEntityManager();
             try {
@@ -235,6 +236,9 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
             	Geocode g = geocodePeristenceUtils.findByCoords(latitude, longitude, precision, em);
             	if (g == null) {
             		g = new Geocode(location, status, latitude, longitude);
+            		if (StringUtils.isNotEmpty(flex)) {
+            			g.setFlex(flex);
+            		}
             		geocodePeristenceUtils.save(g, em);	
             		//invalidate NewestGeocodes
             		CacheUtil.removeAll(ItemProviderAction.NEWEST_GEOCODES, 1, ItemProviderAction.MAX_ITEMS);

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
 <tomcat-users>
    <role rolename="admin"/>
-   <user username="android" password="c8da2cd80fbc7bc0eb15625771382bc2839c0ba7f85652e0450568c96997ac4c$1$a5ff5c0e5edd5236643b8e01ed4c1d097a8c3fa5" roles="admin"/>
+   <user username="android" password="3069772f0ad6e9ad52cb5f83bdba8808a69e6363" roles="admin"/>
 </tomcat-users>
