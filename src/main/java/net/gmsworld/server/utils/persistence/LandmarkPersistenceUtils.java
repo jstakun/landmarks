@@ -23,8 +23,6 @@ import org.hibernate.Session;
 import org.hibernate.StatelessSession;
 import org.json.JSONObject;
 
-import com.openlapi.AddressInfo;
-
 import net.gmsworld.server.persistence.Landmark;
 import net.gmsworld.server.utils.DateUtils;
 import net.gmsworld.server.utils.StringUtil;
@@ -289,7 +287,7 @@ public class LandmarkPersistenceUtils {
 		return joinedTokens;
 	}
 	
-	public String setFlex(Landmark landmark, AddressInfo addressInfo) throws Exception {
+	public void setFlex(Landmark landmark, String cc, String city) throws Exception {
     	String flexStr = landmark.getFlex();
     	JSONObject flex = null; 
     	if (flexStr != null) {
@@ -297,19 +295,12 @@ public class LandmarkPersistenceUtils {
     	} else {
     		flex = new JSONObject();
     	}
-    	if (addressInfo != null) {
-    		if (!flex.has("cc")) {
-    			flex.putOpt("cc", addressInfo.getField(AddressInfo.COUNTRY_CODE));
-    		}
-    		if (!flex.has("city")) {
-    			flex.putOpt("city", addressInfo.getField(AddressInfo.CITY));
-    		}
+    	if (StringUtils.isNotEmpty(cc) && !flex.has("cc")) {
+    		flex.putOpt("cc", cc);
     	}
-		landmark.setFlex(flex.toString());
-		if (addressInfo != null) {
-			return addressInfo.getField(AddressInfo.EXTENSION); //formatted address
-		} else {
-			return null;
-		}
+    	if (StringUtils.isNotEmpty(city) && !flex.has("city")) {
+    		flex.putOpt("city", city);
+    	}
+    	landmark.setFlex(flex.toString());
     }
 }

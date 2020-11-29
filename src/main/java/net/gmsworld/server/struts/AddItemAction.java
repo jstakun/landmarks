@@ -47,7 +47,6 @@ import org.apache.struts2.interceptor.ParameterAware;
 import org.apache.struts2.interceptor.ServletRequestAware;
 import org.json.JSONObject;
 
-import com.openlapi.AddressInfo;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class AddItemAction extends ActionSupport implements ParameterAware, ServletRequestAware {
@@ -169,18 +168,43 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
             		CacheUtil.removeAll(LandmarkProviderAction.NEWEST_LANDMARKS, 1, LandmarkProviderAction.MAX_LANDMARKS);
             		//add bitly hash
             		final String hash = UrlUtils.getBitlyHash(ConfigurationManager.SERVER_URL + "showLandmark/" + landmark.getId());
-            		//add city and country
-            		AddressInfo addressInfo = GeocodeHelperFactory.getInstance().processReverseGeocodeBackend(latitude, longitude);
-            		JSONObject output = new JSONObject();
+            		//add city and country    
+            		String cc = null, city = null, desc = null;
+            		if (StringUtils.startsWith(flex, "{")) {
+            			JSONObject landmarkFlex = new JSONObject(flex);
+            			if (landmarkFlex.has("cc")) {
+            				cc =landmarkFlex.getString("cc");
+            			}
+            			if (landmarkFlex.has("city")) {
+            				city = landmarkFlex.getString("city");
+            			}
+            		}
+            		if (cc == null || city == null) {
+            			GeocodePersistenceUtils geocodePeristenceUtils = (GeocodePersistenceUtils) ServiceLocator.getInstance().getService("bean/GeocodePersistenceUtils");
+            			Geocode g = geocodePeristenceUtils.findByCoords(latitude, longitude, 0.001d, em);
+            			if (g != null) {
+            				if (StringUtils.startsWith(g.getFlex(), "{")) {
+            					JSONObject geocodeFlex = new JSONObject(g.getFlex());
+            					if (geocodeFlex.has("cc")) {
+            						cc = geocodeFlex.getString("cc");
+            					}
+            					if (geocodeFlex.has("city")) {
+            						city = geocodeFlex.getString("city");
+            					}
+            				}
+            				desc = g.getLocation();
+            			}
+            		}
+                    JSONObject output = new JSONObject();
             		output.put("status", "ok")
-            		.put("cc", addressInfo.getField(AddressInfo.COUNTRY_CODE))
-            		.put("city", addressInfo.getField(AddressInfo.CITY))
+            		.put("cc", cc)
+            		.put("city", city)
             		.put("id", landmark.getId());
             		if (StringUtils.isNotEmpty(hash)) {
             			output.put("hash", hash);
             		} 
             		request.setAttribute("output", output.toString());
-            		threadProvider.newThread(new LandmarkExtender(landmark, hash, addressInfo)).start();
+            		threadProvider.newThread(new LandmarkExtender(landmark, hash, cc, city, desc)).start();
             		logger.log(Level.INFO, "Landmark extending done in " + (System.currentTimeMillis()-start) + " millis.");
             	}  
             } catch (NamingException e) {
@@ -455,13 +479,14 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
 	private class LandmarkExtender implements Runnable {
 
 		private Landmark landmark;
-		private String hash;
-		private AddressInfo addressInfo;
+		private String hash, cc, city, desc;
 		
-		public LandmarkExtender(Landmark landmark, String hash, AddressInfo addressInfo) {
+		public LandmarkExtender(Landmark landmark, String hash, String cc, String city, String desc) {
 			this.landmark = landmark;
 			this.hash = hash;
-			this.addressInfo = addressInfo;
+			this.cc = cc;
+			this.city = city;
+			this.desc = desc;
 		}
 		
 		@Override
@@ -473,11 +498,11 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
         	    if (StringUtils.isNotEmpty(hash)) {
         	    	landmark.setHash(hash);
         	    }
-        	    final String desc = landmarkPersistenceUtils.setFlex(landmark, addressInfo);
-        	    if (StringUtils.isEmpty(landmark.getDescription())) {
+        	    landmarkPersistenceUtils.setFlex(landmark, cc, city);
+        	    if (desc != null) {
         	    	landmark.setDecription(desc);
         	    }
-    			landmarkPersistenceUtils.update(landmark, em);	
+        	    landmarkPersistenceUtils.update(landmark, em);	
     			logger.log(Level.INFO, "Landmark " + landmark.getId() + " has been updated in " + (System.currentTimeMillis()-start) + " millis.");
 			} catch (Exception e) {
             	logger.log(Level.SEVERE, e.getMessage(), e);
