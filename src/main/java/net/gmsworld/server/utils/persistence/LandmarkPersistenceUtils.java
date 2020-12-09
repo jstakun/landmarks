@@ -286,21 +286,4 @@ public class LandmarkPersistenceUtils {
 		}
 		return joinedTokens;
 	}
-	
-	public void setFlex(Landmark landmark, String cc, String city) throws Exception {
-    	String flexStr = landmark.getFlex();
-    	JSONObject flex = null; 
-    	if (flexStr != null) {
-    		flex = new JSONObject(flexStr);
-    	} else {
-    		flex = new JSONObject();
-    	}
-    	if (StringUtils.isNotEmpty(cc) && !flex.has("cc")) {
-    		flex.putOpt("cc", cc);
-    	}
-    	if (StringUtils.isNotEmpty(city) && !flex.has("city")) {
-    		flex.putOpt("city", city);
-    	}
-    	landmark.setFlex(flex.toString());
-    }
 }
