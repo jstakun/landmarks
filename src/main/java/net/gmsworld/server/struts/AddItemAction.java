@@ -221,7 +221,7 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
             		CacheUtil.removeAll(LandmarkProviderAction.NEWEST_LANDMARKS, 1, LandmarkProviderAction.MAX_LANDMARKS);
             		//add bitly hash
             		final String landmarkUrl = ConfigurationManager.SSL_SERVER_URL + "showLandmark/" + landmark.getId();
-            		logger.log(Level.INFO, "Shortening url: " + landmarkUrl);
+            		//logger.log(Level.INFO, "Shortening url: " + landmarkUrl);
             		final String hash = UrlUtils.getBitlyHash(landmarkUrl);
             		//set output
                     JSONObject output = new JSONObject();
