@@ -220,7 +220,7 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
 				    //invalidate NewestLandmarks
             		CacheUtil.removeAll(LandmarkProviderAction.NEWEST_LANDMARKS, 1, LandmarkProviderAction.MAX_LANDMARKS);
             		//add bitly hash
-            		final String hash = UrlUtils.getBitlyHash(ConfigurationManager.SERVER_URL + "showLandmark/" + landmark.getId());
+            		final String hash = UrlUtils.getBitlyHash(ConfigurationManager.SSL_SERVER_URL + "showLandmark/" + landmark.getId());
             		//set output
                     JSONObject output = new JSONObject();
             		output.put("status", "ok")
