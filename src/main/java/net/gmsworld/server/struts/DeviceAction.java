@@ -325,7 +325,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 				} else if (name != null && username != null) {
 					device = getDevicePersistenceUtils().findDeviceByNameAndUsername(name, username, em);
 				}
-				if (device  != null) {
+				if (device  != null && StringUtils.isNotEmpty(device.getToken())) {
 					String url = "https://fcm.googleapis.com/v1/projects/" + Commons.getProperty(Property.FCM_PROJECT) + "/messages:send";
 					String pinString;
 					if (pin < 1000) {
@@ -403,12 +403,16 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 				    	result = ERROR;
 					}
 				} else {
-					if (imei != null) {
+					if (device != null && StringUtils.isEmpty(device.getToken())) {
+						addActionError("Device " + device.getImei() + " has no saved token!");
+						ServletActionContext.getResponse().setStatus(400);
+					} else if (imei != null) {
 						addActionError("Device with imei " + imei + " not found!");
+						ServletActionContext.getResponse().setStatus(404);
 					} else if (name != null) {
 						addActionError("Device with name " + name + " not found!");
+						ServletActionContext.getResponse().setStatus(404);
 					}
-					ServletActionContext.getResponse().setStatus(404);
 			    	result = ERROR;
 				}
 			} catch (Exception e) {
