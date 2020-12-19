@@ -65,7 +65,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
     	return false;
     }
     
-    private void setGeoFromFlex() {
+    private void updateDeviceFromFlex() {
     	 if (StringUtils.isNotEmpty(flex)) {
     	     String[] tokens = StringUtils.split(flex,",");
     	     String deviceId = null, geo = null;
@@ -75,13 +75,15 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 				  } else if (StringUtils.startsWith(token, "deviceId:")) {
 					   deviceId = token.substring(9);
 				  }
-				  if (StringUtils.isNotEmpty(geo) && StringUtils.isNotEmpty(deviceId)) {
+				  if (StringUtils.isNotEmpty(deviceId)) {
 					   EntityManager em = EMF.getEntityManager();
 					   try {
 							Device device = getDevicePersistenceUtils().findDeviceByImei(deviceId, em);
 							if (device != null) {
 							 	logger.log(Level.INFO, "Setting device geo location");
-							 	device.setGeo(geo);
+							 	if (StringUtils.isNotEmpty(geo)) {
+							 		device.setGeo(geo);
+							 	}
 							 	device.setCreationDate(new Date());
 							 	getDevicePersistenceUtils().update(device, em);
 							}
@@ -343,7 +345,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 					}
 					if (StringUtils.isNotEmpty(flex)) {
 						data.put("flex", flex);
-						setGeoFromFlex();
+						updateDeviceFromFlex();
 					}
 					if (ttl == null || ttl < 0) {
 						ttl = 300L; //defaults to 300 seconds
