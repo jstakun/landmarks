@@ -56,7 +56,9 @@ public class Device implements Serializable {
 	}
 	
 	public Device() {
-		 this.creationDate = new Date(System.currentTimeMillis());
+		Date now = new Date(System.currentTimeMillis());
+		 this.creationDate = now;
+		 this.updateDate = now;
 	}   
 	
 	public String getImei() {
@@ -85,9 +87,9 @@ public class Device implements Serializable {
 	//	return this.creationDate;
 	//}
 
-	//public void setCreationDate(Date creationDate) {
-	//	this.creationDate = creationDate;
-	//}
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
     
 	public String getName() {
 		return this.name;
@@ -105,11 +107,11 @@ public class Device implements Serializable {
 		this.geo = geo;
 	}
 	
-	public Date getUpdateDate() {
-		return this.updateDate;
-	}
+	//public Date getUpdateDate() {
+	//	return this.updateDate;
+	//}
 
-	public void setUpdateDate(Date updateDate) {
-		this.updateDate = updateDate;
-	}
+	//public void setUpdateDate(Date updateDate) {
+	//	this.updateDate = updateDate;
+	//}
 }
