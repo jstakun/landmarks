@@ -83,9 +83,9 @@ public class Device implements Serializable {
 		this.username = username;
 	}   
 	
-	//public Date getCreationDate() {
-	//	return this.creationDate;
-	//}
+	public Date getCreationDate() {
+		return this.creationDate;
+	}
 
 	public void setCreationDate(Date creationDate) {
 		this.creationDate = creationDate;
