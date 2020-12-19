@@ -42,6 +42,8 @@ public class Device implements Serializable {
 	private String name;
 	@Column(name = "GEO")
 	private String geo;
+	@Column(name = "UPDATE_DATE")
+	private Date updateDate;
 	
 	private static final long serialVersionUID = 1L;
 
@@ -56,6 +58,7 @@ public class Device implements Serializable {
 	public Device() {
 		 this.creationDate = new Date(System.currentTimeMillis());
 	}   
+	
 	public String getImei() {
 		return this.imei;
 	}
@@ -77,13 +80,14 @@ public class Device implements Serializable {
 	public void setUsername(String username) {
 		this.username = username;
 	}   
-	public Date getCreationDate() {
-		return this.creationDate;
-	}
+	
+	//public Date getCreationDate() {
+	//	return this.creationDate;
+	//}
 
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
+	//public void setCreationDate(Date creationDate) {
+	//	this.creationDate = creationDate;
+	//}
     
 	public String getName() {
 		return this.name;
@@ -99,5 +103,13 @@ public class Device implements Serializable {
 
 	public void setGeo(String geo) {
 		this.geo = geo;
-	}   
+	}
+	
+	public Date getUpdateDate() {
+		return this.updateDate;
+	}
+
+	public void setUpdateDate(Date updateDate) {
+		this.updateDate = updateDate;
+	}
 }

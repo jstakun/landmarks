@@ -140,7 +140,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 				if (name != null) {
 					device.setName(name.replace(" ", "-").replace(",", "-"));
 				}
-				device.setCreationDate(new Date());
+				device.setUpdateDate(new Date());
 				setGeo(device);
 				getDevicePersistenceUtils().update(device, em);
 				request.setAttribute(JSonDataAction.JSON_OUTPUT, device);
@@ -284,7 +284,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 					if (name != null) {
 						device.setName(name.replace(" ", "-").replace(",", "-"));
 					}
-					device.setCreationDate(new Date());
+					device.setUpdateDate(new Date());
 					setGeo(device);
 					devicePersistenceUtils.update(device, em);
 				} else {
