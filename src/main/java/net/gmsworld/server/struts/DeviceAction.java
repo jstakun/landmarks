@@ -80,9 +80,9 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 					   try {
 							Device device = getDevicePersistenceUtils().findDeviceByImei(deviceId, em);
 							if (device != null) {
-							 	logger.log(Level.INFO, "Setting device geo location");
 							 	if (StringUtils.isNotEmpty(geo)) {
-							 		device.setGeo(geo);
+							 		logger.log(Level.INFO, "Setting device geo location");
+								 	device.setGeo(geo);
 							 	}
 							 	device.setCreationDate(new Date());
 							 	getDevicePersistenceUtils().update(device, em);
