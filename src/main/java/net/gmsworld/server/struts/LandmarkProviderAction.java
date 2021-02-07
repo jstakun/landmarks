@@ -95,7 +95,7 @@ public class LandmarkProviderAction extends ActionSupport implements ParameterAw
 	    } else if (getParameter("limit") != null) {
 	    	final int limit = NumberUtils.getInt(getParameter("limit"), 10);
 	    	return findNewestLandmarks(limit);
-	    } else if (StringUtils.equals(getParameter("action"), "update") && getParameter("id") != null) {
+	    } else if (StringUtils.equalsIgnoreCase(getParameter("action"), "update") && getParameter("id") != null) {
 	    	return executeUpdate();
 	    } else { 
 	      	addActionError("Missing required parameter!");
@@ -398,7 +398,7 @@ public class LandmarkProviderAction extends ActionSupport implements ParameterAw
         final double altitude = NumberUtils.getDouble(getParameter("altitude"), 0.0);
 
         Date validityDate = null;
-        String validityStr = getParameter("validityDate");
+        final String validityStr = getParameter("validityDate");
         if (StringUtils.isNotEmpty(validityStr)) {
         	long validity = Long.parseLong(validityStr);
         	validityDate = new Date(validity);
