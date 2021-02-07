@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package net.gmsworld.server.layers;
 
 import java.io.UnsupportedEncodingException;
@@ -21,12 +17,12 @@ import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 
 import net.gmsworld.server.config.Commons;
+import net.gmsworld.server.config.ConfigurationManager;
 import net.gmsworld.server.persistence.Landmark;
 import net.gmsworld.server.utils.JSONUtils;
 import net.gmsworld.server.utils.MathUtils;
 import net.gmsworld.server.utils.NumberUtils;
 import net.gmsworld.server.utils.ServiceLocator;
-import net.gmsworld.server.utils.UrlUtils;
 import net.gmsworld.server.utils.memcache.CacheUtil;
 import net.gmsworld.server.utils.persistence.EMF;
 import net.gmsworld.server.utils.persistence.LandmarkPersistenceUtils;
@@ -209,10 +205,16 @@ public class GMSUtils extends LayerHelper {
 		
 		@Override
 		public ExtendedLandmark apply(Landmark source) {
-			QualifiedCoordinates qc = new QualifiedCoordinates(source.getLatitude(), source.getLongitude(), 0f, 0f, 0f);
-	    	String name = source.getName();
-	    	long creationDate = source.getCreationDate().getTime();	
-	    	String url = UrlUtils.getLandmarkUrl(source.getHash(), source.getId(), source.getCreationDate());	        
+			final QualifiedCoordinates qc = new QualifiedCoordinates(source.getLatitude(), source.getLongitude(), 0f, 0f, 0f);
+	    	final String name = source.getName();
+	    	final long creationDate = source.getCreationDate().getTime();	
+	    	final String hash = source.getHash();
+	    	String url = null;	      
+	    	if (StringUtils.isNotEmpty(hash)) { 
+	            url = "https://bit.ly/" + hash;
+	        } else {
+	        	url =  ConfigurationManager.SERVER_URL + "showLandmark/" + source.getId();
+	        }
 	    	Map<String, String> tokens = new HashMap<String, String>();
 	    	tokens.put("description", source.getDescription());	    	
 	    	ExtendedLandmark target = LandmarkFactory.getLandmark(name, null, qc, source.getLayer(), new AddressInfo(), creationDate, null);
