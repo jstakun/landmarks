@@ -65,7 +65,7 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	      	
 	    public MailAction() {
 	    	super();
-	    	cacheProvider = new JBossCacheProvider();
+	    	cacheProvider = JBossCacheProvider.getInstance();
 	    }
 	    
 	    @Override

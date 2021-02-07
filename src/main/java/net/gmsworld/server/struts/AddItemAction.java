@@ -59,7 +59,7 @@ public class AddItemAction extends ActionSupport implements ParameterAware, Serv
 	
 	public AddItemAction() {
 		super();
-		GeocodeHelperFactory.getInstance().setCacheProvider(new JBossCacheProvider());
+		GeocodeHelperFactory.getInstance().setCacheProvider(JBossCacheProvider.getInstance());
 	}
 	
 	@Override

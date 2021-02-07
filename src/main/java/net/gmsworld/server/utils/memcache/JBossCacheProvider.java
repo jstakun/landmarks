@@ -4,6 +4,14 @@ import java.util.List;
 
 public class JBossCacheProvider implements CacheProvider {
 
+	private static JBossCacheProvider instance = new JBossCacheProvider();
+	
+	public static JBossCacheProvider getInstance() {
+		  return instance;
+	}
+	
+	private JBossCacheProvider() {}
+	
 	@Override
 	public boolean containsKey(String key) {
 		return CacheUtil.containsKey(key);

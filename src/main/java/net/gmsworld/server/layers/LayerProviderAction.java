@@ -42,8 +42,8 @@ public class LayerProviderAction extends ActionSupport implements ParameterAware
 	
 	public LayerProviderAction() {
 		super();
-		LayerHelperFactory.getInstance().setCacheProvider(new JBossCacheProvider());
 		LayerHelperFactory.getInstance().setThreadProvider(new TomcatThreadProvider());
+		LayerHelperFactory.getInstance().setCacheProvider(JBossCacheProvider.getInstance());
 	}
 	   
 	@Override

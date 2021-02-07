@@ -459,6 +459,8 @@ public class LandmarkProviderAction extends ActionSupport implements ParameterAw
 						if (StringUtils.isEmpty(description)) {
 							description = g.getLocation();
 						}
+					} else {
+						logger.info("No geocode found in database");
 					}
 				} catch (NamingException e) {
 					logger.log(Level.SEVERE, e.getMessage(), e);
