@@ -109,7 +109,7 @@ public class Landmark implements Serializable {
         return description;
     }
 
-    public void setDecription(String desc) {
+    public void setDescription(String desc) {
         this.description = desc;
     }
 

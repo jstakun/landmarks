@@ -1,25 +1,32 @@
 package net.gmsworld.server.struts;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 
+import net.gmsworld.server.persistence.Geocode;
 import net.gmsworld.server.persistence.Landmark;
+import net.gmsworld.server.utils.DateUtils;
 import net.gmsworld.server.utils.GeocodeUtils;
 import net.gmsworld.server.utils.NumberUtils;
 import net.gmsworld.server.utils.ServiceLocator;
 import net.gmsworld.server.utils.memcache.CacheUtil;
 import net.gmsworld.server.utils.persistence.EMF;
+import net.gmsworld.server.utils.persistence.GeocodePersistenceUtils;
 import net.gmsworld.server.utils.persistence.LandmarkPersistenceUtils;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.interceptor.ParameterAware;
 import org.apache.struts2.interceptor.ServletRequestAware;
 import org.apache.struts2.json.JSONUtil;
+import org.json.JSONObject;
 
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -88,6 +95,8 @@ public class LandmarkProviderAction extends ActionSupport implements ParameterAw
 	    } else if (getParameter("limit") != null) {
 	    	final int limit = NumberUtils.getInt(getParameter("limit"), 10);
 	    	return findNewestLandmarks(limit);
+	    } else if (StringUtils.equals(getParameter("action"), "update") && getParameter("id") != null) {
+	    	return executeUpdate();
 	    } else { 
 	      	addActionError("Missing required parameter!");
             return ERROR;	
@@ -380,5 +389,125 @@ public class LandmarkProviderAction extends ActionSupport implements ParameterAw
 		}
 		request.setAttribute("output", output);
 		return SUCCESS;
+	}
+	
+	private String executeUpdate() {
+		final int id = NumberUtils.getInt(getParameter("id"), -1);
+		final double latitude = GeocodeUtils.getLatitude(getParameter("latitude"));
+        final double longitude = GeocodeUtils.getLongitude(getParameter("longitude"));
+        final double altitude = NumberUtils.getDouble(getParameter("altitude"), 0.0);
+
+        Date validityDate = null;
+        String validityStr = getParameter("validityDate");
+        if (StringUtils.isNotEmpty(validityStr)) {
+        	long validity = Long.parseLong(validityStr);
+        	validityDate = new Date(validity);
+        } else {
+            validityDate = DateUtils.afterOneHundredYearsFromNow();
+        }
+
+        String description = getParameter("description");
+            
+        String flex = getParameter("flex");
+        JSONObject landmarkFlex = null;
+        //add city and country    
+    	String cc = null, city = null;
+    	if (StringUtils.startsWith(flex, "{")) {
+    		landmarkFlex = new JSONObject(flex);
+    		if (landmarkFlex.has("cc")) {
+    			cc = landmarkFlex.getString("cc");
+    		}
+    		if (landmarkFlex.has("city")) {
+    			city = landmarkFlex.getString("city");
+    		} else if (landmarkFlex.has("county")) {
+    			city = landmarkFlex.getString("county");
+    		} else if (landmarkFlex.has("state")) {
+    			city = landmarkFlex.getString("state");
+    		}
+    	} else {
+    		landmarkFlex = new JSONObject();
+    	}
+    		
+    	EntityManager em = EMF.getEntityManager();
+        
+    	if (cc == null || city == null) {
+    		try {
+    			GeocodePersistenceUtils geocodePeristenceUtils = (GeocodePersistenceUtils) ServiceLocator.getInstance().getService("bean/GeocodePersistenceUtils");
+    	        Geocode g = geocodePeristenceUtils.findByCoords(latitude, longitude, 0.001d, em);
+    	        if (g != null) {
+    	            if (StringUtils.startsWith(g.getFlex(), "{")) {
+    	            	JSONObject geocodeFlex = new JSONObject(g.getFlex());
+    	            	if (geocodeFlex.has("cc")) {
+    	            		cc = geocodeFlex.getString("cc");
+    	            		landmarkFlex.put("cc", cc);	
+    	            	}
+    	            	if (geocodeFlex.has("city")) {
+    	            		city = geocodeFlex.getString("city");
+    	            		landmarkFlex.put("city", city);
+    	            	} else if (geocodeFlex.has("county")) {
+    	            		city = geocodeFlex.getString("county");
+    	            		landmarkFlex.put("city", city);
+    	            	} else if (geocodeFlex.has("state")) {
+    	            		city = geocodeFlex.getString("state");
+    	            		landmarkFlex.put("city", city);
+    	            	}
+    	            	if (landmarkFlex.has("cc") || landmarkFlex.has("city")) {
+    	            		flex = landmarkFlex.toString();
+    	            	}
+    	            }
+    	            if (StringUtils.isEmpty(description)) {
+    	            	description = g.getLocation();
+    	            }
+    	        }
+    		} catch (NamingException e) {
+    			logger.log(Level.SEVERE, e.getMessage(), e);
+    		}
+    	}
+            
+    	try {
+            LandmarkPersistenceUtils landmarkPersistenceUtils = (LandmarkPersistenceUtils) ServiceLocator.getInstance().getService("bean/LandmarkPersistenceUtils");
+            Landmark landmark = landmarkPersistenceUtils.selectLandmarkById(id, em);
+            if (landmark != null) {	
+            	landmark.setAltitude(altitude);
+            	if (latitude != 180) {
+            		landmark.setLatitude(latitude);
+            	}
+            	if (longitude != 180) {
+            		landmark.setLongitude(longitude);
+            	}
+            	if (StringUtils.isNotEmpty(description)) {
+            		landmark.setDescription(description);
+            	}
+            	if (StringUtils.isNotEmpty(flex)) {
+            		landmark.setFlex(flex);
+            	}
+            	landmark.setCreationDate(new Date());
+            	landmark.setValidityDate(validityDate);
+            	
+            	logger.log(Level.INFO, "Landmark " + id + " will be updated...");
+            	landmarkPersistenceUtils.update(landmark, em);	
+            	//invalidate NewestLandmarks
+            	CacheUtil.removeAll(LandmarkProviderAction.NEWEST_LANDMARKS, 1, LandmarkProviderAction.MAX_LANDMARKS);
+            	
+            	JSONObject output = new JSONObject();
+            		output.put("status", "ok")
+            		.put("cc", cc)
+            		.put("city", city)
+            		.put("id", landmark.getId());
+            	if (StringUtils.isNotEmpty(landmark.getHash())) {
+            		output.put("hash", landmark.getHash());
+            	} 
+            	request.setAttribute("output", output.toString());
+            } else {
+            	request.setAttribute("output", "{\"error\":\"Landmark " + id + " not found\"}");
+            }
+        } catch (NamingException e) {
+            request.setAttribute("output", "{\"error\":\"" + e.getMessage() + "\"}");
+			logger.log(Level.SEVERE, e.getMessage(), e);
+		}	finally {
+			em.close();
+		}
+            
+        return SUCCESS;
 	}
 }
