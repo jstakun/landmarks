@@ -19,10 +19,10 @@ import net.gmsworld.server.struts.JSonDataAction;
 import net.gmsworld.server.utils.BoundingBox;
 import net.gmsworld.server.utils.GeocodeUtils;
 import net.gmsworld.server.utils.TomcatThreadProvider;
+import net.gmsworld.server.utils.memcache.JBossCacheProvider;
 import net.gmsworld.server.utils.NumberUtils;
 import net.gmsworld.server.utils.ServiceLocator;
 import net.gmsworld.server.utils.StringUtil;
-import net.gmsworld.server.utils.memcache.JBossCacheProvider;
 import net.gmsworld.server.utils.persistence.EMF;
 import net.gmsworld.server.utils.persistence.LayerPersistenceUtils;
 

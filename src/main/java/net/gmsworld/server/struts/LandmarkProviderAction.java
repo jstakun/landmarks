@@ -82,8 +82,6 @@ public class LandmarkProviderAction extends ActionSupport implements ParameterAw
 		    return selectLandmarksByUserAndLayer();
 		} else if (getParameter("hash") != null) {
 	    	return findByHash();
-	    } else if (getParameter("id") != null) {
-	    	return findById();
 	    } else if (getParameter("query") != null) {
 	    	return searchLandmarks();
 	    } else if (getParameter("month") != null && getParameter("count") != null) {
@@ -97,6 +95,8 @@ public class LandmarkProviderAction extends ActionSupport implements ParameterAw
 	    	return findNewestLandmarks(limit);
 	    } else if (StringUtils.equalsIgnoreCase(getParameter("action"), "update") && getParameter("id") != null) {
 	    	return executeUpdate();
+	    } else if (getParameter("id") != null) {
+	    	return findById();
 	    } else { 
 	      	addActionError("Missing required parameter!");
             return ERROR;	
