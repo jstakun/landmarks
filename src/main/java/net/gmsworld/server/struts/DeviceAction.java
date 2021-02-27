@@ -355,8 +355,8 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 					JSONObject apns = new JSONObject().put("headers", new JSONObject().put("apns-expiration", Long.toString((((System.currentTimeMillis() + (ttl*1000L))/1000)))).put("apns-priority","10").put("apns-collapse-id", device.getImei()));
 					JSONObject content = new JSONObject().put("message", new JSONObject().put("token", device.getToken()).put("data", data).put("android", android).put("webpush", webpush).put("apns", apns));
 					
-					String auth  = "Bearer " + getAccessToken();
-					String body = content.toString();
+					final String auth  = "Bearer " + getAccessToken();
+					final String body = content.toString();
 					
 					if (System.getenv("FCM_DEBUG") != null) {
 						logger.log(Level.INFO, "Sending: " + body);
@@ -364,7 +364,7 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 						logger.log(Level.INFO, "Auth: " + auth);
 					}
 					
-					String response = HttpUtils.processFileRequestWithAuthn(new URL(url), "POST", "application/json", body, "application/json", auth);
+					final String response = HttpUtils.processFileRequestWithAuthn(new URL(url), "POST", "application/json", body, "application/json", auth);
 					
 					if (System.getenv("FCM_DEBUG") != null && response != null) {
 						logger.log(Level.INFO, "Received following response: " + response);
@@ -379,29 +379,35 @@ public class DeviceAction extends ActionSupport implements ServletRequestAware {
 								request.setAttribute("output", response);
 								result = SUCCESS;
 							} else {
-								addActionError("Device " + imei + " has been last seen " + deviceLastSeen + " days ago");
+								addActionError("Device " + imei + " has been last seen " + deviceLastSeen + " days ago. Response code: 410");
 								ServletActionContext.getResponse().setStatus(410);
 								result = ERROR;
 							}
 						} else {
 							addActionError("Failed to send command to device " + imei + ". Try again later!");
-							logger.log(Level.SEVERE, "Received invalid response " + response);
+							logger.log(Level.SEVERE, "Received invalid response " + response + ". Response code: 200");
 							result = ERROR;
 						}
 					} else if  (StringUtils.startsWith(response, "{") && responseCode != null && responseCode >= 400) {
 						JSONObject responseJson = new JSONObject(response);
 						if (responseJson.has("error")) {
 							JSONObject error = responseJson.getJSONObject("error");
-							addActionError("Device " + imei + " error: " + error.optString("message"));
+							addActionError("Device " + imei + " error: " + error.optString("message") + ". Response code: " + responseCode);
 						} else {
-							addActionError("Failed to send command to device " + imei + ". Try again later!");
+							addActionError("Failed to send command to device " + imei + ". Try again later. Response code: " + responseCode);
 						}
-						logger.log(Level.SEVERE, "Received error response " + response);
+						logger.log(Level.SEVERE, "Received error response " + response + ". Response code: " + responseCode);
 						ServletActionContext.getResponse().setStatus(responseCode);
 						result = ERROR;
+					} else if (responseCode != null && responseCode == 404) {
+						addActionError("Device " + imei + " not found. Response code: 404");
+						ServletActionContext.getResponse().setStatus(404);
+				    	result = ERROR;
 					} else {
-						addActionError("Failed to send command to device " + imei + ". Try again later!");
-						logger.log(Level.SEVERE, "Received invalid response " + response);
+						addActionError("Failed to send command to device " + imei + ". Try again later. Response code: " + responseCode);
+						if (StringUtils.isNotEmpty(response)) {
+							logger.log(Level.SEVERE, "Received invalid response " + response);
+						}
 						ServletActionContext.getResponse().setStatus(500);
 				    	result = ERROR;
 					}
