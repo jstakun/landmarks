@@ -33,7 +33,7 @@ import org.apache.struts2.interceptor.ServletRequestAware;
 
 import com.opensymphony.xwork2.ActionSupport;
 
-import net.gmsworld.server.config.ConfigurationManager;
+import net.gmsworld.server.config.Commons;
 import net.gmsworld.server.layers.AwsSesUtils;
 import net.gmsworld.server.utils.memcache.CacheProvider;
 import net.gmsworld.server.utils.memcache.JBossCacheProvider;
@@ -438,7 +438,7 @@ public class MailAction extends ActionSupport implements ServletRequestAware {
 	    						  throw new Exception("Not ESMTP header " + res + ": expected 250 Requested mail action okay, completed");
 	    					  }
 	    					  // validate the sender address  
-	    					  say( wtr, "MAIL FROM: <" + ConfigurationManager.DL_MAIL + ">" );
+	    					  say( wtr, "MAIL FROM: <" + Commons.DL_MAIL + ">" );
 	    					  res = hear( rdr );
 	    					  if ( res != 250 ) {
 	    						  throw new Exception("SMTP sender rejected " + res + ": expected 250 Requested mail action okay, completed");

@@ -28,9 +28,10 @@ public class NotificationPersistenceUtils {
 				EMF.save(n, entityManager);
 			} else {
 				n.setStatus(status);
-				if (status == Notification.Status.UNVERIFIED) {
+				if (status == Notification.Status.UNVERIFIED && (System.currentTimeMillis() - n.getLastUpdateDate().getTime() > 60 * 60 * 1000)) {
+					//if secret is older that 1 hour create new one
 					n.setSecret(generateSecret());
-				}
+				}	
 				n.setLastUpdateDate(new Date());
 				EMF.update(n ,entityManager);
 			}
